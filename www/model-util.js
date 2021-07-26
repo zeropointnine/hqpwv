@@ -9,7 +9,7 @@ import Model from './model.js';
 class ModelUtil {
 
   static getAlbumImageUrl(album) {
-    return Values.HQPLAYER_IMAGE_SERVER_URL + album['@_hash']
+    return Values.imagesEndpoint + album['@_hash']
   }
 
   static isPlaying() {

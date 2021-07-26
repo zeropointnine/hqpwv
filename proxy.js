@@ -18,7 +18,8 @@ const XML_PARSER_OPTIONS = { ignoreAttributes : false };
 
 let initCallback;
 let timeoutId;
-let hostname;
+let hqpHostname;
+let hqpIp;
 
 /** UDP socket used for 'discovery' command. */
 let discoSocket;
@@ -81,25 +82,26 @@ const onDiscoSocketMessage = (msg, rinfo) => {
   try {
     json = fastXmlParser.parse(msg.toString(), XML_PARSER_OPTIONS);
   } catch (error) {
-    console.log(`\nERROR: Couldn't parse xml, will exit.`);
+    console.log(`\nERROR: Couldn't parse udp data as xml, will exit.`);
     console.log(msg.toString());
     console.log(error + '\n');
     exitOnKeypress();
   }
   const o = json['discover'];
   if (o) {
-    hostname = o['@_name'];
+    hqpHostname = o['@_name'];
     if (o['@_result'] != 'OK') {
       console.log(`\nWARNING: Did not get expected result=OK`);
     }
   }
-  if (!hostname) {
+  if (!hqpHostname) {
     console.log(`\nERROR: Received no value for hostname, will exit.`);
     console.log(msg.toString());
     console.log(error + '\n');
     exitOnKeypress();
   }
-  console.log('  hostname:', hostname);
+  hqpIp = rinfo.address;
+  console.log('  hostname:', hqpHostname);
 
   initSocket();
 };
@@ -113,12 +115,12 @@ const sendUdpCommand = (message) => {
       exitOnKeypress();
     }
   });
-	// fyi, reference implementation also does this, but results in an error
+	// fyi, reference implementation also does this, but results in an error FOR ME
 	// socket.send(message, 4321, "ff08::c7", onError);
 };
 
 const initSocket = () => {
-  socket = net.createConnection(PORT, hostname, () => {
+  socket = net.createConnection(PORT, hqpHostname, () => {
     console.log('- tcp socket connected');  // rem, still need to wait for 'ready'
   });
   socket.on("error", onSocketError);
@@ -127,7 +129,7 @@ const initSocket = () => {
   socket.on("ready", () => {
     console.log('- tcp socket ready');
     if (initCallback) {
-      initCallback();
+      initCallback(hqpIp);
       initCallback = null;
       // init finished.
     }

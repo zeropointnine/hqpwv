@@ -27,12 +27,12 @@ class Service {
 	/** The currently active command 'item', which is an object with an xml and callback properties. */
 	get currentItem() { return this.currentItem; }
 
-	get isWorking() { return !!this.currentItem }
+	get isBusy() { return !!this.currentItem }
 
 	/** Queued 'commands' waiting to be processed. */
 	get queue() { return this.queue; }
 
-	/** Queues a command. If service is not busy, executes immediately. */
+	/** Queues a command. If queue is empty, executes immediately. */
 	queueCommand(xml, callback) {
 		const item = { xml: xml, callback: callback };
 		this.queue.push(item);
@@ -95,7 +95,7 @@ class Service {
 	/** Makes request to server using the xml in `currentItem` */
 	makeRequest() {
 		// cl(`service request [${this.currentItem.xml.substr(0,30)}] ${this.queue.length} items queued`);
-		const url = Values.COMMAND_ENDPOINT + "?xml=" + encodeURIComponent(this.currentItem.xml);
+    const url = Values.COMMAND_ENDPOINT + "?xml=" + encodeURIComponent(this.currentItem.xml);
     $.ajax({ url: url, error: this.onError, success: this.onSuccess}); // todo timeout: ___ ?
   }
 
@@ -178,5 +178,4 @@ class Service {
 	}
 }
 
-// Singleton
 export default new Service()

@@ -11,20 +11,20 @@ Demo video
 
 # Development setup  
   
-1. Make sure [HQPlayer 4 Desktop](https://www.signalyst.com/consumer.html) is running on the computer you'll be installing the project to.
+1. `cd` to the project directory.
   
-2. `cd` to the project directory.  
-  
-3. Make sure Node.js is installed. Then enter:  
+2. Make sure Node.js is installed. Then enter:
 `npm install`. 
   
-4. Make sure `sass` is installed. Then compile the css:  
+3. Make sure `sass` is installed. Then compile the css:
 `sass scss/main.scss www/css/main.css`  
   
-5. Run the server  
+4. Make sure [HQPlayer 4 Desktop](https://www.signalyst.com/consumer.html) is running.
+
+5. Start the server:
 `node server.js`
   
-6. Browse to the locally served webpage as directed. 
+6. Browse to the locally served webpage as directed.
   
 Executables are generated with `pkg` by simply entering:
 `pkg .`

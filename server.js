@@ -11,13 +11,17 @@ const DEFAULT_PORT = 8000;
 let port;
 let server;
 let isBusy = false;
-
+let hqpIp;
 
 app.use(express.static(WEBPAGE_DIR));
 
+/**
+ * Endpoint for 'commands' that get proxied to HQPlayer.
+ * Note the enforcement of a one-at-a-time policy
+ * (due to nature of socket server)
+ */
 app.get('/endpoints/command', (request, response) => {
   if (isBusy) {
-    // Only accept one request at a time (due to nature of hqp server)
     console.log("server - rejected 'command', is busy");
     response.send({ error: "server_is_busy" });
     return;
@@ -30,7 +34,22 @@ app.get('/endpoints/command', (request, response) => {
   });  
 });
 
-const onInit = () => {
+/**
+ * Endpoint for 'native' REST requests.
+ *
+ * This could be blown out in the future if we add extra
+ * layers of functionality on top of HQPlayer.
+ */
+app.get('/endpoints/native', (request, response) => {
+  if (request.query.hqplayer_ip_address !== undefined) {
+    response.send({ hqplayer_ip_address: hqpIp });
+    return;
+  }
+  response.status(400).json( {error: 'Bad param data'} );
+});
+
+const onProxyReady = (ip) => {
+  hqpIp = ip;
   server = app.listen(port, onSuccess).on('error', onError);
 };
 
@@ -56,20 +75,6 @@ const onSuccess = () => {
   console.log(`from a device on your local network.`);
   console.log(`Please keep this process running.`);
   console.log(`---------------------------------------------------\n`);
-};
-
-getIpBestGuess = () => {
-  const os = require('os');
-  const networkInterfaces = os.networkInterfaces();
-  for (const [key, array] of Object.entries(networkInterfaces)) {
-    for (item of array) {
-      const isIPv4 = (item['family'].toLowerCase() == 'ipv4');
-      const isInternal = item['internal'];
-      if (isIPv4 && !isInternal) {
-        return item['address'];
-      }
-    }
-  }
 };
 
 getPortFromArguments = () => {
@@ -100,4 +105,4 @@ const exitOnKeypress = () => {
 console.log('\nHQPWV Server', packageJson.version);
 console.log('Project page: ' + packageJson.homepage + '\n');
 port = getPortFromArguments();
-proxy.start(onInit);
+proxy.start(onProxyReady);

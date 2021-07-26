@@ -1,7 +1,3 @@
-// dev convenience:
-window.cl = console.log;
-window.cd = (s) => { const h = $('#debug').html(); $('#debug').html(h + '<br>' + s) };
-
 import Values from './values.js';
 import Util from './util.js';
 import ViewUtil from './view-util.js';
@@ -9,6 +5,7 @@ import Commands from './commands.js';
 import Settings from './settings.js';
 import Model from './model.js';
 import ModelUtil from './model-util.js';
+import Native from './native.js';
 import Service from './service.js';
 import Statuser from './statuser.js';
 import LibraryView from './library-view.js';
@@ -72,6 +69,9 @@ export default class App {
     ViewUtil.setVisible(this.playbarView.$el, true);
 
 		// Make service calls
+    Native.getHqPlayerIpAddress((ip) => {
+      Values.setImagesEndpointUsing(ip);
+    });
     Statuser.start();
 		Service.queueCommandsFront([
         { xml :Commands.libraryGet(), callback: this.onLibraryGetResponse },
