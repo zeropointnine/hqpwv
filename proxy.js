@@ -64,9 +64,9 @@ const onDiscoSocketListening = () => {
 const onDiscoveryTimeout = () => {
   console.log(`\nERROR: No response from HQPlayer, will exit.`);
   console.log(`\nTIPS:`);
-  console.log(`1. Make sure HQPlayer Desktop is running on this computer.`);
-  console.log(`2. Verify "Allow control from network" is enabled.`);
-  console.log(`3. Verify the Settings dialog is not open.\n`);
+  console.log(`1. Verify HQPlayer Desktop is currently running on this computer.`);
+  console.log(`2. Verify HQPlayer's Settings dialog is not open.\n`);
+  console.log(`3. Verify "Allow control from network" is enabled.`);
   exitOnKeypress();
 };
 
