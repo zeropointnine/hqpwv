@@ -1,0 +1,85 @@
+#playlistView {
+  transition: top 333ms cubic-bezier(0,.5,.3,1.0);
+}
+
+#playlistHeader {
+	margin-bottom: 8px;
+}
+
+#playlistNonItem {
+  padding-top:$space-unit;
+  color:$color-text-less;
+}
+
+.playlistItem {
+	display:flex;
+	align-items:center;
+	background-color:$color-listitem;
+	padding: 10px 12px 10px 12px;
+  margin-top: 4px;
+	margin-bottom: 4px;
+	cursor:pointer;
+	&:hover {
+		background-color:$color-listitem-over;
+	}
+
+	&.selected {
+		background-color: $color-listitem-selected;	
+		&:hover {
+			background-color:$color-listitem-selected-over;
+		}
+	}
+
+  @include mobile {
+    padding: 8px 8px 8px 8px;
+  }
+}
+
+$margin1: 6px;
+$margin2: 18px;
+
+.playlistItem.groupFirst {
+  border-top-left-radius: $space-unit;
+  border-top-right-radius: $space-unit;
+  margin-top:$margin2;
+  margin-bottom:$margin1;
+  @include mobile {
+    border-top-left-radius: $space-unit-mobile;
+    border-top-right-radius: $space-unit-mobile;
+  }
+}
+.playlistItem.groupMiddle {
+  margin-top:$margin1;
+  margin-bottom:$margin1;
+}
+.playlistItem.groupLast {
+  border-bottom-left-radius: $space-unit;
+  border-bottom-right-radius: $space-unit;
+  margin-top:$margin1;
+  margin-bottom:$margin2;
+  @include mobile {
+    border-bottom-left-radius: $space-unit-mobile;
+    border-bottom-right-radius: $space-unit-mobile;
+  }
+}
+.playlistItem.single {
+  //border-radius: 16px;
+  margin-top:$margin2;
+  margin-bottom:$margin2;
+}
+
+.playlistItemLeft {
+	margin-right:$space-unit;
+  @include mobile {
+    margin-right:$space-unit-mobile;
+  }
+}
+.playlistItemMain {
+	flex:1;
+}
+.playlistItemRight {
+  margin-left:$space-unit;
+  @include mobile {
+    margin-left:$space-unit-mobile;
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "hqpwv",
+  "version": "0.8.0",
+  "description": "Remote control application for HQPlayer",
+  "bin": "server.js",
+  "homepage": "https://github.com/zeropointnine/hqpwv",
+  "pkg": {
+    "assets": [
+      "node_modules/**/*",
+      "www/**/*"
+    ],
+    "targets": [
+      "node16-macos-x64",
+      "node14-windows-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fast-xml-parser": "^3.19.0",
+    "ip": "^1.1.5"
+  }
+}

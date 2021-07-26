@@ -1,0 +1,73 @@
+#dialogOuter {
+  visibility: hidden;
+  position: absolute;
+  z-index: 10002;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  #dialog {
+    position: absolute;
+    width: 700px;
+    left: 50%;
+    margin-left: -350px;
+    top: 35px;
+    background-color: $color-bg;
+    border: 2px solid $color-listitem;
+
+    #dialogTitle {
+      color: $color-accent;
+      font-size: 16px;
+      font-weight: bold;
+      padding: $space-unit;
+      border-bottom: 2px solid $color-listitem;
+      background-color: $color-listitem-less;
+    }
+
+    #dialogMessage {
+      padding: $space-unit $space-unit 0 $space-unit;
+      max-height: 400px;
+      margin-bottom: $space-unit;
+    }
+
+    #dialogBottom {
+      text-align: center;
+      padding-bottom: $space-unit;
+
+      #dialogButton {
+        display: inline-block;
+        min-width: 80px;
+      }
+    }
+  }
+}
+
+#dialogOuter.isFatal {
+  background-color: rgba(0, 0, 0, 0.5);
+  #dialog {
+    #dialogTitle {
+      color: $color-accent;
+    }
+  }
+}
+
+@include tablet {
+  #dialogOuter {
+    #dialog {
+      width: 450px;
+      margin-left:-225px;
+    }
+  }
+}
+
+@include mobile {
+  #dialogOuter {
+    #dialog {
+      top: 35px;
+      width: 300px;
+      margin-left:-150px;
+    }
+  }
+}

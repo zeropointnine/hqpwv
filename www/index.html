@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+		<!--user-scalable=no-->
+
+		<link rel="stylesheet" href="css/main.css">
+		<script src="libs/jquery-3.6.0.min.js"></script>
+
+		<script type="module">
+			import App from './app.js';
+			$(document).ready(() => {
+				const app = new App();
+			});
+		</script>
+	</head>
+
+	<body>
+		
+		<div id="page">
+
+			<div id="debug"></div>
+
+			<div id="topBar" style="position:relative">
+				<div id="appLogo"><div id="appLogoInner">HQPWV</div></div>
+				<div id="appTitle">HQPlayer Web Viewer</div>
+				<div id="settingsButton" class="iconButton"></div>
+			</div>
+
+			<div id="mainArea">
+
+				<div id="libraryView" class="subview" tabindex="0">
+						<div id="libraryHeaderView">
+							<span class="viewTitle">Library</span>
+
+							<div id="libraryOptionsView">
+								<div id="librarySortDropdown" class="dropdown">
+									<div class="dropdownTitle">Sort by</div>
+									<div class="dropdownItems">
+										<div class="dropdownItem">Artist</div>
+										<div class="dropdownItem">Album</div>
+										<div class="dropdownItem">Directory path</div>
+									</div>
+								</div>
+								<div id="libraryOptionsButton" class="iconButton"></div>
+							</div>
+
+						</div>
+						<div id="libraryList"></div>
+				</div>
+
+				<div id="albumView" class="subview" tabindex="0">
+					<div id="albumCloseButton" class="iconButton closeButton"></div>
+					<div id="albumViewHeader" class="viewTitle">Album</div>
+
+					<div id="albumViewInfo">
+						<img id="albumViewPicture">
+						<div id="albumViewTexts">
+							<div id="albumViewTextsInner">
+								<div id="albumViewTitle"></div>
+								<div id="albumViewArtist"></div>
+								<div id="albumViewStats"></div>
+								<div id="albumViewButtons"><div
+										id="albumPlayNowButton" class="textButton">play now</div><div
+										id="albumQueueButton" class="textButton">add to queue</div></div>
+							</div>
+						</div>
+					</div>
+
+					<div id="albumList"></div>
+				</div>
+
+				<div id="playlistView" class="subview" tabindex="0">
+					<div id="playlistViewContent">
+						<div id="playlistHeader" style="display:flex;">
+							<div class="viewTitle">Playlist</div>
+							<div id="playlistCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
+						</div>
+						<div id="playlistClearButton" class="textButton" style="margin-top:12px;margin-bottom:12px">clear</div>
+						<div id="playlistList"></div>
+					</div>
+				</div>
+
+				<div id="settingsView" class="subview">
+
+					<div id="settingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
+
+					<div style="margin-top:8px">
+						HQPWV v0.8a<br><br>
+						<div class="settingsSubheading">Project page:</div>
+						<a id="settingsProjectAnchor" class="colorTextLess" style="margin-left:28px"></a>
+					</div>
+
+					<div id="settingsHotkeys" style="margin-top:28px;">
+						<div class="settingsSubheading">Hotkeys:</div>
+						<table>
+							<tr><td class="c1">q</td><td class="c2">show playlist</td></tr>
+							<tr><td class="c1">p</td><td class="c2">play/pause</td></tr>
+							<tr><td class="c1">s</td><td class="c2">stop</td></tr>
+							<tr><td class="c1">j</td><td class="c2">previous track</td></tr>
+							<tr><td class="c1">k</td><td class="c2">next track</td></tr>
+							<tr><td class="c1">comma</td><td class="c2">seek -10s</td></tr>
+							<tr><td class="c1">period</td><td class="c2">seek +10s</td></tr>
+							<tr><td class="c1">esc</td><td class="c2">close modal</td></tr>
+						</table>
+					</div>
+
+					<div id="settingsInfoView" style="margin-top:28px; ">
+						<div class="settingsSubheading">Your HQPlayer version:</div>
+						<div id="hqpVersion" class="colorTextLess" style="margin-left:28px">&nbsp;<br>&nbsp;</div>
+					</div>
+
+					<div class="colorTextLess" style="margin-top:28px;font-size:12px;font-style:italic;">Watch this space<br>for future buttons to push</div>
+				</div>
+
+				<--! z-index'ed overlays -->
+
+				<div id="albumContextMenu" class="contextMenu">
+					<div id="albumContextItemQueue" class="contextItem">Queue track</div>
+					<div id="albumContextItemQueueMultiple" class="contextItem">Queue this and following tracks</div>
+					<div id="albumContextItemPlayNow" class="contextItem">Play track now</div>
+					<div id="albumContextItemPlayNowMultiple" class="contextItem">Play this and following tracks now</div>
+				</div>
+
+				<div id="playlistContextMenu" class="contextMenu">
+					<div id="playlistContextUp" class="contextItem">Move up</div>
+					<div id="playlistContextDown" class="contextItem">Move down</div>
+					<div id="playlistContextRemove" class="contextItem">Remove</div>
+					<div id="playlistContextAlbum" class="contextItem" style="border-top:1px solid #444;">Go to album</div>
+				</div>
+
+				<!-- !important-->
+				<div id="breakpointIndicator"></div>
+
+			</div> <!-- #mainArea -->
+
+			<div id="playbarView" style="position:relative">
+
+				<div id="showPlaylistButton" class="iconButton">
+					<div id="playlistNumberAt"></div>
+					<div id="playlistNumberStroke"></div>
+					<div id="playlistNumberTotal"></div>
+				</div>
+				<div id="playbarStroke"></div>
+
+				<div id="playingTextOuter">
+					<div id="playingText">&nbsp;</div>
+				</div>
+
+				<div id="playbarButtons">
+					<div id="stopButton" class="iconButton"></div>
+					<div id="previousButton" class="iconButton"></div>
+					<div id="playButton" class="iconButton"></div>
+					<div id="nextButton" class="iconButton"></div>
+					<div id="seekBackwardButton" class="iconButton"></div>
+					<div id="seekForwardButton" class="iconButton"></div>
+					<div id="playingTrackArea">
+						<div id="playingTrackCurrentTime"></div>
+						<div id="playProgressView">
+							<div id="playProgressThumbOuter"><div id="playProgressThumb"></div></div>
+						</div>
+						<div id="playingTrackLength"></div>
+					</div>
+				</div>
+
+				<!-- note, snack piggybacks off of playbar -->
+				<div id="snack">
+					<div id="snackInner">
+						<div id="snackIcon" class="iconButton"></div>
+						<div id="snackClose" class="iconButton closeButton"></div>
+						<div id="snackLine1">Snackbar-like</div>
+						<div id="snackLine2">Text line</div>
+					</div>
+				</div>
+
+			</div> <!-- #playbarView -->
+
+			<div id="dialogOuter">
+				<div id="dialog">
+					<div id="dialogTitle">&nbsp;</div>
+					<div id="dialogMessage">&nbsp;</div>
+					<div id="dialogBottom">
+						<div id="dialogButton" class="textButton">&nbsp;</div>
+					</div>
+				</div>
+			</div>
+
+	</body>
+</html>

@@ -1,0 +1,122 @@
+#libraryView {
+  // special case for lib view
+  padding-left:0;
+  padding-right:0;
+}
+
+#libraryHeaderView {
+  margin-left:$space-unit;
+  margin-right:$space-unit;
+  flex:1;
+  display:flex;
+  height:36px;
+  flex-direction: row;
+  @include mobile {
+    margin-left:$space-unit-mobile;
+    margin-right:$space-unit-mobile;
+  }
+}
+
+#libraryOptionsView {
+  margin-left:auto;
+  display:flex;
+
+  #librarySortDropdown {
+    width:150px;
+    margin-right:12px;
+  }
+
+  #libraryOptionsButton:before {
+    background-image: url('./../img/icons/sort_white_24dp.svg');
+    opacity:0.7;
+  }
+}
+
+#libraryList {
+	display:flex;
+	flex-wrap: wrap;
+  margin-top:$space-unit;
+	margin-left:auto;
+	margin-right:auto;
+	// width set programmatically so columns remain centered
+
+  @include mobile {
+    margin-top:$space-unit-mobile;
+  }
+}
+.libraryItem {
+  position:relative;
+	width: 240px;
+	background:$color-listitem;
+	padding: 12px 12px 12px 12px;
+	margin-left: 8px;
+	margin-right: 8px;
+	margin-bottom: 16px;
+	cursor:pointer;
+
+  @include tablet {
+    width:224px;
+  }
+
+  @include mobile {
+    width:144px;
+    padding:6px 6px 6px 6px;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-bottom: 8px;
+  }
+}
+
+.libraryItemPicture {
+	width:(240px - 12px - 12px);
+	height:(240px - 12px - 12px);
+	background:rgba(0,0,0,0.0);
+	margin-bottom: 4px;
+  object-fit: cover;
+
+  @include tablet {
+    width: (224px - 12px - 12px);
+    height: (224px - 12px - 12px);
+  }
+
+  @include mobile {
+    width: (144px - 6px - 6px);
+    height: (144px - 6px - 6px);
+  }
+}
+
+.libraryItemText1 {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.libraryItemText2 {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+  margin-top:-4px;
+}
+.libraryItemBits {
+  position:absolute;
+  line-height:20px;
+  font-size:12px;
+  background-color:$color-listitem;
+  padding-left:6px;
+  padding-right:4px;
+  padding-bottom:2px;
+  right:12px;
+  top:198px;
+  opacity:0;
+  transition: opacity 0.12s linear;
+  @include tablet {
+    right:12px;
+    top:182px;
+  }
+  @include mobile {
+    right:6px;
+    top:108px;
+  }
+}
+.libraryItem:hover .libraryItemBits {
+  opacity:1;
+}
