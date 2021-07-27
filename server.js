@@ -22,7 +22,7 @@ app.use(express.static(WEBPAGE_DIR));
  */
 app.get('/endpoints/command', (request, response) => {
   if (isBusy) {
-    console.log("server - rejected 'command', is busy");
+    console.log("webserver - rejected 'command', is busy");
     response.send({ error: "server_is_busy" });
     return;
   }
@@ -65,7 +65,7 @@ const onError = (e) => {
 };
 
 const onSuccess = () => {
-  console.log(`- server is ready on port ${port}`);
+  console.log(`- webserver is ready on port ${port}`);
   const ipAddress = ip.address();
   const urlText = ipAddress
       ? `http://${ipAddress}:${port}`

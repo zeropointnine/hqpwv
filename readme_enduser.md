@@ -17,7 +17,7 @@ Demo video
 # Setup  
 1. Get the latest MacOS or Windows (unsigned) executable [here](https://github.com/zeropointnine/hqpwv/releases). Instructions for running unsigned binaries on MacOS can be found [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac). If running an unsigned executable is not an option, consider downloading the source code and run the application using Node.js.
 2. Make sure HQPlayer Desktop is running, and that your library is populated. Verify that the "Allow control from network" button is checked.
-3. Run `hqpwv-server`. Running it from the same computer as HQPlayer is optimal, but is not a requirement.
+3. Run `hqpwv-server`. Running it from the same computer as HQPlayer is recommended (It can be run on a different computer than HQPlayer, but configuration issues may arise due to firewalls blocking ports, etc).
 4. If all goes well, the console output should give you a webpage url to navigate to (eg, something like`http://192.168.X.XXX:8000`).
 5. Navigate to the url from any desktop or mobile browser that's on the same network as HQPlayer and HQPWV.
   

@@ -42,6 +42,7 @@ const initDiscoverySocket = () => {
 	if (discoSocket) {
 		discoSocket.close();
 	}
+  console.log('- creating udp socket');
 	discoSocket = dgram.createSocket('udp4');
 	
   discoSocket.on('error', () => {
@@ -63,11 +64,12 @@ const onDiscoSocketListening = () => {
 };
 
 const onDiscoveryTimeout = () => {
-  console.log(`\nERROR: No response from HQPlayer, will exit.`);
+  console.log(`\nERROR: No response from HQPlayer`);
   console.log(`\nTIPS:`);
-  console.log(`1. Verify HQPlayer Desktop is currently running on this computer.`);
-  console.log(`2. Verify HQPlayer's Settings dialog is not open.\n`);
-  console.log(`3. Verify "Allow control from network" is enabled.`);
+  console.log(`1. Verify HQPlayer Desktop is currently running`);
+  console.log(`   (preferably on the same computer as the HQPWV server).`);
+  console.log(`2. Verify HQPlayer's Settings dialog is not open.`);
+  console.log(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
   exitOnKeypress();
 };
 
@@ -82,7 +84,7 @@ const onDiscoSocketMessage = (msg, rinfo) => {
   try {
     json = fastXmlParser.parse(msg.toString(), XML_PARSER_OPTIONS);
   } catch (error) {
-    console.log(`\nERROR: Couldn't parse udp data as xml, will exit.`);
+    console.log(`\nERROR: Couldn't parse udp data as xml`);
     console.log(msg.toString());
     console.log(error + '\n');
     exitOnKeypress();
@@ -95,7 +97,7 @@ const onDiscoSocketMessage = (msg, rinfo) => {
     }
   }
   if (!hqpHostname) {
-    console.log(`\nERROR: Received no value for hostname, will exit.`);
+    console.log(`\nERROR: Received no value for hostname`);
     console.log(msg.toString());
     console.log(error + '\n');
     exitOnKeypress();
@@ -110,7 +112,7 @@ const sendUdpCommand = (message) => {
   message = XML_HEADER + message;
 	discoSocket.send(message, PORT, UDP_ADDRESS, (error) => {
     if (error) {
-      console.log(`\nERROR sending udp message, will exit.`);
+      console.log(`\nERROR sending udp message`);
       console.log(error + '\n');
       exitOnKeypress();
     }
@@ -120,6 +122,7 @@ const sendUdpCommand = (message) => {
 };
 
 const initSocket = () => {
+  console.log(`- connecting to tcp socket ${hqpHostname}:${PORT}`);
   socket = net.createConnection(PORT, hqpHostname, () => {
     console.log('- tcp socket connected');  // rem, still need to wait for 'ready'
   });
@@ -148,7 +151,6 @@ const onSocketError = (error) => {
   reset();
   // Try to reconnect
   setTimeout(initSocket, 2000);
-  // todo no longer has callback at this point?
 };
 
 const onSocketEnd = () => {
