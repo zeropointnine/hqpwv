@@ -9,6 +9,7 @@ const dgram = require('dgram');
 const net = require("net");
 const fastXmlParser = require('fast-xml-parser');
 
+const TROUBLESHOOTING_URL = 'https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md';
 const UDP_ADDRESS = "239.192.0.199";
 const PORT = 4321;
 const XML_HEADER = `<?xml version="1.0" encoding="UTF-8"?>`;
@@ -18,7 +19,6 @@ const XML_PARSER_OPTIONS = { ignoreAttributes : false };
 
 let initCallback;
 let timeoutId;
-let hqpHostname;
 let hqpIp;
 
 /** UDP socket used for 'discovery' command. */
@@ -67,9 +67,9 @@ const onDiscoveryTimeout = () => {
   console.log(`\nERROR: No response from HQPlayer`);
   console.log(`\nTIPS:`);
   console.log(`1. Verify HQPlayer Desktop is currently running`);
-  console.log(`   (preferably on the same computer as the HQPWV server).`);
   console.log(`2. Verify HQPlayer's Settings dialog is not open.`);
   console.log(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
+  console.log(`4. For more troubleshooting info, see ${TROUBLESHOOTING_URL}.`);
   exitOnKeypress();
 };
 
@@ -97,14 +97,10 @@ const onDiscoSocketMessage = (msg, rinfo) => {
     }
   }
   if (!hqpHostname) {
-    console.log(`\nERROR: Received no value for hostname`);
+    console.log(`\nWARNING: Received no value for hostname`);
     console.log(msg.toString());
-    console.log(error + '\n');
-    exitOnKeypress();
   }
   hqpIp = rinfo.address;
-  console.log('  hostname:', hqpHostname);
-
   initSocket();
 };
 
@@ -117,13 +113,15 @@ const sendUdpCommand = (message) => {
       exitOnKeypress();
     }
   });
-	// fyi, reference implementation also does this, but results in an error FOR ME
+	// fyi, reference implementation also does this, but results in an error for me
 	// socket.send(message, 4321, "ff08::c7", onError);
 };
 
 const initSocket = () => {
-  console.log(`- connecting to tcp socket ${hqpHostname}:${PORT}`);
-  socket = net.createConnection(PORT, hqpHostname, () => {
+  console.log(`- connecting to tcp socket ${hqpIp}:${PORT}`);
+  // Note, could also create connection using hostname instead of IP.
+  // IP has proven to be more reliable when reconnecting windows hqpwv server to mac hqplayer, fwiw.
+  socket = net.createConnection(PORT, hqpIp, () => {
     console.log('- tcp socket connected');  // rem, still need to wait for 'ready'
   });
   socket.on("error", onSocketError);

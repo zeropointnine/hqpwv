@@ -294,14 +294,14 @@ export default class App {
   }
 
   showHqpDisconnectedSnack(errorCode) {
-    const title = `The HQPWV Server has lost connection to HQPlayer`;
+    const title = `HQPWV Server has lost connection to HQPlayer`;
     let msg = `Make sure HQPlayer is running. <span class="colorTextLess"><a href="${Values.TROUBLESHOOTING_HREF}">Troubleshooting tips<a>.</span>`;
     SnackView.show('hqp-disconnected', title, msg);
   }
 
   showServerErrorsSnack(statusCode) {
-    const title = `The HQPWV Server is not responding`;
-    let msg = `Restart HQPWV Server if necessary. <span class="colorTextLess"><a href="${Values.TROUBLESHOOTING_HREF}">Troubleshooting tips<a>.</span>`;
+    const title = `HQPWV Server is not responding`;
+    let msg = `Restart server if necessary. <span class="colorTextLess"><a href="${Values.TROUBLESHOOTING_HREF}">Troubleshooting tips<a>.</span>`;
     SnackView.show('server-error', title, msg);
   }
 }
