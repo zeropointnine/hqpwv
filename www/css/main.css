@@ -540,9 +540,14 @@ li:before {
   }
 }
 
+#playlistContextAlbum {
+  border-top: 1px solid #282828;
+}
+
 #libraryView {
   padding-left: 0;
   padding-right: 0;
+  overflow-x: hidden;
 }
 
 #libraryHeaderView {
@@ -694,35 +699,38 @@ li:before {
   margin-top: 16px;
   margin-bottom: 16px;
 }
-#albumViewInfo #albumViewPicture {
+
+#albumViewPicture {
   width: 50%;
   object-fit: contain;
   object-position: center top;
 }
-#albumViewInfo #albumViewTexts {
+
+#albumViewTexts {
   width: 50%;
   align-items: center;
   padding-left: 32px;
   display: flex;
 }
-#albumViewInfo #albumViewTexts #albumViewTextsInner {
+#albumViewTexts #albumViewTextsInner {
   height: auto;
   padding-bottom: 24px;
 }
-#albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewTitle {
+#albumViewTexts #albumViewTextsInner #albumViewTitle {
   font-family: "Noto Serif SC", sans-serif;
   font-size: 36px;
   line-height: 42px;
-}
-#albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewArtist {
-  margin-top: 16px;
-  font-size: 20px;
-  line-height: 24px;
-}
-#albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewStats {
   margin-top: 16px;
 }
-#albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewButtons {
+#albumViewTexts #albumViewTextsInner #albumViewStats {
+  margin-top: 16px;
+}
+#albumViewTexts #albumViewTextsInner #albumViewPath {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #666;
+}
+#albumViewTexts #albumViewTextsInner #albumViewButtons {
   margin-top: 24px;
 }
 
@@ -730,40 +738,56 @@ li:before {
   #albumViewInfo {
     flex-direction: column;
   }
-  #albumViewInfo #albumViewPicture {
-    width: auto;
+
+  #albumViewPicture {
+    width: 70%;
     margin-left: 15%;
     margin-right: 15%;
   }
-  #albumViewInfo #albumViewTexts {
+
+  #albumViewTexts {
     width: auto;
     margin-top: 12px;
     padding-left: 0;
   }
-  #albumViewInfo #albumViewTexts #albumViewTextsInner {
+  #albumViewTexts #albumViewTextsInner {
     padding-bottom: 0;
   }
-  #albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewTitle {
-    font-size: 20px;
-    line-height: 24px;
-  }
-  #albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewArtist {
+  #albumViewTexts #albumViewTextsInner #albumViewTitle {
     margin-top: 12px;
-    font-size: 14px;
-    line-height: 17px;
+    font-size: 28px;
+    line-height: 33px;
   }
-  #albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewStats {
+  #albumViewTexts #albumViewTextsInner #albumViewStats {
     margin-top: 12px;
   }
-  #albumViewInfo #albumViewTexts #albumViewTextsInner #albumViewButtons {
+  #albumViewTexts #albumViewTextsInner #albumViewPath {
+    display: none;
+  }
+  #albumViewTexts #albumViewTextsInner #albumViewButtons {
     margin-top: 12px;
   }
 }
 @media (max-width: 480px) {
-  #albumViewInfo #albumViewPicture {
+  #albumViewPicture {
     margin-left: 0;
     margin-right: 0;
-    width: auto;
+    width: 100%;
+  }
+
+  #albumViewTexts #albumViewTextsInner #albumViewTitle {
+    margin-top: 12px;
+    font-size: 20px;
+    line-height: 23px;
+  }
+  #albumViewTexts #albumViewTextsInner #albumViewStats {
+    margin-top: 12px;
+  }
+  #albumViewTexts #albumViewTextsInner #albumViewPath {
+    display: none;
+  }
+  #albumViewTexts #albumViewTextsInner #albumViewButtons {
+    margin-top: 12px;
   }
 }
 #albumPlayNowButton {
@@ -850,7 +874,6 @@ li:before {
   flex: 0 0 auto;
   height: auto;
   padding: 12px 0 12px 0;
-  border-top: 1px solid #444;
   background-color: #101010;
   z-index: 10000;
 }
@@ -928,6 +951,16 @@ li:before {
 
 .isPaused #playButton:before {
   background-image: url("./../img/icons/play_arrow_white_24dp.svg");
+}
+
+.isPlaylistEmpty #playButton {
+  pointer-events: none;
+}
+.isPlaylistEmpty #playButton:before {
+  background-image: url("./../img/icons/play_arrow_white_24dp.svg");
+}
+.isPlaylistEmpty #playButton:before {
+  opacity: 0.5;
 }
 
 #previousButton {
@@ -1044,19 +1077,17 @@ li:before {
   pointer-events: none;
 }
 
-#playProgressThumbOuter {
+#playProgressInner {
   position: absolute;
-  width: calc(100% - 20px);
+  width: calc(100% - 20px );
   height: 100%;
   left: 10px;
 }
 
 #playProgressThumb {
   position: absolute;
-  left: 0;
-  top: 0;
   width: 20px;
-  height: 20px;
+  height: 100%;
   margin-left: -10px;
   cursor: pointer;
   background-color: #ff2200;
@@ -1077,7 +1108,7 @@ li:before {
   height: 84px;
   right: 60px;
   top: 6px;
-  background-color: #444;
+  background-color: #282828;
 }
 @media (max-width: 480px) {
   #playbarStroke {
@@ -1156,6 +1187,28 @@ li:before {
     opacity: 1;
   }
 }
+#bottomScrim {
+  position: absolute;
+  width: 100%;
+  height: 28px;
+  top: -28px;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 40%, rgba(0, 0, 0, 0) 100%);
+}
+@media (max-width: 480px) {
+  #bottomScrim {
+    display: none;
+  }
+}
+
+#bottomStroke {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  top: 0px;
+  background-color: #282828;
+}
+
 #snack {
   visibility: hidden;
   position: absolute;

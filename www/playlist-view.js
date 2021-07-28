@@ -24,7 +24,7 @@ export default class PlaylistView extends Subview {
   	this.$el.find("#playlistCloseButton").on("click tap", () => $(document).trigger('playlist-close-button'));
 		this.$el.find("#playlistClearButton").on("click tap", this.onClearButton);
 
-    $(document).on('model-playlist-updated', e => this.update());
+    Util.addAppListener(this, 'model-playlist-updated', this.update);
 	}
 
   show() {

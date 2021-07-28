@@ -16,82 +16,102 @@
   display:flex;
   margin-top:$space-unit;
   margin-bottom: $space-unit;
-
-  #albumViewPicture {
-    width:50%;
-    //max-width: 640px;
-    object-fit:contain;
-    object-position:center top;
-  }
-  #albumViewTexts {
-    width:50%;
-    align-items:center;
-    padding-left:32px;
-    display: flex;
-    #albumViewTextsInner { // wrapped content gets v-aligned
-      height:auto;
-      padding-bottom:24px;  // raise vertically a little (looks better)
-      #albumViewTitle {
-        font-family: 'Noto Serif SC', sans-serif;
-        font-size:36px;
-        //margin-right:15%;
-        line-height:42px;
-      }
-      #albumViewArtist {
-        margin-top:$space-unit;
-        font-size:20px;
-        line-height:24px;
-      }
-      #albumViewStats {
-        margin-top:$space-unit;
-      }
-      #albumViewButtons {
-        margin-top:24px;
-      }
+}
+#albumViewPicture {
+  width:50%;
+  //max-width: 640px;
+  object-fit:contain;
+  object-position:center top;
+}
+#albumViewTexts {
+  width:50%;
+  align-items:center;
+  padding-left:32px;
+  display: flex;
+  #albumViewTextsInner { // wrapped content gets v-aligned
+    height:auto;
+    padding-bottom:24px;  // raise vertically a little (looks better)
+    #albumViewArtist {
+    }
+    #albumViewTitle {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size:36px;
+      //margin-right:15%;
+      line-height:42px;
+      margin-top:$space-unit;
+    }
+    #albumViewStats {
+      margin-top:$space-unit;
+    }
+    #albumViewPath {
+      margin-top:$space-unit;
+      font-size: 12px;
+      color:$color-text-least;
+    }
+    #albumViewButtons {
+      margin-top:24px;
     }
   }
 }
+
 @include tablet {
   #albumViewInfo {
     flex-direction:column;
-    #albumViewPicture {
-      width: auto;
-      margin-left:15%;
-      margin-right:15%;
-    }
-    #albumViewTexts {
-      width:auto;
-      margin-top:$space-unit-mobile;
-      padding-left:0;
-
-      #albumViewTextsInner {
-        padding-bottom:0;
-
-        #albumViewTitle {
-          font-size: 20px;
-          line-height:24px;
-        }
-        #albumViewArtist {
-          margin-top:$space-unit-mobile;
-          font-size: 14px;
-          line-height:17px;
-        }
-        #albumViewStats {
-          margin-top:$space-unit-mobile;
-        }
-        #albumViewButtons {
-          margin-top:$space-unit-mobile;
-        }
+  }
+  #albumViewPicture {
+    width: 70%;
+    margin-left:15%;
+    margin-right:15%;
+  }
+  #albumViewTexts {
+    width:auto;
+    margin-top:$space-unit-mobile;
+    padding-left:0;
+    #albumViewTextsInner {
+      padding-bottom:0;
+      #albumViewArtist {
+      }
+      #albumViewTitle {
+        margin-top:$space-unit-mobile;
+        font-size: 28px;
+        line-height:33px;
+      }
+      #albumViewStats {
+        margin-top:$space-unit-mobile;
+      }
+      #albumViewPath {
+        display:none;
+      }
+      #albumViewButtons {
+        margin-top:$space-unit-mobile;
       }
     }
   }
 }
 @include mobile {
-  #albumViewInfo {
-    #albumViewPicture {
-      margin-left:0;
-      margin-right:0;
-      width: auto;
+  #albumViewPicture {
+    margin-left:0;
+    margin-right:0;
+    width: 100%;
+  }
+  #albumViewTexts {
+    #albumViewTextsInner {
+      #albumViewArtist {
+      }
+      #albumViewTitle {
+        margin-top:$space-unit-mobile;
+        font-size: 20px;
+        line-height:23px;
+      }
+      #albumViewStats {
+        margin-top:$space-unit-mobile;
+      }
+      #albumViewPath {
+        display:none;
+      }
+      #albumViewButtons {
+        margin-top:$space-unit-mobile;
+      }
     }
   }
 }

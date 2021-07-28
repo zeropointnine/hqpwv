@@ -20,7 +20,8 @@ export default class AlbumView extends Subview {
   album = null; // album object
   tracks = null; // tracks array of album object
 
-  lastPlayingSong = null;
+  currentPlayingSong = null;
+  currentPlayingSongAlbumIndex = -1;
 
   constructor() {
     super($("#albumView"));
@@ -42,6 +43,7 @@ export default class AlbumView extends Subview {
   		() => { this.$el.css('top', '0px'); this.$el.css('opacity', 1); },
   		null);
     $(document).on('model-status-updated', this.updateHighlightedTrack);
+    this.currentPlayingSongAlbumIndex = -1;
   }
 
   hide() {
@@ -60,24 +62,31 @@ export default class AlbumView extends Subview {
 		if (!this.album) {
 			return;
 		}
-    const imgPath = ModelUtil.getAlbumImageUrl(this.album);
-		$("#albumViewPicture").attr('src', imgPath);
-		$("#albumViewTitle").html(this.album['@_album']);
-		$("#albumViewArtist").html(this.album['@_artist']);
-		$("#albumViewStats").html(this.makeStatsText());
 
-		for (let i = 0; i < this.tracks.length; i++) { // todo fault
-			const item = this.tracks[i];
-			const $item = $(this.makeListItem(i, item));
-			$item.on("click tap", e => this.onItemClick(e));
-			$item.find(".moreButton").on("click tap", e => this.onItemContextButtonClick(e));
-			this.listItems$.push($item);
-			this.$list.append($item);
-		}
+    this.updateInfoArea();
 
-		this.lastPlayingSong = undefined;
+    for (let i = 0; i < this.tracks.length; i++) { // todo fault
+      const item = this.tracks[i];
+      const $item = $(this.makeListItem(i, item));
+      $item.on("click tap", e => this.onItemClick(e));
+      $item.find(".moreButton").on("click tap", e => this.onItemContextButtonClick(e));
+      this.listItems$.push($item);
+      this.$list.append($item);
+    }
+
+		this.currentPlayingSong = undefined;
 		this.updateHighlightedTrack();
 	}
+
+  updateInfoArea() {
+    const imgPath = ModelUtil.getAlbumImageUrl(this.album);
+    $("#albumViewPicture").attr('src', imgPath);
+
+    $("#albumViewTitle").html(this.album['@_album']);
+    $("#albumViewArtist").html(this.album['@_artist']);
+    $("#albumViewStats").html(this.makeStatsText());
+    $("#albumViewPath").html(this.album['@_path']);
+  }
 
 	makeListItem(index, item) {
 		const seconds = parseInt(item['@_length']);
@@ -99,10 +108,10 @@ export default class AlbumView extends Subview {
 		}
     const meta = ModelUtil.getPlayingSongMetadata();
     const song = meta ? meta['@_song'] : '';
-    if (song === this.lastPlayingSong) {
+    if (song === this.currentPlayingSong) {
      return;
     }
-    this.lastPlayingSong = song;
+    this.currentPlayingSong = song;
 
     const isInAlbum = ModelUtil.doesAlbumContainPlayingSong(this.album);
 
@@ -115,7 +124,17 @@ export default class AlbumView extends Subview {
         b = ModelUtil.doesAlbumSongEqualPlayingSong(this.album, track);
       }
 			const $listItem = this.listItems$[i];
-			b ? $listItem.addClass('selected') : $listItem.removeClass('selected');
+      if (b) {
+        $listItem.addClass('selected');
+        const last = this.currentPlayingSongAlbumIndex;
+        this.currentPlayingSongAlbumIndex = i;
+        if (this.currentPlayingSongAlbumIndex == last + 1) {
+          // The playing song has just advanced by 1
+          // this.nextTrackScrollEffect($listItem)
+        }
+      } else {
+        $listItem.removeClass('selected');
+      }
 		}
 	};
 
@@ -132,8 +151,6 @@ export default class AlbumView extends Subview {
 	onItemClick(event) {
 		const index = $(event.currentTarget).attr("data-index");
 		const item = this.tracks[index];
-		console.log(item);
-		$(document).trigger('album-item-click', item);
 	}
 
 	onItemContextButtonClick(event) {
@@ -190,5 +207,40 @@ export default class AlbumView extends Subview {
     }
     const result = Util.durationTextHoursMinutes(albumSeconds);
     return result;
+  }
+
+  /**
+   * Force next-track to be fully visible, aligned to bottom edge,
+   * but only if it's currently partially or wholly cropped below $el,
+   * and only if the jump is not too large.
+   * todo not viable unless/until remove scrolleffect on subviews due to judder etc; can then be simplified
+   */
+  nextTrackScrollEffect($listItem) {
+    const maxDistance = $listItem.outerHeight() * 2;
+    const delta = this.getBottomEdgeDistance($listItem);
+    if (delta < 0 || delta > maxDistance) {
+      return;
+    }
+    let count = 30; // failsafe lol
+    const f = () => {
+      // Must be recalculated on every frame due to
+      // dynamic sizing of $el due to topbar scroll effect (!)
+      const delta = this.getBottomEdgeDistance($listItem);
+      if (Math.abs(delta) < 1.0 || count-- <= 0) {
+        clearInterval(id);
+        return;
+      }
+      const target = this.$el.scrollTop() + (delta * 0.35);
+      this.$el.scrollTop(target)
+    };
+    const id = setInterval(f, 33);
+  }
+
+  /** Returns the distance a list item's bottom edge is from the bottom edge of the container. */ 
+  getBottomEdgeDistance($listItem) {
+    const listBottom = this.$el.scrollTop() + this.$el.outerHeight();
+    const itemBottom = $listItem[0].offsetTop + $listItem.outerHeight();
+    const delta = itemBottom - listBottom;
+    return delta;
   }
 }

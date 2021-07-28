@@ -10,14 +10,14 @@ import Service from './service.js';
 export default class ProgressView {
 
   $el;
-  $thumbOuter;
+  $inner;
   $thumb;
   isDragging = false;
   ratio = 0;
 
   constructor() {
     this.$el = $('#playProgressView');
-    this.$thumbOuter = this.$el.find('#playProgressThumbOuter');
+    this.$inner = this.$el.find('#playProgressInner');
     this.$thumb = this.$el.find('#playProgressThumb');
 
     this.$thumb.on('mousedown touchstart', this.startDrag);
@@ -86,8 +86,8 @@ export default class ProgressView {
     if (isNaN(x)) {
       x = 0;
     }
-    x = x - this.$thumbOuter.offset().left;
-    const maxX = this.$thumbOuter.width();
+    x = x - this.$inner.offset().left;
+    const maxX = this.$inner.width();
     x = Math.min(x, maxX);
     x = Math.max(x, 0);
     return (x / maxX);

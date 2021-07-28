@@ -2,6 +2,7 @@
   // special case for lib view
   padding-left:0;
   padding-right:0;
+  overflow-x: hidden; // bc layout bug when window width is near container width :/
 }
 
 #libraryHeaderView {
@@ -39,7 +40,6 @@
 	margin-left:auto;
 	margin-right:auto;
 	// width set programmatically so columns remain centered
-
   @include mobile {
     margin-top:$space-unit-mobile;
   }

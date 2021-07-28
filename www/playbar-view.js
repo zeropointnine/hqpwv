@@ -50,7 +50,7 @@ export default class PlaybarView {
     this.$playingText.on("click tap", () => $(document).trigger('playbar-show-playlist'));
 
     Util.addAppListener(this, 'model-status-updated', this.update);
-    Util.addAppListener(this, 'model-playlist-updated', this.updatePlaylistNumbers);
+    Util.addAppListener(this, 'model-playlist-updated', this.update);
   }
 
   get $el() {
@@ -60,7 +60,7 @@ export default class PlaybarView {
   update() {
     this._updatePlayingText();
     this._updateSecondsAndThumb();
-    this.updatePlaylistNumbers();
+    this._updatePlaylistNumbers();
 
     /*
     also:
@@ -72,10 +72,10 @@ export default class PlaybarView {
 
   /**
    * Updates the at-track number and total-tracks number.
-   * Uses data from Model.status and Model.playlist.
+   * Uses data from both Model.status and Model.playlist.
    */
-  updatePlaylistNumbers() {
-    // nb: status has a totaltracks property but appears 2b bugged
+  _updatePlaylistNumbers() {
+    // nb: status has a totaltracks property but appears to be bugged so not using
     const totalTracks = parseInt(Model.playlistData.length) || 0;
     const atTrack = parseInt(Model.statusData['@_track']) || 0;
     if (totalTracks == this.totalTracks && atTrack == this.atTrack) {
@@ -88,8 +88,32 @@ export default class PlaybarView {
     this.$playlistNumberTotal.text(this.totalTracks);
   }
 
+  /**
+   * Updates the 'now playing' text line.
+   * Uses data from both Model.status and Model.playlist.
+   */
   _updatePlayingText() {
-    const s = this.makePlayingText();
+    let s = '';
+    if (ModelUtil.isStopped()) {
+      s = (Model.playlistData.length > 0)
+          ? `Stopped`
+          : `<span class="colorTextLess">Playlist is empty</span>`;
+    } else {
+      if (Model.statusData['metadata']) {
+        if (Model.statusData['metadata']['@_artist']) {
+          s += Model.statusData['metadata']['@_artist'];
+        }
+        if (Model.statusData['metadata']['@_song']) {
+          if (s) {
+            s += ' - ';
+          }
+          s += Model.statusData['metadata']['@_song'];
+        }
+      }
+      if (!s) {
+        s = '---'; // stopped?
+      }
+    }
     if (this.playingText != s) {
       this.playingText = s;
       this.$playingText.html(this.playingText);
@@ -123,29 +147,6 @@ export default class PlaybarView {
     if (this.trackCurrentRatio != previous) {
       this.progressView.update(this.trackCurrentRatio);
     }
-  }
-
-  makePlayingText() {
-    let s = '';
-    if (ModelUtil.isStopped()) {
-      s = "Stopped";
-    } else {
-      if (Model.statusData['metadata']) {
-        if (Model.statusData['metadata']['@_artist']) {
-          s += Model.statusData['metadata']['@_artist'];
-        }
-        if (Model.statusData['metadata']['@_song']) {
-          if (s) {
-            s += ' - ';
-          }
-          s += Model.statusData['metadata']['@_song'];
-        }
-      }
-      if (!s) {
-        s = '---'; // stopped?
-      }
-    }
-    return s;
   }
 
   onPlayButton = (e) => {

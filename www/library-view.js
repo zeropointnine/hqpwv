@@ -11,6 +11,7 @@ import LibraryOptionsView from './library-options-view.js';
 const ITEM_SPAN_H_MOBILE = 144 + 4 + 4;
 const ITEM_SPAN_H_TABLET = 224 + 8 + 8;
 const ITEM_SPAN_H_DESKTOP = 240 + 8 + 8;
+const MAX_COLS = 6;
 
 /**
  * Library view containing a list of albums.
@@ -113,7 +114,9 @@ export default class LibraryView extends Subview {
     } else {
       itemSpanH = ITEM_SPAN_H_DESKTOP;
     }
-		const inner = Math.floor(outer / itemSpanH) * itemSpanH;
+    let multiple = Math.floor(outer / itemSpanH);
+    multiple = Math.min(multiple, MAX_COLS);
+		const inner = multiple * itemSpanH;
 		this.$list.width(inner + "px");
 	}
 

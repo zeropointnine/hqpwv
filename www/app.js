@@ -42,8 +42,8 @@ export default class App {
     this.doWindowResize();
 
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
-
-    $(document).on('model-status-updated', e => this.updatePageHolderClasses());
+    Util.addAppListener(this, 'model-playlist-updated', this.updatePageHolderClasses);
+    Util.addAppListener(this, 'model-status-updated', this.updatePageHolderClasses);
     this.updatePageHolderClasses();
 
     Util.addAppListener(this, 'library-sort-type-changed', this.onLibrarySortTypeChanged);
@@ -56,6 +56,7 @@ export default class App {
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
     Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
     Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
+
 
     this.$settingsButton.on("click", () => this.showSettingsView());
 
@@ -146,7 +147,12 @@ export default class App {
     this.libraryView.update();
   }
 
+  /**
+   * Updates css classes on page holder, which represent basic view states.
+   * Some child elements will want to modify their styles based on the existence of these classes.
+   */
   updatePageHolderClasses() {
+    // playing, paused, stopped
     if (ModelUtil.isPlaying()) {
       this.$pageHolder.addClass('isPlaying').removeClass('isPaused isStopped');
     } else if (ModelUtil.isPaused()) {
@@ -154,6 +160,10 @@ export default class App {
     } else {
       this.$pageHolder.addClass('isStopped').removeClass('isPlaying isPaused');
     }
+    // empty playlist
+    (Model.playlistData.length > 0)
+        ? this.$pageHolder.removeClass('isPlaylistEmpty')
+        : this.$pageHolder.addClass('isPlaylistEmpty');
   }
 
   /**

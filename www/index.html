@@ -59,9 +59,10 @@
 						<img id="albumViewPicture">
 						<div id="albumViewTexts">
 							<div id="albumViewTextsInner">
-								<div id="albumViewTitle"></div>
 								<div id="albumViewArtist"></div>
+								<div id="albumViewTitle"></div>
 								<div id="albumViewStats"></div>
+								<div id="albumViewPath"></div>
 								<div id="albumViewButtons"><div
 										id="albumPlayNowButton" class="textButton">play now</div><div
 										id="albumQueueButton" class="textButton">add to queue</div></div>
@@ -128,7 +129,7 @@
 					<div id="playlistContextUp" class="contextItem">Move up</div>
 					<div id="playlistContextDown" class="contextItem">Move down</div>
 					<div id="playlistContextRemove" class="contextItem">Remove</div>
-					<div id="playlistContextAlbum" class="contextItem" style="border-top:1px solid #444;">Go to album</div>
+					<div id="playlistContextAlbum" class="contextItem">Go to album</div>
 				</div>
 
 				<!-- !important-->
@@ -159,13 +160,15 @@
 					<div id="playingTrackArea">
 						<div id="playingTrackCurrentTime"></div>
 						<div id="playProgressView">
-							<div id="playProgressThumbOuter"><div id="playProgressThumb"></div></div>
+							<div id="playProgressInner"><div id="playProgressThumb"></div></div>
 						</div>
 						<div id="playingTrackLength"></div>
 					</div>
 				</div>
 
-				<!-- note, snack piggybacks off of playbar -->
+				<!-- note how these piggyback off of playbar -->
+				<div id="bottomScrim"></div>
+				<div id="bottomStroke"></div>
 				<div id="snack">
 					<div id="snackInner">
 						<div id="snackIcon" class="iconButton"></div>
