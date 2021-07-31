@@ -28,9 +28,7 @@ Demo video
 - Consider supporting HQPlayer Embedded.
 - Consider supporting older versions of Desktop Safari and Mobile Safari.
 - Consider signing executables.
-- ~~Allow for running HQPWV on a different machine than HQPlayer.~~ done
-- Add UI for controling HQPlayer upsampling filters.
-- Also: Volume control (lol).
+- Volume control (lol).
 - Filter (search) controls to the library view.
 - Pagination system for extremely-large user libraries?
 - Flat track listing view, with filter controls.
@@ -38,3 +36,5 @@ Demo video
 - Playlist shuffle.
 - Saved playlists.
 - Add 'metadata layer' to track number of plays and likes.
+- ~~Allow for running HQPWV on a different machine than HQPlayer.~~ done
+- ~~Add UI for controling HQPlayer upsampling filters.~~ added

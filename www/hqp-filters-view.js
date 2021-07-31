@@ -9,6 +9,7 @@ import Commands from './commands.js';
 import Service from './service.js';
 import Settings from './settings.js';
 import HqpPresetsView from './hqp-presets-view.js';
+import HqpConfigModel from './hqp-config-model.js';
 import SnackView from './snack-view.js';
 
 export default class HqpFiltersView {
@@ -22,10 +23,6 @@ export default class HqpFiltersView {
 
   presetsView;
 
-  modesArray = [];
-  filtersArray = [];
-  shapersArray = [];
-  ratesArray = [];
 
   // todo `<FiltersItem index= name= value= />` [?]
 
@@ -52,7 +49,7 @@ export default class HqpFiltersView {
 
   onShow() {
     this.presetsView.updateLoadPresetsText();
-    this.updateData(this.populateSelects);
+    HqpConfigModel.updateData(this.populateSelects);
 
     ViewUtil.setVisible(this.$info, !ModelUtil.isStopped());
     if (!ModelUtil.isStopped()) {
@@ -64,44 +61,18 @@ export default class HqpFiltersView {
     $(document).off('model-status-updated', this.onModelStatusUpdated);
   }
   
-  updateData(callback) {
-    Service.queueCommandsFront([
-        { xml: Commands.getModes(), callback: this.onGetModes},
-        { xml: Commands.getFilters(), callback: this.onGetFilters },
-        { xml: Commands.getShapers(), callback: this.onGetShapers },
-        { xml: Commands.getRates(), callback: this.onGetRates },
-        { xml: Commands.status(), callback: callback }
-    ]);
-  }
-
-  onGetModes = (data) => {
-    this.modesArray = ModelUtil.getArrayFrom(data, 'GetModes', 'ModesItem'); // note 'ModesItem' (plural)
-  };
-  onGetFilters = (data) => {
-    this.filtersArray = ModelUtil.getArrayFrom(data, 'GetFilters', 'FiltersItem');
-  };
-  onGetShapers = (data) => {
-    this.shapersArray = ModelUtil.getArrayFrom(data, 'GetShapers', 'ShapersItem');
-  };
-  onGetRates = (data) => {
-    this.ratesArray = ModelUtil.getArrayFrom(data, 'GetRates', 'RatesItem');
-    if (this.ratesArray[0]['@_rate'] == '0') { // special case
-      this.ratesArray.shift();
-    }
-  };
-
   populateSelects = () => {
     const mode = Model.statusData['@_active_mode'];
-    this.populateSelect(this.$modeSelect, this.modesArray, '@_name', '@_index', mode);
+    this.populateSelect(this.$modeSelect, HqpConfigModel.modesArray, '@_name', '@_index', mode);
 
     const filter = Model.statusData['@_active_filter']; // these are label values, not indices :/
-    this.populateSelect(this.$filterSelect, this.filtersArray, '@_name', '@_index', filter);
+    this.populateSelect(this.$filterSelect, HqpConfigModel.filtersArray, '@_name', '@_index', filter);
 
     const shaper = Model.statusData['@_active_shaper'];
-    this.populateSelect(this.$shaperSelect, this.shapersArray, '@_name', '@_index', shaper);
+    this.populateSelect(this.$shaperSelect, HqpConfigModel.shapersArray, '@_name', '@_index', shaper);
 
     const rate = Model.statusData['@_active_rate'];
-    this.populateSelect(this.$rateSelect, this.ratesArray, '@_rate', '@_index', rate);
+    this.populateSelect(this.$rateSelect, HqpConfigModel.ratesArray, '@_rate', '@_index', rate);
 
     // cl(mode, filter, shaper, rate)
   };
@@ -141,9 +112,9 @@ export default class HqpFiltersView {
   }
 
   onSelectChange = (e) => {
+    const select = e.currentTarget;
     // Note: The option value attribute holds the data object's _index_ value,
     // which is what's used for the 'Set' XML's "value" attribute (!)
-    const select = e.currentTarget;
     const value = select.value;
     if (value == undefined) {
       cl('warning no value on select', $select);
@@ -190,7 +161,7 @@ export default class HqpFiltersView {
       // Do full update regardless because
       // (1) not sure that result=ok guarantees that the 'set' is accepted
       // (2) not sure if setting one value may invalidate another (eg rate)
-      this.updateData(this.populateSelectsRedundant);
+      HqpConfigModel.updateData(this.populateSelectsRedundant);
     });
   };
 
@@ -206,83 +177,16 @@ export default class HqpFiltersView {
   }
 
   onLoadPresetButton(index) {
-    const o = Settings.hqpPresets[index];
-    // Make sure object exists
-    if (!o) {
-      return;
-    }
-    // Make sure each property has a value
-    const mode = o['mode'];
-    const filter = o['filter'];
-    const shaper = o['shaper'];
-    const rate = o['rate'];
-    if (!mode || !filter || !shaper || !rate) {
-      return;
-    }
-    // Make sure each value exists in the current arrays data
-    // todo but actually first must apply mode and then reload filters/shapers/rates :/
-    // const result = this.isPresetValid(o);
-
-    this.applyPreset(o);
-  }
-
-  /**
-   * Verifies that the current settings arrays do have values
-   * for each of the preset's properties.
-   * Rem tho, filter/shaper/rate arrays are dependent on the currently set mode!
-   */
-  isPresetValid(o) {
-    const mode = o['mode'];
-    const filter = o['filter'];
-    const shaper = o['shaper'];
-    const rate = o['rate'];
-    let b;
-    b = Util.hasMatch(this.modesArray, '@_name', mode);
-    cl(b);
-    b = Util.hasMatch(this.filtersArray, '@_name', filter);
-    cl(b);
-    b = Util.hasMatch(this.shapersArray, '@_name', shaper);
-    cl(b);
-    b = Util.hasMatch(this.ratesArray, '@_rate', rate);
-    cl(b);
-    return true; // todo revisit
-  }
-
-  applyPreset(o) {
-    const lookup = (array, key1, value, key2) => {
-      for (let o of array ) {
-        if (o[key1] == value) {
-          return o[key2];
-        }
+    const preset = Settings.hqpPresets[index];
+    HqpConfigModel.applyPreset(preset, (isSuccess) => {
+      if (!isSuccess) {
+        cl('warning couldnt apply preset')
       }
-    };
-
-    const step4 = () => {
-      this.populateSelectsRedundant(); // done
-    };
-    const step3 = () => {
-      let filterIndex = lookup(this.filtersArray, '@_name', o['filter'], '@_index');
-      let shaperIndex = lookup(this.shapersArray, '@_name', o['shaper'], '@_index');
-      let rateIndex = lookup(this.ratesArray, '@_rate', o['rate'], '@_index');
-      const a = [
-        Commands.setFilter(filterIndex),
-        Commands.setShaping(shaperIndex),
-        { xml: Commands.setRate(rateIndex), callback: step4 }
-      ];
-      Service.queueCommandsFront(a);
-    };
-    const step2 = () => {
-      this.updateData(step3);
-    };
-
-    // 1. Set mode
-    // 2. Update the data arrays
-    // 3. And only then set filter/shaper/rate
-    // 4. Finally, repopulate selects.
-    let modeIndex = lookup(this.modesArray, '@_name', o['mode'], '@_index');
-    Service.queueCommandFront(Commands.setMode(modeIndex), step2);
+      this.populateSelectsRedundant();
+    });
   }
 
+  // Hides info text when status goes to stop.
   onModelStatusUpdated = () => {
     if (ModelUtil.isStopped()) {
       ViewUtil.setVisible(this.$info, false);

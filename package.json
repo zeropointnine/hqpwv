@@ -13,7 +13,7 @@
       "node16-macos-x64",
       "node14-windows-x64"
     ],
-    "outputPath": "dist"
+    "outputPath": "."
   },
   "dependencies": {
     "express": "^4.17.1",
