@@ -208,13 +208,13 @@ $thumb-width: 20px;
   height: 72px;
   top:12px;
   right:12px;
-  &.isShowing {
-    background-color: $color-button-over;
-  }
   &:before {
     background-image: url('./../img/icons/queue_music_white_24dp.svg');
     background-position: center 6px;
   }
+}
+.playlistView #showPlaylistButton {
+  background-color: $color-button-selected;
 }
 
 #playlistNumberAt {

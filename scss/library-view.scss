@@ -3,6 +3,10 @@
   padding-left:0;
   padding-right:0;
   overflow-x: hidden; // bc layout bug when window width is near container width :/
+
+  // is always bottom-most subview
+  // must have a value due to how app.js modal management works
+  z-index: 100;
 }
 
 #libraryHeaderView {

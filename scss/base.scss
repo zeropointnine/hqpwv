@@ -20,17 +20,18 @@ $color-text-least: #666;
 
 $color-accent: #ff2200;
 
-$color-button-bg: rgba(255,255,255,0.16); // 0x28 over 256
-$color-button-over: rgba(255,255,255,0.22); // 0x38 over 256
+$color-button-bg: rgba(255,255,255,0.16); // 0x28 divided by 256
+$color-button-over: rgba(255,255,255,0.22); // 0x38 divided by 256
+$color-button-selected: rgba(255,255,255,0.28); // 0x48 divided by 256
 
 $space-unit: 16px;
 $space-unit-mobile: 12px;
 
 $font-size-normal: 16px;
-$font-size-normal-mobile: 12px;
+$font-size-normal-mobile: 14px;
 
-$font-size-smaller: 12px;
-$font-size-smaller-mobile: 10px;
+$font-size-smaller: 14px;
+$font-size-smaller-mobile: 12px;
 
 $icon-button-side: 36px;
 
@@ -70,7 +71,7 @@ $z-subview-max: 9999;
 	padding: 0;
 	box-sizing: border-box;
 	
-	font-family: 'Noto Sans TC', serif;
+	font-family: 'Noto Sans TC', sans-serif;
 	font-size: $font-size-normal;
 	color: $color-text;
 
@@ -136,6 +137,8 @@ li:before {
   overflow-y: scroll;
   padding:$space-unit;
   background-color:$color-bg;
+  transition: opacity 333ms cubic-bezier(0,.5,.3,1.0);
+
   &:focus {
     outline: none
   }
@@ -277,3 +280,4 @@ li:before {
     }
   }
 }
+

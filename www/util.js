@@ -75,3 +75,30 @@ Util.jqueryObjectIndexOf = ($jqueryObject, element) => {
   }
   return -1;
 };
+
+/**
+ * @param delimiter would be say, ", " for a typical comma situation
+ */
+Util.makeCasualDelimitedString = (array, delimiter) => {
+  let s = '';
+  for (let el of array) {
+    if (el === null || el === undefined || el === '') {
+      continue;
+    }
+    if (s.length > 0) {
+      s = s + delimiter + el;
+    } else {
+      s = el;
+    }
+  }
+  return s;
+};
+
+Util.hasMatch = (arrayOfObjects, objectKey, value) => {
+  for (let el of arrayOfObjects) {
+    if (el[objectKey] === value) {
+      return true;
+    }
+  }
+  return false;
+};

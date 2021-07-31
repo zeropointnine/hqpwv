@@ -1,0 +1,142 @@
+#settingsView { }
+
+.settingsSubheading {
+  margin-bottom: 8px;
+}
+#settingsHotkeys {
+  table {
+    padding:0;
+    margin:0;
+  }
+  .c1 {
+    text-align:right;
+    width:100px;
+    padding-right:10px;
+    border-right:1px solid $color-accent;
+  }
+  .c2 {
+    padding-left:8px;
+  }
+}
+
+$indent-left: 75px;
+$indent-left-mobile: 45px;
+
+select {
+  appearance: none; // removes browser's default dropdown arrow
+  -webkit-appearance:none;
+  background-color: $color-listitem;
+  border: none;
+  height:36px;
+  padding: 0 8px 0 8px;
+  margin: 0;
+  line-height:36px;
+  cursor:pointer;
+}
+select * {
+  // styles the <option> elements minimally; but not in ff unforch fyi
+  font-family: 'Noto Sans TC', serif;
+  font-size: $font-size-normal;
+}
+
+.settingsSelectOuter {
+  margin-bottom:16px;
+  label {
+    display:inline-block;
+    text-align: right;
+    width:$indent-left;
+    margin-right:8px;
+    @include mobile {
+      width:$indent-left-mobile;
+    }
+  }
+  select {
+    width:150px;
+  }
+  select[name="modeSelect"] {
+    font-weight:bold;
+    & > option {
+      font-weight: normal;
+    }
+  }
+}
+
+#settingsModesDivider {
+  width:240px;
+  height:1px;
+  margin-top:16px;
+  margin-bottom:16px;
+  background-color:$color-listitem;
+}
+
+// ---
+
+#hqpSettingsView { }
+
+#hqpFiltersView {
+  margin-top:24px;
+  @include mobile {
+    margin-top: 16px
+  }
+}
+
+#hqpPresetsView {
+  margin-top:28px;
+  @include mobile {
+    margin-top:24px;
+  }
+
+  .savePresets {
+  }
+
+  .presetLabel {
+    margin-bottom: 12px;
+    @include mobile {
+      margin-top: 10px;
+    }
+  }
+
+  .savePresetLine {
+    margin-left:$indent-left;
+    @include mobile {
+      margin-left:0;
+    }
+  }
+
+  .loadPresets {
+    margin-top:20px;
+  }
+
+  .loadPresetLine {
+    margin-left:$indent-left;
+    margin-bottom: 8px;
+    display:flex;
+    @include mobile {
+      margin-left:0;
+    }
+    .loadPresetButton {
+      flex: 0 0 $icon-button-side;
+    }
+    .loadPresetLabel {
+      flex: 1;
+      margin-left:8px;
+      font-size:$font-size-smaller;
+      line-height: $icon-button-side;
+      color:$color-text-less;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      @include userSelect(text);
+      @include mobile {
+        font-size:$font-size-smaller-mobile;
+      }
+    }
+  }
+
+}
+
+#hqpFiltersInfo {
+  margin-top:16px;
+  font-size:$font-size-smaller;
+  color:$color-text-least;
+}

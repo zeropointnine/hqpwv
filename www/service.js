@@ -32,7 +32,11 @@ class Service {
 	/** Queued 'commands' waiting to be processed. */
 	get queue() { return this.queue; }
 
-	/** Queues a command. If queue is empty, executes immediately. */
+	/**
+   * Queues a command. If queue is empty, executes immediately.
+   * (nb, in practice, we almost always want to insert command/s
+   * at the front of the queue using `queueCommandsFront`)
+   */
 	queueCommand(xml, callback) {
 		const item = { xml: xml, callback: callback };
 		this.queue.push(item);

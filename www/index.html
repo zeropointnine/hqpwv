@@ -26,6 +26,7 @@
 			<div id="topBar" style="position:relative">
 				<div id="appLogo"><div id="appLogoInner">HQPWV</div></div>
 				<div id="appTitle">HQPlayer Web Viewer</div>
+				<div id="hqpSettingsButton" class="iconButton"></div>
 				<div id="settingsButton" class="iconButton"></div>
 			</div>
 
@@ -84,14 +85,68 @@
 					</div>
 				</div>
 
+				<div id="hqpSettingsView" class="subview">
+
+					<div id="hqpSettingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
+
+					<div class="viewTitle">HQPlayer Settings</div>
+
+					<div id="hqpFiltersView">
+
+						<div class="settingsSelectOuter">
+							<label for="modeSelect" style="margin-right:8px;">Mode:</label>
+							<select name="modeSelect" id="modeSelect"></select>
+						</div>
+
+						<div class="settingsSelectOuter">
+							<label for="filterSelect" style="margin-right:8px;">Filter:</label>
+							<select name="filterSelect" id="filterSelect"></select>
+						</div>
+						<div class="settingsSelectOuter">
+							<label for="shaperSelect" style="margin-right:8px;">Shaper:</label>
+							<select name="shaperSelect" id="shaperSelect"></select>
+						</div>
+						<div class="settingsSelectOuter">
+							<label for="rateSelect" style="margin-right:8px;">Rate:</label>
+							<select name="rateSelect" id="rateSelect"></select>
+						</div>
+
+						<div id="hqpPresetsView">
+							<div class="savePresets">
+								<div class="presetLabel">Save to preset</div>
+								<div class="savePresetLine">
+									<div id="savePreset1" class="textButton">1</div><div
+									id="savePreset2" class="textButton" style="margin-left:8px">2</div><div
+									id="savePreset3" class="textButton" style="margin-left:8px">3</div>
+								</div>
+							</div>
+							<div class="loadPresets">
+								<div class="presetLabel">Apply preset</div>
+								<div class="loadPresetLine">
+									<div id="loadPreset1" class="textButton loadPresetButton">1</div><div id="loadPreset1Text" class="loadPresetLabel"></div>
+								</div>
+								<div class="loadPresetLine">
+									<div id="loadPreset2" class="textButton loadPresetButton">2</div><div id="loadPreset2Text" class="loadPresetLabel"></div>
+								</div>
+								<div class="loadPresetLine">
+									<div id="loadPreset3" class="textButton loadPresetButton">3</div><div id="loadPreset3Text" class="loadPresetLabel"></div>
+								</div>
+							</div>
+						</div>
+
+						<div id="hqpFiltersInfo">Changing HQPlayer settings will stop playback.</div>
+
+					</div>
+
+				</div>
+
 				<div id="settingsView" class="subview">
 
 					<div id="settingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
 
 					<div style="margin-top:8px">
-						HQPWV v0.8a<br><br>
-						<div class="settingsSubheading">Project page:</div>
-						<a id="settingsProjectAnchor" class="colorTextLess" style="margin-left:28px"></a>
+						<div id="settingsVersion" class="viewTitle"></div>
+						<a id="settingsProjectAnchor" class="colorTextLess"></a>
 					</div>
 
 					<div id="settingsHotkeys" style="margin-top:28px;">
@@ -112,8 +167,6 @@
 						<div class="settingsSubheading">Your HQPlayer version:</div>
 						<div id="hqpVersion" class="colorTextLess" style="margin-left:28px">&nbsp;<br>&nbsp;</div>
 					</div>
-
-					<div class="colorTextLess" style="margin-top:28px;font-size:12px;font-style:italic;">Watch this space<br>for future buttons to push</div>
 				</div>
 
 				<--! z-index'ed overlays -->

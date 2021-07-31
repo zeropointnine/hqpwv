@@ -8,21 +8,15 @@ import Model from './model.js';
 class Native {
 
   /**
-   * @param callback is given ip address as param, else null
+   * @param instanceId is sent to endpoint to track page instances connecting to the service
+   * @param callback argument expected to be ip address, else null
    */
-  getHqPlayerIpAddress(callback) {
+  getInfo(instanceId, callback) {
+    const url = `${Values.NATIVE_ENDPOINT}?info&id=${instanceId}`;
     $.ajax({
-      url: Values.NATIVE_ENDPOINT + "?hqplayer_ip_address",
+      url: url,
       error: (e) => { cl(e); callback(null); },
-      success: (data, textStatus, jqXHR) => {
-        const ip = data['hqplayer_ip_address'];
-        if (ip) {
-          callback(ip);
-        } else {
-          cl('unexpected response data:', data);
-          callback(null);
-        }
-      }
+      success: (data, textStatus, jqXHR) => { callback(data); }
     });
   }
 }

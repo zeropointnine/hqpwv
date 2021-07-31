@@ -9,6 +9,9 @@ class Values {
   ENDPOINTS_BASE_URL = window.location.origin + '/endpoints/';
   COMMAND_ENDPOINT = this.ENDPOINTS_BASE_URL + "command";
   NATIVE_ENDPOINT = this.ENDPOINTS_BASE_URL + 'native';
+
+  _hqpwvVersion = '';
+
   _imagesEndpoint;
 
   constructor() {
@@ -22,7 +25,23 @@ class Values {
   }
 
   setImagesEndpointUsing(ipAddress) {
+    ipAddress = ipAddress ? ipAddress : window.location.hostname;
     this._imagesEndpoint = 'http://' + ipAddress + ':8088' + '/cover/';
+  }
+
+  get hqpwvVersion() {
+    return this._hqpwvVersion;
+  }
+
+  set hqpwvVersion(s) {
+    if (! s) {
+      s = '';
+    } else {
+      if (!s.startsWith('v')) {
+        s = 'v' + s;
+      }
+    }
+    this._hqpwvVersion = s;
   }
 }
 

@@ -66,32 +66,25 @@
     background-color: $color-button-over;
   }
 }
-
-// ---
-
-#settingsView {
-  transition: top 333ms cubic-bezier(0,.5,.3,1.0),
-      opacity 333ms cubic-bezier(0,.5,.3,1.0);
-}
-.settingsSubheading {
-  margin-bottom: 8px;
-}
-#settingsHotkeys {
-  table {
-    padding:0;
-    margin:0;
-  }
-  .c1 {
-    text-align:right;
-    width:100px;
-    padding-right:10px;
-    border-right:1px solid $color-accent;
-  }
-  .c2 {
-    padding-left:8px;
-  }
+.settingsView #settingsButton,
+.hqpSettingsView #settingsButton{
+  visibility: hidden;
 }
 
+#hqpSettingsButton {
+  &:before {
+    background-image: url('./../img/icons/settings_applications_white_24dp.svg');
+    opacity:0.66;
+  }
+  background-color: transparent;
+  &:hover {
+    background-color: $color-button-over;
+  }
+}
+.settingsView #hqpSettingsButton,
+.hqpSettingsView #hqpSettingsButton{
+  visibility: hidden;
+}
 // ---
 
 // Allows us to know current breakpoint by inspecting element's width

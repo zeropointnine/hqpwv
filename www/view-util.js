@@ -101,3 +101,11 @@ ViewUtil.isIOS = () => {
   return !!window.navigator.userAgent.match(/iPad/i)
       || !!window.navigator.userAgent.match(/iPhone/i);
 }
+
+ViewUtil.doStockFadeIn = ($el, callback=null) => {
+  ViewUtil.setVisible($el, true);
+  ViewUtil.animateCss($el,
+      () => $el.css('opacity', 0),
+      () => $el.css('opacity', 1),
+      () => { if (callback) callback(); } );
+};

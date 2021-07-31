@@ -17,22 +17,21 @@ export default class SettingsView extends Subview {
 
   constructor() {
     super($("#settingsView"));
-    this.infoView = new SettingsInfoView(this.$el.find("#settingsInfoView"));
     this.$closeButton.on('click tap', (e) => $(document).trigger('settings-view-close'));
+    this.infoView = new SettingsInfoView(this.$el.find("#settingsInfoView"));
+
     Util.addAppListener(this, 'model-info-updated', () => this.infoView.update());
   }
 
   show() {
+    const $version = this.$el.find('#settingsVersion');
+    $version.text(`HQPWV ${Values.hqpwvVersion}`);
     const $anchor = this.$el.find("#settingsProjectAnchor");
     $anchor.text(Values.PROJECT_URL);
     $anchor.attr('href', Values.PROJECT_URL);
 
-    ViewUtil.setVisible(this.$el, true);
+    ViewUtil.doStockFadeIn(this.$el);
     this.$el[0].scrollTop = 0;
-    ViewUtil.animateCss(this.$el,
-        () => this.$el.css('opacity', 0),
-        () => this.$el.css('opacity', 1),
-        null);
 
     Service.queueCommandFront(Commands.getInfo());
   }

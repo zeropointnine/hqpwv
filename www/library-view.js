@@ -41,6 +41,7 @@ export default class LibraryView extends Subview {
   }
 
   update() {
+    const startTime = new Date().getTime();
 		if (this.intersectionObs) {
       this.intersectionObs.disconnect();
     }
@@ -63,8 +64,10 @@ export default class LibraryView extends Subview {
         this.$list.append($item);
       }
     }
-
 		this.updateListWidth();
+
+    const duration = new Date().getTime() - startTime;
+    cl(`lib populate ${duration}ms`);
 	}
 
   forceReloadImages() {

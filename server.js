@@ -41,8 +41,11 @@ app.get('/endpoints/command', (request, response) => {
  * layers of functionality on top of HQPlayer.
  */
 app.get('/endpoints/native', (request, response) => {
-  if (request.query.hqplayer_ip_address !== undefined) {
-    response.send({ hqplayer_ip_address: hqpIp });
+  if (request.query.info !== undefined) {
+    response.send({
+      hqplayer_ip_address: hqpIp,
+      hqpwv_version: packageJson.version
+    });
     return;
   }
   response.status(400).json( {error: 'Bad param data'} );

@@ -58,7 +58,6 @@ export default class LibraryOptionsView {
 
   onDocumentClick = (e) => {
     const isThis = (this.$el.has($(e.target)).length > 0);
-    cl('odc, isthis?', isThis)
     if (!isThis) {
       this.hideControls()
     }

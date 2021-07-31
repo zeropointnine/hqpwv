@@ -14,6 +14,7 @@ import PlaylistView from './playlist-view.js';
 import PlaybarView from './playbar-view.js';
 import TopBar from './top-bar.js';
 import SettingsView from './settings-view.js';
+import HqpSettingsView from './hqp-settings-view.js';
 import DialogView from './dialog-view.js';
 import SnackView from './snack-view.js';
 
@@ -28,11 +29,15 @@ export default class App {
 	albumView = new AlbumView();
 	playlistView = new PlaylistView();
 	settingsView = new SettingsView();
-  modals = [this.libraryView, this.albumView, this.playlistView, this.settingsView];
+  hqpSettingsView = new HqpSettingsView();
+  subviews = [this.libraryView, this.albumView, this.playlistView, this.settingsView, this.hqpSettingsView];
 
   $pageHolder = $('#page');
   $settingsButton = $('#settingsButton');
+  $hqpSettingsButton = $('#hqpSettingsButton');
 
+  instanceId = Math.floor(Math.random() * 99999999);
+  libraryGetStartTime = 0;
   lastHandledKeypressTime = 0;
   resizeTimeoutId = 0;
   subviewZ = 100;
@@ -41,10 +46,9 @@ export default class App {
     $(window).on('resize', this.onWindowResize);
     this.doWindowResize();
 
-    Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
-    Util.addAppListener(this, 'model-playlist-updated', this.updatePageHolderClasses);
-    Util.addAppListener(this, 'model-status-updated', this.updatePageHolderClasses);
-    this.updatePageHolderClasses();
+    Util.addAppListener(this, 'model-playlist-updated', this.updatePageHolderPlayStateClasses);
+    Util.addAppListener(this, 'model-status-updated', this.updatePageHolderPlayStateClasses);
+    this.updatePageHolderPlayStateClasses();
 
     Util.addAppListener(this, 'library-sort-type-changed', this.onLibrarySortTypeChanged);
 		Util.addAppListener(this, 'library-item-click', this.showAlbumView);
@@ -53,81 +57,87 @@ export default class App {
 		Util.addAppListener(this, 'playlist-close-button', this.hidePlaylist);
 		Util.addAppListener(this, 'playlist-context-album', this.playlistToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
+    Util.addAppListener(this, 'hqp-settings-view-close', this.hideHqpSettingsView);
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
     Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
     Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
 
 
     this.$settingsButton.on("click", () => this.showSettingsView());
+    this.$hqpSettingsButton.on("click", () => this.showHqpSettingsView());
 
     $(document).on('keydown', this.onKeydown);
 
     // Make the correct things visible
-    for (let modal of this.modals) {
-      ViewUtil.setVisible(modal.$el, false);
+    for (let subview of this.subviews) {
+      ViewUtil.setVisible(subview.$el, false);
     }
 		this.libraryView.show();
+    this.updatePageHolderSubviewClass(this.libraryView);
     ViewUtil.setVisible(this.playbarView.$el, true);
 
 		// Make service calls
-    Native.getHqPlayerIpAddress((ip) => {
-      Values.setImagesEndpointUsing(ip);
+    this.libraryGetStartTime = new Date().getTime();
+    Native.getInfo(this.instanceId, (data) => {
+      Values.setImagesEndpointUsing(data.hqplayer_ip_address);
+      Values.hqpwvVersion = data.hqpwv_version;
     });
     Statuser.start();
 		Service.queueCommandsFront([
         { xml :Commands.libraryGet(), callback: this.onLibraryGetResponse },
-        Commands.playlistGet()
+        { xml: Commands.playlistGet(), callback: this.onInitDone }
     ]);
+
+    // xxx temp
+    // setTimeout(() => this.showSettingsView(), 1000);
 	}
 
+  // ---
+  // subview concrete show/hide logic
+  
 	showPlaylistView() {
-    this.showView(this.playlistView);
-    this.playbarView.$showPlaylistButton.addClass('isShowing');
+    this.showSubview(this.playlistView);
 		Service.queueCommandFront(Commands.playlistGet());
 	}
 
 	showAlbumView(album) {
 		this.albumView.update(album);
-    this.showView(this.albumView);
+    this.showSubview(this.albumView);
 	}
 
 	showSettingsView() {
-    ViewUtil.setVisible(this.$settingsButton, false);
-		this.showView(this.settingsView);
+		this.showSubview(this.settingsView);
 	}
 
-  showView(subview) {
-    this.subviewZ++; // ha.
-    subview.$el.css('z-index', this.subviewZ);
-    subview.show();
+  showHqpSettingsView() {
+    this.showSubview(this.hqpSettingsView);
   }
 
-	playlistToAlbum(album) {
+  playlistToAlbum(album) {
     ViewUtil.setVisible(this.albumView.$el, false);
-		this.playlistView.hide();
-    this.playbarView.$showPlaylistButton.removeClass('isShowing');
-		setTimeout(() => this.showAlbumView(album), 200);
-	}
+    this.playlistView.hide();
+    setTimeout(() => this.showAlbumView(album), 200);
+  }
 
   hidePlaylist() {
-    this.playlistView.hide();
-    this.playbarView.$showPlaylistButton.removeClass('isShowing');
-    this.postHideFocus(this.playlistView.$el);
+    this.hideSubview(this.playlistView);
   }
   
   hideAlbumView() {
-    this.albumView.hide();
-    this.postHideFocus(this.albumView.$el);
+    this.hideSubview(this.albumView);
   }
 
   hideSettingsView() {
-    this.settingsView.hide();
-    ViewUtil.setVisible(this.$settingsButton, true);
+    this.hideSubview(this.settingsView);
   }
 
-  hideTopModal() {
-    const modal = this.getTopModal();
-    switch (modal) {
+  hideHqpSettingsView() {
+    this.hideSubview(this.hqpSettingsView);
+  }
+
+  hideTopSubview() {
+    const subview = this.getTopSubview();
+    switch (subview) {
       case this.albumView:
         this.hideAlbumView();
         break;
@@ -137,22 +147,36 @@ export default class App {
       case this.settingsView:
         this.hideSettingsView();
         break;
+      case this.hqpSettingsView:
+        this.hideHqpSettingsView();
+        break;
       default:
-        if (modal) { cl('not accounted for'); }
+        if (subview) { cl('not accounted for'); }
         break;
     }
   }
+  
+  // ---
+  // subview management
 
-  onModelLibraryUpdated() {
-    this.libraryView.update();
+  showSubview(subview) {
+    this.subviewZ++; // ha.
+    subview.$el.css('z-index', this.subviewZ);
+    subview.show();
+    this.updatePageHolderSubviewClass(subview);
   }
 
+  hideSubview(subview) {
+    this.updatePageHolderSubviewClassOnHide();
+    subview.hide();
+    this.postHideFocus(subview.$el);
+  }
+  
   /**
-   * Updates css classes on page holder, which represent basic view states.
-   * Some child elements will want to modify their styles based on the existence of these classes.
+   * Updates css classes on page holder related to play state.
    */
-  updatePageHolderClasses() {
-    // playing, paused, stopped
+  updatePageHolderPlayStateClasses() {
+    // playing, paused, stopped (mutually exclusive)
     if (ModelUtil.isPlaying()) {
       this.$pageHolder.addClass('isPlaying').removeClass('isPaused isStopped');
     } else if (ModelUtil.isPaused()) {
@@ -164,6 +188,34 @@ export default class App {
     (Model.playlistData.length > 0)
         ? this.$pageHolder.removeClass('isPlaylistEmpty')
         : this.$pageHolder.addClass('isPlaylistEmpty');
+  }
+
+  /**
+   * Updates css classes on #page which describe which subview is currently showing.
+   */
+  updatePageHolderSubviewClass(subview) {
+    // note how class name is that of the subview's id!
+    const cls = subview.$el.attr('id');
+    // trying to prevent triggering unnecessary dom changes twice here, basically
+    const all = ['libraryView', 'albumView', 'playlistView', 'settingsView', 'hqpSettingsView'];
+    for (let item of all) {
+      if (item !== cls) {
+        this.$pageHolder.removeClass(item);
+      }
+    }
+    this.$pageHolder.addClass(cls);
+  }
+
+  /** Should be called before hiding current subview. */
+  updatePageHolderSubviewClassOnHide() {
+    const subviews = this.getVisibleSubviews();
+    if (subviews.length < 2) {
+      cl('warning not enough visible subviews');
+      return;
+    }
+    // The subview which is about to get exposed by the current subview's hide()
+    const subview = subviews[1];
+    this.updatePageHolderSubviewClass(subview);
   }
 
   /**
@@ -187,26 +239,57 @@ export default class App {
     ViewUtil.setFocus($target);
   }
 
-  // Returns the top-most, visible modal subview instance, or null.
-  getTopModal() {
+  /** Returns the top-most visible subview, or null. */
+  getTopSubview() {
     let maxZ = 0;
-    let topModal;
-    for (let modal of this.modals) {
-      if (ViewUtil.isVisible(modal.$el)) {
-        const z = modal.$el.css('z-index');
+    let topSubview;
+    for (let subview of this.subviews) {
+      if (ViewUtil.isVisible(subview.$el)) {
+        const z = subview.$el.css('z-index');
         if (z > maxZ) {
           maxZ = z;
-          topModal = modal;
+          topSubview = subview;
         }
       }
     }
-    return topModal;
+    return topSubview;
   }
 
+  /** Returns list of visible subviews in z-index order, desc. */
+  getVisibleSubviews() {
+    const array = [];
+    for (let subview of this.subviews) {
+      if (ViewUtil.isVisible(subview.$el)) {
+        const z = subview.$el.css('z-index');
+        array.push( { subview: subview, z: z } );
+      }
+    }
+    array.sort((a, b) => {
+      if (a.z > b.z) {
+        return -1;
+      } else if (a.z < b.z) {
+        return 1;
+      } else {
+        return 0; // shdnthpn
+      }
+    });
+    return array.map(item => item.subview );
+  }
+  
+  // ---
+  // handlers, various
+
   onLibraryGetResponse = (data) => {
+    const duration = new Date().getTime() - this.libraryGetStartTime;
+    cl(`libraryget ${duration}ms`);
     if (data.error != undefined) {
       this.showFatalError(data.error);
     }
+    this.libraryView.update();
+  };
+
+  onInitDone = () => {
+    cl('ready');
   };
 
 	onPlaybarPlaylistButton() {
@@ -223,7 +306,7 @@ export default class App {
     }
     switch (e.key) {
       case 'Escape':
-        this.hideTopModal();
+        this.hideTopSubview();
         break;
       case 'q':
         this.playbarView.$showPlaylistButton.click();
@@ -285,6 +368,9 @@ export default class App {
     $(document).trigger('debounced-window-resize');
   }
 
+  // ---
+  // modal-related
+  
   showDialog(titleText, messageHtml, buttonText, isFatal, handler) {
     $(document).off('keydown', this.onKeydown);
     DialogView.show(titleText, messageHtml, buttonText, isFatal, () => {

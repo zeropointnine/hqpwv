@@ -72,6 +72,60 @@ class ModelUtil {
     const trackName = track['@_name']; // ie, filename
     return metaUri.endsWith(trackName);
   }
+
+  /**
+   * From a given response json, returns the array (if any) which is two levels deep.
+   * Many types of hqp response data uses this structure.
+   * If no object exists at that path, returns empty array.
+   * If the object at that path is not an array, wraps it in an array
+   * (bc hqp returns single-item 'lists' unwrapped).
+   */
+  static getArrayFrom(data, key1, key2) {
+    let array = (data[key1] && data[key1][key2])
+        ? data[key1][key2]
+        : [];
+    if (!Array.isArray(array)) {
+      array = [array];
+    }
+    return array;
+  }
+
+  /**
+   * Checks for 2nd-level object's result property (wc many hqp responses have).
+   * Returns `undefined` if object is not of expected structure.
+   */
+  static isResultOk(dataObject, key) {
+    const keys = Object.keys(dataObject);
+    if (keys.length != 1) {
+      cl('warning object has more than on key', dataObject);
+      return undefined;
+    }
+    const object2 = dataObject[keys[0]];
+    if (object2['@_result'] === undefined) {
+      cl('warning no result property', dataObject, object2);
+      return undefined;
+    }
+    const b = object2['@_result'] == 'OK';
+    if (!b) {
+      cl('result !OK', dataObject);
+    }
+    return b;
+
+    // todo remove
+    //if (!dataObject[key]) {
+    //  cl('warning: could be wrong top-level key', key, dataObject);
+    //  return false;
+    //}
+    //if (dataObject[key]['@_result'] === undefined) {
+    //  cl('warning: no result property', dataObject);
+    //  return false;
+    //}
+    //const b = dataObject[key]['@_result'] == 'OK';
+    //if (!b) {
+    //  cl('result !OK', dataObject);
+    //}
+    //return b;
+  }
 }
 
 export default ModelUtil;

@@ -16,6 +16,10 @@ Commands.status = () => {
 	return `<Status subscribe="0" />`;
 };
 
+Commands.state = () => {
+  return `<State />`;
+};
+
 Commands.libraryGet = () => {
 	return `<LibraryGet pictures="0" />`;
 };
@@ -87,6 +91,33 @@ Commands.seek = (seconds) => {
 	return `<Seek position="${seconds}" />`;
 };
 
+Commands.getModes = () => {
+  return `<GetModes />`;
+};
+Commands.setMode = (value) => {
+  return `<SetMode value="${value}" />`;
+};
+
+Commands.getFilters = () => {
+  return `<GetFilters />`;
+};
+Commands.setFilter = (value) => {
+  return `<SetFilter value="${value}" />`;
+};
+
+Commands.getShapers = () => {
+  return `<GetShapers />`;
+};
+Commands.setShaping = (value) => {
+  return `<SetShaping value="${value}" />`;
+};
+
+Commands.getRates = () => {
+  return `<GetRates />`;
+};
+Commands.setRate = (value) => {
+  return `<SetRate value="${value}" />`;
+};
 
 // Higher-level functions that take service json data as arguments or reaches out to Model
 // todo move out of Commands
@@ -113,7 +144,6 @@ Commands.addTrackUsingAlbumAndIndices = (album, startIndex=-1, endIndex=-1, isPl
 	if (endIndex < startIndex) {
 		endIndex = startIndex;
 	}
-	cl(`addtoplaylist [${startIndex}-${endIndex}]`);
 
 	const items = [];
 	if (isPlayNow) {

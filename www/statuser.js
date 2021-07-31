@@ -64,21 +64,21 @@ class Statuser {
         // There is a 'quick queue' 'in progress', but we now know that hqp is playing,
         // so no more need for it.
         this.queue = [];
-        // cl('discard queue');
+        this.doNext();
       }
       return;
     }
 
-    if (type == 'Play') {
-      if (!ModelUtil.isPlaying() && data['Play']['@_result'] != 'Error') {
-        // When a play command happens while current known play state is not 'play',
-        // send 'status' immediately, followed by a specified series of quicker timeouts.
+    if (type == 'Play' || type == 'SelectTrack') {
+      if (ModelUtil.isStopped() && ModelUtil.isResultOk(data)) {
+        // A 'start playing' command happened while player was stopped.
+        // Send 'status' immediately, followed by a specified series of quicker timeouts.
         this.queue = [250, 250, 250, 250, 500, 500, 500, 500, 1000, 1000, 1000];
         this.doNext();
       }
       return;
     }
-    // todo other cases to handle?
+    // todo other cases worth handling?
   }
 }
 
