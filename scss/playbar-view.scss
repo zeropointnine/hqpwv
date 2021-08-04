@@ -4,7 +4,6 @@
 	flex: 0 0 auto;
 	height: auto;
 	padding: 12px 0 12px 0;
-	// border-top: 1px solid $color-listitem;
   background-color: $color-bg;
   z-index:10000;
 }
@@ -166,7 +165,7 @@ $thumb-width: 20px;
   }
 }
 .isStopped #playProgressView,
-.isWindingUp #playProgressView{
+.isBusy #playProgressView{
   pointer-events: none;
 }
 
@@ -183,19 +182,18 @@ $thumb-width: 20px;
   margin-left: $thumb-width * -0.5;
   cursor:pointer;
   background-color:$color-accent;
-  transition: background-color 0.15s linear;
 }
 .isStopped #playProgressThumb {
   pointer-events:none;
-  opacity:0.5;
+  opacity:0;
 }
 .isPaused #playProgressThumb {
-  animation: thumbPulse 2s infinite;
+  opacity:0.5;
 }
-.isWindingUp #playProgressThumb {
-  background-color:$color-text;
+.isBusy #playProgressThumb {
   animation: thumbPulse 1.33s infinite;
-  cursor-events: none;
+  pointer-events: none;
+  transition: background-color 0.15s linear;
 }
 
 #playbarStroke {

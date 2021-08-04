@@ -671,7 +671,7 @@ li:before {
 }
 
 .isStopped #playProgressView,
-.isWindingUp #playProgressView {
+.isBusy #playProgressView {
   pointer-events: none;
 }
 
@@ -689,22 +689,21 @@ li:before {
   margin-left: -10px;
   cursor: pointer;
   background-color: #ff2200;
-  transition: background-color 0.15s linear;
 }
 
 .isStopped #playProgressThumb {
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0;
 }
 
 .isPaused #playProgressThumb {
-  animation: thumbPulse 2s infinite;
+  opacity: 0.5;
 }
 
-.isWindingUp #playProgressThumb {
-  background-color: #ccc;
+.isBusy #playProgressThumb {
   animation: thumbPulse 1.33s infinite;
-  cursor-events: none;
+  pointer-events: none;
+  transition: background-color 0.15s linear;
 }
 
 #playbarStroke {

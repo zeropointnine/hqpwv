@@ -100,7 +100,7 @@ class Service {
 	/** Makes request to server using the xml in `currentItem` */
 	makeRequest() {
     if (!this.currentItem.xml.includes('<Status')) {
-      // cl(`request ${this.currentItem.xml.substr(0,30)}`);
+      cl(`${Values.uptimeString} service ${this.currentItem.xml.substr(0,60)}`);
     }
     const url = Values.COMMAND_ENDPOINT + "?xml=" + encodeURIComponent(this.currentItem.xml);
     $.ajax({ url: url, error: this.onError, success: this.onSuccess}); // todo timeout: ___ ?
@@ -156,7 +156,7 @@ class Service {
     const a = Object.keys(data);
     let type = null;
     if (a.length != 1) {
-      cl('WARNING: response object unexpected format; wrong number of keys:', a, data);
+      cl('warning unexpected, wrong number of keys:', data);
     } else {
       type = a[0];
     }

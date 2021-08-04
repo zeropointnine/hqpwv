@@ -15,7 +15,8 @@ class PresetRuleApplier {
   abCounter = 0;
 
   constructor() {
-    Util.addAppListener(this, 'new-track-detected', this.onNewTrackDetected);
+    Util.addAppListener(this, 'play-to-play', this.onNewTrackDetected);
+    Util.addAppListener(this, 'stop-to-play', this.onNewTrackDetected);
   }
 
   noop() { }
@@ -23,7 +24,7 @@ class PresetRuleApplier {
   onNewTrackDetected() {
     switch (Settings.currentRule) {
       case 'threshold':
-        this.doThreshold();
+        this.doThresholdIfNecessary();
         break;
       case 'ab':
         this.doAb();
@@ -31,7 +32,7 @@ class PresetRuleApplier {
     }
   };
 
-  doThreshold() {
+  doThresholdIfNecessary() {
     if (!Settings.isThresholdRuleValid()) {
       return;
     }
@@ -70,37 +71,7 @@ class PresetRuleApplier {
       return;
     }
 
-    this.applyPresetAndReplayTrack(preset);
-  }
-
-  /**
-   * Assumes currently playing a track (presumably at the very start).
-   * Shows taost at the end.
-   *
-   * @preset should exist and have values.
-   */
-  applyPresetAndReplayTrack(preset) {
-    // todo block starting here maybe
-
-    const currentTrack = Model.statusData['@_track'];
-    if (!currentTrack) {
-      cl('warning no track in statusdata')
-    }
-
-    PresetUtil.applyPreset(preset, (didSetSomething) => {
-      if (didSetSomething) {
-        // Having set a config value, hqp will be in a stopped state,
-        // which means <selectTrack> will trigger a 'new-track-detected'
-        // which should be ignored.
-        Statuser.ignoreNextNewTrackDetected = true;
-
-        const s = `Applied preset: <em>${PresetUtil.toString(preset)}</em>`;
-        $(document).trigger('show-toast', s)
-      }
-      if (currentTrack) {
-        Service.queueCommandFront(Commands.selectTrack(currentTrack)); // done
-      }
-    });
+    PresetUtil.applyPresetAndPlayTrack(preset, Model.statusData['@_track']);
   }
 
   doAb() {
@@ -110,7 +81,7 @@ class PresetRuleApplier {
     if (!preset) {
       return;
     }
-    this.applyPresetAndReplayTrack(preset);
+    PresetUtil.applyPresetAndPlayTrack(preset, Model.statusData['@_track']);
   }
 
   getPresetByOptionValue(value) {

@@ -9,6 +9,7 @@ import HqpConfigModel from './hqp-config-model.js';
 import Native from './native.js';
 import Service from './service.js';
 import Statuser from './statuser.js';
+import Busyer from './busyer.js';
 import PresetRuleApplier from './preset-rule-applier.js';
 import LibraryView from './library-view.js';
 import AlbumView from './album-view.js';
@@ -49,11 +50,11 @@ export default class App {
     $(window).on('resize', this.onWindowResize);
     this.doWindowResize();
 
-    Util.addAppListener(this, 'model-playlist-updated', this.updatePageHolderPlayStateClasses);
-    Util.addAppListener(this, 'model-status-updated', this.updatePageHolderPlayStateClasses);
-    Util.addAppListener(this, 'windup-start', this.updatePageHolderPlayStateClasses);
-    Util.addAppListener(this, 'windup-end', this.updatePageHolderPlayStateClasses);
-    this.updatePageHolderPlayStateClasses();
+    Util.addAppListener(this, 'model-playlist-updated', this.updateStateClasses);
+    Util.addAppListener(this, 'model-status-updated', this.updateStateClasses);
+    Util.addAppListener(this, 'busy-start', this.updateBusyClass);
+    Util.addAppListener(this, 'busy-end', this.updateBusyClass);
+    this.updateStateClasses();
 
     Util.addAppListener(this, 'library-sort-type-changed', this.onLibrarySortTypeChanged);
 		Util.addAppListener(this, 'library-item-click', this.showAlbumView);
@@ -199,9 +200,9 @@ export default class App {
   }
   
   /**
-   * Updates css classes on page holder related to play state.
+   * Updates page holder css classes related to play state.
    */
-  updatePageHolderPlayStateClasses() {
+  updateStateClasses() {
     // playing, paused, stopped (mutually exclusive)
     if (ModelUtil.isPlaying()) {
       this.$pageHolder.addClass('isPlaying').removeClass('isPaused isStopped');
@@ -210,20 +211,23 @@ export default class App {
     } else {
       this.$pageHolder.addClass('isStopped').removeClass('isPlaying isPaused');
     }
-
-    // is-winding-up
-    if (Statuser.isWindingUp()) {
-      this.$pageHolder.addClass('isWindingUp');
-    } else {
-      this.$pageHolder.removeClass('isWindingUp');
-    }
-
+    
     // empty playlist
     (Model.playlistData.length > 0)
         ? this.$pageHolder.removeClass('isPlaylistEmpty')
         : this.$pageHolder.addClass('isPlaylistEmpty');
+    
+    this.updateBusyClass();
   }
 
+  updateBusyClass() {
+    if (Busyer.isBusy) {
+      this.$pageHolder.addClass('isBusy');
+    } else {
+      this.$pageHolder.removeClass('isBusy');
+    }
+  }
+  
   /**
    * Updates css classes on #page which describe which subview is currently showing.
    */
@@ -435,7 +439,6 @@ export default class App {
   }
 
   showToast(htmlText) {
-    cl('showtoast', htmlText)
     ToastView.show(htmlText)
   }
 }

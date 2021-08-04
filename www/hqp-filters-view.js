@@ -11,7 +11,8 @@ import HqpPresetsView from './hqp-presets-view.js';
 import SnackView from './snack-view.js';
 
 /**
- *
+ * Has upscaler settings controls.
+ * Also 'owns' presets view.
  */
 export default class HqpFiltersView {
 
@@ -51,9 +52,10 @@ export default class HqpFiltersView {
   }
 
   onShow() {
-    // Info text
-    ViewUtil.setDisplayed(this.$info, !ModelUtil.isStopped());
+    this.populateSelects();
     $(document).on('model-status-updated', this.onModelStatusUpdated);
+
+    ViewUtil.setDisplayed(this.$info, !ModelUtil.isStopped());
   }
 
   onHide() {

@@ -94,6 +94,12 @@ Util.makeCasualDelimitedString = (array, delimiter) => {
   return s;
 };
 
+Util.makeCasualSecondsString = (ms) => {
+  let sec = (ms / 1000);
+  sec = (Math.round(sec * 100) / 100).toFixed(2);
+  return sec + 's';
+};
+
 Util.hasMatch = (arrayOfObjects, objectKey, value) => {
   for (let el of arrayOfObjects) {
     if (el[objectKey] === value) {

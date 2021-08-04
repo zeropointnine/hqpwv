@@ -3,6 +3,7 @@ import Model from './model.js';
 import HqpConfigModel from './hqp-config-model.js';
 import Commands from './commands.js';
 import Service from './service.js';
+import Statuser from './statuser.js';
 
 /**
  *
@@ -54,6 +55,32 @@ class PresetUtil {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Assumes currently playing a track (presumably at the very start).
+   * Shows taost at the end.
+   *
+   * @preset should exist and have values.
+   */
+  applyPresetAndPlayTrack(preset, trackValue) {
+
+    // todo block starting here maybe
+
+    this.applyPreset(preset, (didSetSomething) => {
+      if (didSetSomething) {
+        // Having set a config value, hqp will be in a stopped state,
+        // which means <selectTrack> will trigger a 'new-track-detected'
+        // which should be ignored.
+        Statuser.ignoreNextNewTrackDetected = true;
+
+        const s = `Applied preset: <em>${this.toString(preset)}</em>`;
+        $(document).trigger('show-toast', s)
+      }
+      if (trackValue) {
+        Service.queueCommandFront(Commands.selectTrack(trackValue)); // done
+      }
+    });
   }
 
   /**

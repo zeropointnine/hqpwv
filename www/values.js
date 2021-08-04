@@ -1,18 +1,19 @@
+import Util from './util.js';
+
 /**
- *
+ * Various simple global values.
  */
 class Values {
 
   PROJECT_URL = 'https://github.com/zeropointnine/hqpwv';
   TROUBLESHOOTING_HREF = 'https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md';
-
-  ENDPOINTS_BASE_URL = window.location.origin + '/endpoints/';
+  ENDPOINTS_BASE_URL = window.location.origin + '/endpoints/'; // default
   COMMAND_ENDPOINT = this.ENDPOINTS_BASE_URL + "command";
   NATIVE_ENDPOINT = this.ENDPOINTS_BASE_URL + 'native';
 
   _hqpwvVersion = '';
-
   _imagesEndpoint;
+  _startTime = new Date().getTime();
 
   constructor() {
     // Set hqplayer image server endpoint to that of webserver
@@ -42,6 +43,11 @@ class Values {
       }
     }
     this._hqpwvVersion = s;
+  }
+
+  get uptimeString() {
+    const delta = new Date().getTime() - this._startTime;
+    return Util.makeCasualSecondsString(delta);
   }
 }
 
