@@ -165,7 +165,8 @@ $thumb-width: 20px;
     margin-right:0;
   }
 }
-.isStopped #playProgressView {
+.isStopped #playProgressView,
+.isWindingUp #playProgressView{
   pointer-events: none;
 }
 
@@ -182,6 +183,7 @@ $thumb-width: 20px;
   margin-left: $thumb-width * -0.5;
   cursor:pointer;
   background-color:$color-accent;
+  transition: background-color 0.15s linear;
 }
 .isStopped #playProgressThumb {
   pointer-events:none;
@@ -189,6 +191,11 @@ $thumb-width: 20px;
 }
 .isPaused #playProgressThumb {
   animation: thumbPulse 2s infinite;
+}
+.isWindingUp #playProgressThumb {
+  background-color:$color-text;
+  animation: thumbPulse 1.33s infinite;
+  cursor-events: none;
 }
 
 #playbarStroke {
@@ -291,7 +298,40 @@ $thumb-width: 20px;
   background-color:$color-listitem;
 }
 
+
 // ---
+// Piggybacks off the top of the playbar
+#toast {
+  $toast-height:36px;
+
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: $toast-height;
+  top: -$toast-height;
+  overflow: clip;
+
+  #toastInner {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: $toast-height;
+    background: $color-bg;
+    border-top: 1px solid $color-listitem;
+    padding: 0 16px 0 16px;
+    font-size: $font-size-smaller;
+    text-align: center;
+    line-height: $toast-height - 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: top 0.33s cubic-bezier(0, .5, .3, 1.0);
+    @include mobile {
+      font-size: $font-size-smaller-mobile;
+    }
+  }
+}
+
 // Piggybacks off the top of the playbar
 #snack {
   visibility: hidden;

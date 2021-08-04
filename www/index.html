@@ -8,13 +8,17 @@
 		<link rel="stylesheet" href="css/main.css">
 		<script src="libs/jquery-3.6.0.min.js"></script>
 
-		<script type="module">
+		<script>
 			window.cl = console.log;
+		</script>
+
+		<script type="module">
 			import App from './app.js';
 			$(document).ready(() => {
 				const app = new App();
 			});
 		</script>
+
 	</head>
 
 	<body>
@@ -88,56 +92,131 @@
 				<div id="hqpSettingsView" class="subview">
 
 					<div id="hqpSettingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
+					<div class="viewTitle">Upscaler settings</div>
 
-					<div class="viewTitle">HQPlayer Settings</div>
+					<div class="hqpSettingsInner">
 
-					<div id="hqpFiltersView">
+						<div id="hqpFiltersView">
+							<div class="settingsSelectOuter">
+								<label for="modeSelect" style="margin-right:8px;">Mode:</label>
+								<select name="modeSelect" id="modeSelect"></select>
+							</div>
 
-						<div class="settingsSelectOuter">
-							<label for="modeSelect" style="margin-right:8px;">Mode:</label>
-							<select name="modeSelect" id="modeSelect"></select>
-						</div>
+							<div class="settingsSelectOuter">
+								<label for="filterSelect" style="margin-right:8px;">Filter:</label>
+								<select name="filterSelect" id="filterSelect"></select>
+							</div>
+							<div class="settingsSelectOuter">
+								<label for="shaperSelect" style="margin-right:8px;">Shaper:</label>
+								<select name="shaperSelect" id="shaperSelect"></select>
+							</div>
 
-						<div class="settingsSelectOuter">
-							<label for="filterSelect" style="margin-right:8px;">Filter:</label>
-							<select name="filterSelect" id="filterSelect"></select>
-						</div>
-						<div class="settingsSelectOuter">
-							<label for="shaperSelect" style="margin-right:8px;">Shaper:</label>
-							<select name="shaperSelect" id="shaperSelect"></select>
-						</div>
-						<div class="settingsSelectOuter">
-							<label for="rateSelect" style="margin-right:8px;">Rate:</label>
-							<select name="rateSelect" id="rateSelect"></select>
-						</div>
+							<div id="hqpFiltersInfo">* Changing upscaler settings will stop playback.</div>
 
-						<div id="hqpPresetsView">
-							<div class="savePresets">
-								<div class="presetLabel">Save to preset</div>
-								<div class="savePresetLine">
-									<div id="savePreset1" class="textButton">1</div><div
-									id="savePreset2" class="textButton" style="margin-left:8px">2</div><div
-									id="savePreset3" class="textButton" style="margin-left:8px">3</div>
+							<div class="presetsDivider"></div>
+
+							<div id="hqpPresetsView">
+								<div class="savePresets">
+									<div class="presetLabel">Save to preset</div>
+									<div class="savePresetLine">
+										<div id="savePreset1" class="textButton">1</div><div
+											id="savePreset2" class="textButton" style="margin-left:8px">2</div><div
+											id="savePreset3" class="textButton" style="margin-left:8px">3</div>
+									</div>
+								</div>
+								<div class="loadPresets">
+									<div class="presetLabel">Apply preset</div>
+									<div class="loadPresetLine">
+										<div id="loadPreset1" class="textButton loadPresetButton">1</div><div id="loadPreset1Text" class="loadPresetLabel"></div>
+									</div>
+									<div class="loadPresetLine">
+										<div id="loadPreset2" class="textButton loadPresetButton">2</div><div id="loadPreset2Text" class="loadPresetLabel"></div>
+									</div>
+									<div class="loadPresetLine">
+										<div id="loadPreset3" class="textButton loadPresetButton">3</div><div id="loadPreset3Text" class="loadPresetLabel"></div>
+									</div>
 								</div>
 							</div>
-							<div class="loadPresets">
-								<div class="presetLabel">Apply preset</div>
-								<div class="loadPresetLine">
-									<div id="loadPreset1" class="textButton loadPresetButton">1</div><div id="loadPreset1Text" class="loadPresetLabel"></div>
+
+							<div class="experimentalDivider"></div>
+
+							<div id="settingsExperimentalLine"><div class="iconButton expandIcon"></div><span class="text">Experimental</span></div>
+
+							<div id="hqpPresetRulesView">
+
+								<div class="settingsSubheading" style="">Preset rules</div>
+
+								<div class="hqpPresetRulesInner">
+
+									<div id="ruleThreshold" class="ruleItem">
+
+										<div id="ruleThresholdCheckbox" class="checkbox ruleCheckbox" data-settings-value="threshold"></div>
+
+										<div class="ruleItemInner">
+
+											<div class="ruleLine">If PCM source samplerate is</div>
+
+											<div class="ruleLine">
+												<select name="ruleThresholdLeastMostSelect" id="ruleThresholdLeastMostSelect">
+													<option value="least">at least</option>
+													<option value="most">at most</option>
+												</select><select
+													name="ruleThresholdFs" id="ruleThresholdFs" style="margin-left:8px"></select><span
+												style="margin-left:2px;">,</span>
+											</div>
+
+											<div class="ruleLine">
+												<span style="margin-right:6px;">then apply preset</span><select
+													name="ruleThresholdPresetA" id="ruleThresholdPresetA">
+													<option value="1">1</option>
+													<option value="2">2</option>
+													<option value="3">3</option>
+												</select><span
+												style="margin-left:2px;">.</span>
+											</div>
+
+											<div class="ruleLine">
+												<span style="margin-right:6px;">Else, apply preset</span><select
+													name="ruleThresholdPresetB" id="ruleThresholdPresetB">
+													<option value="1">1</option>
+													<option value="2">2</option>
+													<option value="3">3</option>
+												</select><span
+												style="margin-left:2px;">.</span>
+											</div>
+
+										</div>
+									</div>
+
+									<div id="ruleAb" class="ruleItem" style="margin-top:16px;">
+										<div id="ruleAbCheckbox" class="checkbox ruleCheckbox" data-settings-value="ab"></div>
+										<div class="ruleItemInner">
+											<div class="ruleLine">
+												<span style="margin-right:6px;">Alternate between presets</span><select
+												name="ruleAbPresetA" id="ruleAbPresetA">
+													<option value="1">1</option>
+													<option value="2">2</option>
+													<option value="3">3</option>
+												</select><span
+												style="margin-left:6px; margin-right:6px;">and</span><select
+												name="ruleAbPresetB" id="ruleAbPresetB">
+													<option value="1">1</option>
+													<option value="2">2</option>
+													<option value="3">3</option>
+												</select></span>
+											</div>
+											<div class="ruleLine" style="margin-top:-8px;">
+												<span>whenever a track is played or changed.</span>
+											</div>
+
+										</div>
+									</div>
+
 								</div>
-								<div class="loadPresetLine">
-									<div id="loadPreset2" class="textButton loadPresetButton">2</div><div id="loadPreset2Text" class="loadPresetLabel"></div>
-								</div>
-								<div class="loadPresetLine">
-									<div id="loadPreset3" class="textButton loadPresetButton">3</div><div id="loadPreset3Text" class="loadPresetLabel"></div>
-								</div>
+
 							</div>
 						</div>
-
-						<div id="hqpFiltersInfo">Changing HQPlayer settings will stop playback.</div>
-
 					</div>
-
 				</div>
 
 				<div id="settingsView" class="subview">
@@ -152,13 +231,16 @@
 					<div id="settingsHotkeys" style="margin-top:28px;">
 						<div class="settingsSubheading">Hotkeys:</div>
 						<table>
-							<tr><td class="c1">q</td><td class="c2">show playlist</td></tr>
 							<tr><td class="c1">p</td><td class="c2">play/pause</td></tr>
 							<tr><td class="c1">s</td><td class="c2">stop</td></tr>
 							<tr><td class="c1">j</td><td class="c2">previous track</td></tr>
 							<tr><td class="c1">k</td><td class="c2">next track</td></tr>
 							<tr><td class="c1">comma</td><td class="c2">seek -10s</td></tr>
 							<tr><td class="c1">period</td><td class="c2">seek +10s</td></tr>
+						</table>
+						<table style="margin-top:12px">
+							<tr><td class="c1">q</td><td class="c2">show playlist</td></tr>
+							<tr><td class="c1">u</td><td class="c2">show upscaling settings</td></tr>
 							<tr><td class="c1">esc</td><td class="c2">close modal</td></tr>
 						</table>
 					</div>
@@ -222,6 +304,11 @@
 				<!-- note how these piggyback off of playbar -->
 				<div id="bottomScrim"></div>
 				<div id="bottomStroke"></div>
+
+				<div id="toast">
+					<div id="toastInner">Toast here preset 1 2 3 x</div>
+				</div>
+
 				<div id="snack">
 					<div id="snackInner">
 						<div id="snackIcon" class="iconButton"></div>

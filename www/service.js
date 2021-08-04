@@ -15,7 +15,8 @@ class Service {
 
 	queue = [];
 	currentItem = null;
-	queueTimestamp = 0;
+
+  queueTimestamp = 0;
 	itemTimestamp = 0;
   proxyErrorStartTime = 0;
   proxyErrorCounter = 0;
@@ -98,7 +99,9 @@ class Service {
 
 	/** Makes request to server using the xml in `currentItem` */
 	makeRequest() {
-		// cl(`service request [${this.currentItem.xml.substr(0,30)}] ${this.queue.length} items queued`);
+    if (!this.currentItem.xml.includes('<Status')) {
+      // cl(`request ${this.currentItem.xml.substr(0,30)}`);
+    }
     const url = Values.COMMAND_ENDPOINT + "?xml=" + encodeURIComponent(this.currentItem.xml);
     $.ajax({ url: url, error: this.onError, success: this.onSuccess}); // todo timeout: ___ ?
   }

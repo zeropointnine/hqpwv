@@ -67,7 +67,7 @@ export default class LibraryView extends Subview {
 		this.updateListWidth();
 
     const duration = new Date().getTime() - startTime;
-    cl(`lib populate ${duration}ms`);
+    cl(`init - lib populate time ${duration}ms`);
 	}
 
   forceReloadImages() {
@@ -126,7 +126,7 @@ export default class LibraryView extends Subview {
 	onItemClick = (event) => {
 		const index = $(event.currentTarget).attr("data-index");
 		const album = this.albums[index];
-    cl(album);
+    // cl(album);
 		$(document).trigger('library-item-click', album);
 	};
 

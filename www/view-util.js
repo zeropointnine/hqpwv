@@ -11,6 +11,10 @@ ViewUtil.isVisible = ($el) => {
   return ($el.css("visibility") == 'visible');
 };
 
+ViewUtil.isDisplayed = ($el) => {
+  const val = $el.css('display');
+  return (val != 'none');
+};
 
 ViewUtil.setDisplayed = ($el, b) => {
 	$el.css("display", (b ? "block" : "none"));

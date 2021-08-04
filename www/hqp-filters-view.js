@@ -1,6 +1,3 @@
-/**
- *
- */
 import Util from './util.js';
 import ViewUtil from './view-util.js';
 import Model from './model.js';
@@ -8,21 +5,23 @@ import ModelUtil from './model-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import Settings from './settings.js';
-import HqpPresetsView from './hqp-presets-view.js';
 import HqpConfigModel from './hqp-config-model.js';
+import PresetUtil from './preset-util.js';
+import HqpPresetsView from './hqp-presets-view.js';
 import SnackView from './snack-view.js';
 
+/**
+ *
+ */
 export default class HqpFiltersView {
 
   $el;
   $modeSelect;
   $filterSelect;
   $shaperSelect;
-  $rateSelect;
   $info;
 
   presetsView;
-
 
   // todo `<FiltersItem index= name= value= />` [?]
 
@@ -32,29 +31,29 @@ export default class HqpFiltersView {
     this.$modeSelect = this.$el.find('#modeSelect');
     this.$filterSelect = this.$el.find('#filterSelect');
     this.$shaperSelect = this.$el.find('#shaperSelect');
-    this.$rateSelect = this.$el.find('#rateSelect');
 
     this.$modeSelect.on('change', this.onSelectChange);
     this.$filterSelect.on('change', this.onSelectChange);
     this.$shaperSelect.on('change', this.onSelectChange);
-    this.$rateSelect.on('change', this.onSelectChange);
 
     this.$info = this.$el.find('#hqpFiltersInfo');
 
     this.presetsView = new HqpPresetsView(this.$el.find('#hqpPresetsView'));
+    this.presetsView.updateLoadPresetsText();
 
+    Util.addAppListener(this, 'upscaling-data-updated', this.onUpscalingDataUpdated);
     Util.addAppListener(this, 'save-hqp-preset-button', this.onSavePresetButton);
     Util.addAppListener(this, 'load-hqp-preset-button', this.onLoadPresetButton);
   }
 
-  onShow() {
-    this.presetsView.updateLoadPresetsText();
-    HqpConfigModel.updateData(this.populateSelects);
+  onUpscalingDataUpdated(mode) {
+    this.populateSelects();
+  }
 
-    ViewUtil.setVisible(this.$info, !ModelUtil.isStopped());
-    if (!ModelUtil.isStopped()) {
-      $(document).on('model-status-updated', this.onModelStatusUpdated);
-    }
+  onShow() {
+    // Info text
+    ViewUtil.setDisplayed(this.$info, !ModelUtil.isStopped());
+    $(document).on('model-status-updated', this.onModelStatusUpdated);
   }
 
   onHide() {
@@ -65,16 +64,13 @@ export default class HqpFiltersView {
     const mode = Model.statusData['@_active_mode'];
     this.populateSelect(this.$modeSelect, HqpConfigModel.modesArray, '@_name', '@_index', mode);
 
-    const filter = Model.statusData['@_active_filter']; // these are label values, not indices :/
-    this.populateSelect(this.$filterSelect, HqpConfigModel.filtersArray, '@_name', '@_index', filter);
+    const filterName = Model.statusData['@_active_filter'];
+    const filtersArray = HqpConfigModel.filtersData[mode];
+    this.populateSelect(this.$filterSelect, filtersArray, '@_name', '@_index', filterName);
 
-    const shaper = Model.statusData['@_active_shaper'];
-    this.populateSelect(this.$shaperSelect, HqpConfigModel.shapersArray, '@_name', '@_index', shaper);
-
-    const rate = Model.statusData['@_active_rate'];
-    this.populateSelect(this.$rateSelect, HqpConfigModel.ratesArray, '@_rate', '@_index', rate);
-
-    // cl(mode, filter, shaper, rate)
+    const shaperName = Model.statusData['@_active_shaper'];
+    const shapersArray = HqpConfigModel.shapersData[mode];
+    this.populateSelect(this.$shaperSelect, shapersArray, '@_name', '@_index', shaperName);
   };
 
   /**
@@ -99,14 +95,15 @@ export default class HqpFiltersView {
   populateSelect($select, array, labelKey, indexKey, selectedLabelText) {
     // Filter item properties: name, index, value
     // Shaper items properties: name, index, value
-    // Rate itemsproperties: rate, index
     $select.empty();
     let optionsHtml = '';
-    for (let item of array) {
-      const optionText = item[labelKey];
-      const value = item[indexKey];
-      const selectedness = (optionText == selectedLabelText) ? 'selected' : '';
-      optionsHtml += `<option value="${value}" ${selectedness}>${optionText}</option>`;
+    if (array) {
+      for (let item of array) {
+        const optionText = item[labelKey];
+        const value = item[indexKey];
+        const selectedness = (optionText == selectedLabelText) ? 'selected' : '';
+        optionsHtml += `<option value="${value}" ${selectedness}>${optionText}</option>`;
+      }
     }
     $select.html(optionsHtml);
   }
@@ -140,11 +137,6 @@ export default class HqpFiltersView {
         responseKey = 'SetShaping';
         label = 'shaper';
         break;
-      case this.$rateSelect[0]:
-        command = Commands.setRate(value);
-        responseKey = 'SetRate';
-        label = 'bitrate';
-        break;
       default:
         break;
     }
@@ -154,14 +146,11 @@ export default class HqpFiltersView {
     }
 
     Service.queueCommandFront(command, (data) => {
-      const b = ModelUtil.isResultOk(data, responseKey);
+      const b = ModelUtil.isResultOk(data, responseKey); // todo unverified
       if (!b) {
         SnackView.show('set-error', 'HQPlayer response', `Couldn't set ${label}`, '');
       }
-      // Do full update regardless because
-      // (1) not sure that result=ok guarantees that the 'set' is accepted
-      // (2) not sure if setting one value may invalidate another (eg rate)
-      HqpConfigModel.updateData(this.populateSelectsRedundant);
+      HqpConfigModel.updateData(() => Service.queueCommandFront(Commands.status()) );
     });
   };
 
@@ -169,16 +158,15 @@ export default class HqpFiltersView {
     const mode = Model.statusData['@_active_mode'];
     const filter = Model.statusData['@_active_filter'];
     const shaper = Model.statusData['@_active_shaper'];
-    const rate = Model.statusData['@_active_rate'];
-    const o = { mode: mode, filter: filter, shaper: shaper, rate: rate };
-    Settings.hqpPresets[index] = o;
-    Settings.commitHqpPresets();
+    const o = { mode: mode, filter: filter, shaper: shaper };
+    Settings.presetsArray[index] = o;
+    Settings.commitPresetsArray();
     this.presetsView.updateLoadPresetsText();
   }
 
   onLoadPresetButton(index) {
-    const preset = Settings.hqpPresets[index];
-    HqpConfigModel.applyPreset(preset, (isSuccess) => {
+    const preset = Settings.presetsArray[index];
+    PresetUtil.applyPreset(preset, (isSuccess) => {
       if (!isSuccess) {
         cl('warning couldnt apply preset')
       }
@@ -186,11 +174,25 @@ export default class HqpFiltersView {
     });
   }
 
-  // Hides info text when status goes to stop.
   onModelStatusUpdated = () => {
     if (ModelUtil.isStopped()) {
-      ViewUtil.setVisible(this.$info, false);
-      $(document).off('model-status-updated', this.onModelStatusUpdated);
+      ViewUtil.setDisplayed(this.$info, false);
+    }
+
+    // Diff status vs lastStatus
+    const mode = Model.statusData['@_active_mode'];
+    if (Model.statusData['@_active_mode'] != Model.lastStatusData['@_active_mode']) {
+      this.populateSelect(this.$modeSelect, HqpConfigModel.modesArray, '@_name', '@_index', mode);
+    }
+    if (Model.statusData['@_active_filter'] != Model.lastStatusData['@_active_filter']) {
+      const filterName = Model.statusData['@_active_filter'];
+      const filtersArray = HqpConfigModel.filtersData[mode];
+      this.populateSelect(this.$filterSelect, filtersArray, '@_name', '@_index', filterName);
+    }
+    if (Model.statusData['@_active_shaper'] != Model.lastStatusData['@_active_shaper']) {
+      const shaperName = Model.statusData['@_active_shaper'];
+      const shapersArray = HqpConfigModel.shapersData[mode];
+      this.populateSelect(this.$shaperSelect, shapersArray, '@_name', '@_index', shaperName);
     }
   }
 }

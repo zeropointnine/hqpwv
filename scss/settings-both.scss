@@ -3,6 +3,7 @@
 .settingsSubheading {
   margin-bottom: 8px;
 }
+
 #settingsHotkeys {
   table {
     padding:0;
@@ -51,7 +52,10 @@ select * {
     }
   }
   select {
-    width:150px;
+    width:200px;
+    @include mobile {
+      width:150px;
+    }
   }
   select[name="modeSelect"] {
     font-weight:bold;
@@ -61,17 +65,18 @@ select * {
   }
 }
 
-#settingsModesDivider {
-  width:240px;
-  height:1px;
-  margin-top:16px;
-  margin-bottom:16px;
-  background-color:$color-listitem;
-}
-
 // ---
 
 #hqpSettingsView { }
+
+.hqpSettingsInner {
+  width:500px;
+  margin-left:auto;
+  margin-right:auto;
+  @include tablet {
+    width: 100%;
+  }
+}
 
 #hqpFiltersView {
   margin-top:24px;
@@ -80,14 +85,17 @@ select * {
   }
 }
 
-#hqpPresetsView {
-  margin-top:28px;
-  @include mobile {
-    margin-top:24px;
-  }
+.presetsDivider {
+  width:100%;
+  height:1px;
+  margin-top:32px;
+  margin-bottom:24px;
+  background-color:$color-listitem;
+}
 
-  .savePresets {
-  }
+#hqpPresetsView {
+
+  .savePresets { }
 
   .presetLabel {
     margin-bottom: 12px;
@@ -132,11 +140,77 @@ select * {
       }
     }
   }
-
 }
 
 #hqpFiltersInfo {
-  margin-top:16px;
+  margin-left: $indent-left;
+  margin-top:20px;
   font-size:$font-size-smaller;
   color:$color-text-least;
+  @include mobile {
+    margin-left:$indent-left-mobile;
+  }
+}
+
+// ---
+
+.experimentalDivider {
+  width:100%;
+  height:1px;
+  margin-top:32px;
+  margin-bottom:4px;
+  background-color:$color-listitem;
+}
+
+#settingsExperimentalLine {
+  display:flex;
+  padding-bottom:6px;
+  cursor:pointer;
+
+  .expandIcon {
+    background-color:transparent;
+    &:before {
+      background-image: url('./../img/icons/expand_more_white_24dp.svg');
+    }
+  }
+  .text {
+    line-height: $icon-button-side;
+    margin-left:0px;
+  }
+}
+
+#hqpPresetRulesView {
+  display: none;
+  border-top:1px solid $color-listitem;
+  padding-top:24px;
+}
+
+.hqpPresetRulesInner {
+  margin-top:16px;
+  margin-left:36px;
+  @include mobile {
+    margin-left:0px;
+  }
+}
+
+.ruleItem {
+  margin-top:12px;
+  display:flex;
+  .ruleCheckbox {
+    flex: 0 1 36px;
+    margin-right:16px;
+  }
+  .ruleItemInner {
+    flex: 1;
+  }
+}
+
+.ruleLine {
+  line-height: 36px;//$icon-button-side;
+  margin-bottom:4px;
+}
+
+#ruleThreshold.isDisabled {
+  pointer-events:none;
+  opacity:0.5;
 }

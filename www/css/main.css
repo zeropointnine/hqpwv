@@ -254,6 +254,26 @@ li:before {
   cursor: default;
 }
 
+.checkbox {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #383838;
+  margin-right: 6px;
+  cursor: pointer;
+}
+.checkbox.isChecked:before {
+  display: block;
+  content: "";
+  margin: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background-color: #383838;
+}
+.checkbox .isDisabled {
+  cursor: default;
+}
+
 #page {
   display: flex;
   flex-direction: column;
@@ -650,7 +670,8 @@ li:before {
   }
 }
 
-.isStopped #playProgressView {
+.isStopped #playProgressView,
+.isWindingUp #playProgressView {
   pointer-events: none;
 }
 
@@ -668,6 +689,7 @@ li:before {
   margin-left: -10px;
   cursor: pointer;
   background-color: #ff2200;
+  transition: background-color 0.15s linear;
 }
 
 .isStopped #playProgressThumb {
@@ -677,6 +699,12 @@ li:before {
 
 .isPaused #playProgressThumb {
   animation: thumbPulse 2s infinite;
+}
+
+.isWindingUp #playProgressThumb {
+  background-color: #ccc;
+  animation: thumbPulse 1.33s infinite;
+  cursor-events: none;
 }
 
 #playbarStroke {
@@ -785,6 +813,36 @@ li:before {
   height: 1px;
   top: 0px;
   background-color: #282828;
+}
+
+#toast {
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 36px;
+  top: -36px;
+  overflow: clip;
+}
+#toast #toastInner {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 36px;
+  background: #101010;
+  border-top: 1px solid #282828;
+  padding: 0 16px 0 16px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 32px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: top 0.33s cubic-bezier(0, 0.5, 0.3, 1);
+}
+@media (max-width: 480px) {
+  #toast #toastInner {
+    font-size: 12px;
+  }
 }
 
 #snack {
@@ -1306,7 +1364,12 @@ select * {
   }
 }
 .settingsSelectOuter select {
-  width: 150px;
+  width: 200px;
+}
+@media (max-width: 480px) {
+  .settingsSelectOuter select {
+    width: 150px;
+  }
 }
 .settingsSelectOuter select[name=modeSelect] {
   font-weight: bold;
@@ -1315,12 +1378,15 @@ select * {
   font-weight: normal;
 }
 
-#settingsModesDivider {
-  width: 240px;
-  height: 1px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  background-color: #282828;
+.hqpSettingsInner {
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 768px) {
+  .hqpSettingsInner {
+    width: 100%;
+  }
 }
 
 #hqpFiltersView {
@@ -1332,14 +1398,14 @@ select * {
   }
 }
 
-#hqpPresetsView {
-  margin-top: 28px;
+.presetsDivider {
+  width: 100%;
+  height: 1px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+  background-color: #282828;
 }
-@media (max-width: 480px) {
-  #hqpPresetsView {
-    margin-top: 24px;
-  }
-}
+
 #hqpPresetsView .presetLabel {
   margin-bottom: 12px;
 }
@@ -1394,9 +1460,77 @@ select * {
 }
 
 #hqpFiltersInfo {
-  margin-top: 16px;
+  margin-left: 75px;
+  margin-top: 20px;
   font-size: 14px;
   color: #666;
+}
+@media (max-width: 480px) {
+  #hqpFiltersInfo {
+    margin-left: 45px;
+  }
+}
+
+.experimentalDivider {
+  width: 100%;
+  height: 1px;
+  margin-top: 32px;
+  margin-bottom: 4px;
+  background-color: #282828;
+}
+
+#settingsExperimentalLine {
+  display: flex;
+  padding-bottom: 6px;
+  cursor: pointer;
+}
+#settingsExperimentalLine .expandIcon {
+  background-color: transparent;
+}
+#settingsExperimentalLine .expandIcon:before {
+  background-image: url("./../img/icons/expand_more_white_24dp.svg");
+}
+#settingsExperimentalLine .text {
+  line-height: 36px;
+  margin-left: 0px;
+}
+
+#hqpPresetRulesView {
+  display: none;
+  border-top: 1px solid #282828;
+  padding-top: 24px;
+}
+
+.hqpPresetRulesInner {
+  margin-top: 16px;
+  margin-left: 36px;
+}
+@media (max-width: 480px) {
+  .hqpPresetRulesInner {
+    margin-left: 0px;
+  }
+}
+
+.ruleItem {
+  margin-top: 12px;
+  display: flex;
+}
+.ruleItem .ruleCheckbox {
+  flex: 0 1 36px;
+  margin-right: 16px;
+}
+.ruleItem .ruleItemInner {
+  flex: 1;
+}
+
+.ruleLine {
+  line-height: 36px;
+  margin-bottom: 4px;
+}
+
+#ruleThreshold.isDisabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /*# sourceMappingURL=main.css.map */

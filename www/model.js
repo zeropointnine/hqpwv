@@ -8,6 +8,7 @@ class Model {
 
 	_libraryData = [];
 	_statusData = {};
+  _lastStatusData = {};
 	_playlistData = [];
   _infoData = {};
 
@@ -24,8 +25,13 @@ class Model {
 		return this._statusData;
 	}
 
+  get lastStatusData() {
+    return this._lastStatusData;
+  }
+
 	setStatusDataUsingResponseObject(data) {
-		this._statusData = data;
+		this._lastStatusData = this._statusData;
+    this._statusData = data;
 		$(document).trigger('model-status-updated');
 	}
 

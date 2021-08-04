@@ -5,9 +5,11 @@ import Commands from './commands.js';
 import Settings from './settings.js';
 import Model from './model.js';
 import ModelUtil from './model-util.js';
+import HqpConfigModel from './hqp-config-model.js';
 import Native from './native.js';
 import Service from './service.js';
 import Statuser from './statuser.js';
+import PresetRuleApplier from './preset-rule-applier.js';
 import LibraryView from './library-view.js';
 import AlbumView from './album-view.js';
 import PlaylistView from './playlist-view.js';
@@ -17,6 +19,7 @@ import SettingsView from './settings-view.js';
 import HqpSettingsView from './hqp-settings-view.js';
 import DialogView from './dialog-view.js';
 import SnackView from './snack-view.js';
+import ToastView from './toast-view.js';
 
 /**
  * 
@@ -37,17 +40,19 @@ export default class App {
   $hqpSettingsButton = $('#hqpSettingsButton');
 
   instanceId = Math.floor(Math.random() * 99999999);
-  libraryGetStartTime = 0;
   lastHandledKeypressTime = 0;
   resizeTimeoutId = 0;
   subviewZ = 100;
 
 	constructor() {
+
     $(window).on('resize', this.onWindowResize);
     this.doWindowResize();
 
     Util.addAppListener(this, 'model-playlist-updated', this.updatePageHolderPlayStateClasses);
     Util.addAppListener(this, 'model-status-updated', this.updatePageHolderPlayStateClasses);
+    Util.addAppListener(this, 'windup-start', this.updatePageHolderPlayStateClasses);
+    Util.addAppListener(this, 'windup-end', this.updatePageHolderPlayStateClasses);
     this.updatePageHolderPlayStateClasses();
 
     Util.addAppListener(this, 'library-sort-type-changed', this.onLibrarySortTypeChanged);
@@ -61,7 +66,7 @@ export default class App {
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
     Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
     Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
-
+    Util.addAppListener(this, 'show-toast', this.showToast);
 
     this.$settingsButton.on("click", () => this.showSettingsView());
     this.$hqpSettingsButton.on("click", () => this.showHqpSettingsView());
@@ -76,21 +81,45 @@ export default class App {
     this.updatePageHolderSubviewClass(this.libraryView);
     ViewUtil.setVisible(this.playbarView.$el, true);
 
-		// Make service calls
-    this.libraryGetStartTime = new Date().getTime();
+    PresetRuleApplier.noop();
+
+    this.init();
+	}
+
+  /** Performs series of required asynchronous calls */
+  init() {
+
+    // This is done in parallel to the hqp service calls
     Native.getInfo(this.instanceId, (data) => {
       Values.setImagesEndpointUsing(data.hqplayer_ip_address);
       Values.hqpwvVersion = data.hqpwv_version;
     });
-    Statuser.start();
-		Service.queueCommandsFront([
-        { xml :Commands.libraryGet(), callback: this.onLibraryGetResponse },
-        { xml: Commands.playlistGet(), callback: this.onInitDone }
-    ]);
 
-    // xxx temp
-    // setTimeout(() => this.showSettingsView(), 1000);
-	}
+    const step3 = (data) => {
+      if (data.error != undefined) {
+        this.showFatalError(data.error);
+      }
+      const duration = new Date().getTime() - startTime;
+      cl(`init - async calls time ${duration}ms`);
+
+      this.libraryView.update();
+
+      // temp:
+      this.showHqpSettingsView();
+    };
+
+    const step2 = () => {
+      Statuser.start();
+      Service.queueCommandsFront([
+        { xml: Commands.playlistGet() },
+        { xml: Commands.libraryGet(), callback: step3 }
+      ])
+    };
+
+    // step1
+    const startTime = new Date().getTime();
+    HqpConfigModel.updateData(step2);
+  };
 
   // ---
   // subview concrete show/hide logic
@@ -184,6 +213,14 @@ export default class App {
     } else {
       this.$pageHolder.addClass('isStopped').removeClass('isPlaying isPaused');
     }
+
+    // is-winding-up
+    if (Statuser.isWindingUp()) {
+      this.$pageHolder.addClass('isWindingUp');
+    } else {
+      this.$pageHolder.removeClass('isWindingUp');
+    }
+
     // empty playlist
     (Model.playlistData.length > 0)
         ? this.$pageHolder.removeClass('isPlaylistEmpty')
@@ -279,19 +316,6 @@ export default class App {
   // ---
   // handlers, various
 
-  onLibraryGetResponse = (data) => {
-    const duration = new Date().getTime() - this.libraryGetStartTime;
-    cl(`libraryget ${duration}ms`);
-    if (data.error != undefined) {
-      this.showFatalError(data.error);
-    }
-    this.libraryView.update();
-  };
-
-  onInitDone = () => {
-    cl('ready');
-  };
-
 	onPlaybarPlaylistButton() {
 		if (this.playlistView.$el.css('visibility') == 'visible') {
 			this.hidePlaylist();
@@ -301,7 +325,12 @@ export default class App {
 	}
 
   onKeydown = (e) => {
+    if (this.$pageHolder.css('pointer-events') == 'none') {
+      cl('no')
+      return;
+    }
     if (new Date().getTime() - this.lastHandledKeypressTime < 666) {
+      // prevent issues from autorepeat or monkey-presses
       return;
     }
     switch (e.key) {
@@ -311,6 +340,12 @@ export default class App {
       case 'q':
         this.playbarView.$showPlaylistButton.click();
         break;
+      case 'u':
+        if (!ViewUtil.isVisible(this.hqpSettingsView.$el)) {
+          this.$hqpSettingsButton.click();
+        }
+        break;
+
       case 's':
         this.playbarView.$stopButton.click();
         break;
@@ -370,8 +405,9 @@ export default class App {
 
   // ---
   // modal-related
-  
-  showDialog(titleText, messageHtml, buttonText, isFatal, handler) {
+  // todo move these to dialog and snack classes
+
+  showDialog(titleText, messageHtml, buttonText, isFatal, handler=null) {
     $(document).off('keydown', this.onKeydown);
     DialogView.show(titleText, messageHtml, buttonText, isFatal, () => {
       $(document).on('keydown', this.onKeydown);
@@ -399,5 +435,10 @@ export default class App {
     const title = `HQPWV Server is not responding`;
     let msg = `Restart server if necessary. <span class="colorTextLess"><a href="${Values.TROUBLESHOOTING_HREF}">Troubleshooting tips<a>.</span>`;
     SnackView.show('server-error', title, msg);
+  }
+
+  showToast(htmlText) {
+    cl('showtoast', htmlText)
+    ToastView.show(htmlText)
   }
 }

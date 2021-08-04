@@ -213,7 +213,8 @@ export default class AlbumView extends Subview {
    * Force next-track to be fully visible, aligned to bottom edge,
    * but only if it's currently partially or wholly cropped below $el,
    * and only if the jump is not too large.
-   * todo not viable unless/until remove scrolleffect on subviews due to judder etc; can then be simplified
+   * todo it's off by like (tracknum * 2) px, ugh
+   * todo revisit only if we remove scrolleffect on subviews, then simplify
    */
   nextTrackScrollEffect($listItem) {
     const maxDistance = $listItem.outerHeight() * 2;
@@ -230,10 +231,10 @@ export default class AlbumView extends Subview {
         clearInterval(id);
         return;
       }
-      const target = this.$el.scrollTop() + (delta * 0.35);
+      const target = this.$el.scrollTop() + 2; // (delta * 0.35);
       this.$el.scrollTop(target)
     };
-    const id = setInterval(f, 33);
+    const id = setInterval(f, 16);
   }
 
   /** Returns the distance a list item's bottom edge is from the bottom edge of the container. */ 

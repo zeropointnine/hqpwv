@@ -6,6 +6,7 @@ import Commands from './commands.js';
 import Model from './model.js';
 import Service from './service.js';
 import Settings from './settings.js';
+import PresetUtil from './preset-util.js';
 import SettingsInfoView from './settings-info-view.js';
 import HqpFiltersView from './hqp-filters-view.js';
 
@@ -47,27 +48,13 @@ export default class HqpPresetsView {
   }
 
   updateLoadPresetsText() {
+    // todo should validate based on current info (when possible)
     const $texts = [this.$loadPreset1Text, this.$loadPreset2Text, this.$loadPreset3Text];
     for (let i = 0; i < 3; i++) {
       const $text = $texts[i];
-      const o = Settings.hqpPresets[i];
-      const s = this.makeLoadPresetText(o);
+      const o = Settings.presetsArray[i];
+      const s = PresetUtil.toString(o);
       $text.text(s);
     }
-  }
-
-  makeLoadPresetText(settingsHqpPresetObject) {
-    if (!settingsHqpPresetObject) {
-      return 'Not set';
-    }
-    const mode = settingsHqpPresetObject['mode'];
-    const filter = settingsHqpPresetObject['filter'];
-    const shaper = settingsHqpPresetObject['shaper'];
-    const rate = settingsHqpPresetObject['rate'];
-    let s = Util.makeCasualDelimitedString([mode, filter, shaper, rate], ' / ');
-    if (!s && s.length == 0) {
-      s = 'Not set'
-    }
-    return s;
   }
 }

@@ -281,3 +281,27 @@ li:before {
   }
 }
 
+.checkbox {
+  display:inline-block;
+  width:$icon-button-side;
+  height:$icon-button-side;
+  border:2px solid $color-listitem-selected;
+  margin-right:6px;
+
+  cursor:pointer;
+
+  &.isChecked {
+    &:before {
+      display:block;
+      content: '';
+      margin:2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      background-color: $color-listitem-selected;
+    }
+  }
+
+  .isDisabled {
+    cursor:default;
+  }
+}
