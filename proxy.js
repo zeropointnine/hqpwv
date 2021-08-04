@@ -308,7 +308,7 @@ const postProcessJson = (json) => {
 };
 
 /**
- * Filters out albums that have no track items from a library object (by replacing the array).
+ * Filters out albums that have no track items (viz, playlist files)
  */
 const postProcessLibrary = (json) => {
   if (!json['LibraryGet']['LibraryDirectory']) {
@@ -320,7 +320,7 @@ const postProcessLibrary = (json) => {
   const albums1 = json['LibraryGet']['LibraryDirectory'];
   const albums2 = [];
   for (let item of albums1) {
-    if (item['LibraryFile'] && item['LibraryFile'].length > 0) {
+    if (item['LibraryFile']) {
       albums2.push(item);
     } else {
       numDropped++;

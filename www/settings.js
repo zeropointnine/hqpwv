@@ -50,7 +50,6 @@ class Settings {
     if (!this._abRule) {
       this._abRule = AbRuleView.getDefaultValues();
     }
-    cl('abrule init', this._abRule)
   }
 
   get librarySortType() {

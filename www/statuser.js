@@ -75,10 +75,10 @@ class Statuser {
 
     const sendEventMaybe = (name) => {
       if (this.ignoreNextNewTrackDetected) {
-        cl('statuser ignoring detect')
+        cl('statuser ignoring detect');
         this.ignoreNextNewTrackDetected = false;
       } else {
-        cl(`${Values.uptimeString} statuser - ${name} ${Model.statusData['metadata']['@_samplerate']}`);
+        cl(`statuser sending ${name}`);
         $(document).trigger(name);
       }
     };

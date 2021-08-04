@@ -14,7 +14,6 @@ export default class LibraryOptionsView {
 
   $button = $('#libraryOptionsButton');
   sortDropdown = new Dropdown($('#librarySortDropdown'));
-  // dropdown2 = ...
 
   constructor($el) {
     this.$el = $el;
@@ -71,6 +70,8 @@ export default class LibraryOptionsView {
         return 'album';
       case 2:
         return 'path';
+      case 3:
+        return 'random';
       default:
         return null;
     }
@@ -84,6 +85,8 @@ export default class LibraryOptionsView {
         return 1;
       case 'path':
         return 2;
+      case 'random':
+        return 3;
       default:
         return -1;
     }

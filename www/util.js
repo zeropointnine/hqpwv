@@ -108,3 +108,13 @@ Util.hasMatch = (arrayOfObjects, objectKey, value) => {
   }
   return false;
 };
+
+// From https://medium.com/@nitinpatel_20236/
+Util.shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i);
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+};

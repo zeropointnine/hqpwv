@@ -74,6 +74,7 @@ const onSuccess = () => {
       ? `http://${ipAddress}:${port}`
       : `the IP address of this machine (port ${port})`;
   console.log(`\n---------------------------------------------------`);
+  console.log(`READY.`);
   console.log(`To use HQPWV, browse to ${urlText}`);
   console.log(`from a device on your local network.`);
   console.log(`Please keep this process running.`);

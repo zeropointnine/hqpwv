@@ -1,4 +1,6 @@
+import Util from './util.js';
 import Values from './values.js';
+import AlbumSortUtil from './album-sort-util.js';
 import Settings from './settings.js';
 import Subview from './subview.js';
 import Breakpoint from './breakpoint.js';
@@ -7,7 +9,7 @@ import Model from './model.js';
 import Service from './service.js';
 import LibraryOptionsView from './library-options-view.js';
 
-// Must match css (.libraryItem's width + marginLeft + marginRight)
+// Must match css (.libraryItem width + marginLeft + marginRight)
 const ITEM_SPAN_H_MOBILE = 144 + 4 + 4;
 const ITEM_SPAN_H_TABLET = 224 + 8 + 8;
 const ITEM_SPAN_H_DESKTOP = 240 + 8 + 8;
@@ -47,7 +49,7 @@ export default class LibraryView extends Subview {
     }
 
     this.albums = Model.libraryData ? [...Model.libraryData] : [];
-    this.sortAlbums();
+    AlbumSortUtil.sortAlbums(this.albums, Settings.librarySortType);
     this.$list.empty();
 
     if (this.albums.length == 0) {
@@ -69,10 +71,6 @@ export default class LibraryView extends Subview {
     const duration = new Date().getTime() - startTime;
     cl(`init - lib populate time ${duration}ms`);
 	}
-
-  forceReloadImages() {
-    // ??
-  }
 
   makeListItem(index, album) {
     const imgPath = ModelUtil.getAlbumImageUrl(album);
@@ -126,7 +124,6 @@ export default class LibraryView extends Subview {
 	onItemClick = (event) => {
 		const index = $(event.currentTarget).attr("data-index");
 		const album = this.albums[index];
-    // cl(album);
 		$(document).trigger('library-item-click', album);
 	};
 
@@ -134,7 +131,7 @@ export default class LibraryView extends Subview {
     if (event.keyCode == 13) {
       this.onItemClick(event);
     }
-  }
+  };
 
 	onIntersection = (entries, self) => {
 		for (const entry of entries) {
@@ -146,41 +143,5 @@ export default class LibraryView extends Subview {
 				$img.removeAttr('src');
 			}
 		}
-	}
-
-  sortAlbums() {
-    const sortByArtist = (o1, o2) => {
-      const a = o1['@_artist'].toLowerCase();
-      const b = o2['@_artist'].toLowerCase();
-      return a == b ? 0 : a > b ? 1 : -1; // todo tiebreaker logic
-    };
-
-    const sortByAlbum = (o1, o2) => {
-      const a = o1['@_album'].toLowerCase();
-      const b = o2['@_album'].toLowerCase();
-      return a == b ? 0 : a > b ? 1 : -1;
-    };
-
-    const sortByPath = (o1, o2) => {
-      const a = o1['@_path'];
-      const b = o2['@_path'];
-      return a == b ? 0 : a > b ? 1 : -1;
-    };
-
-    let fn;
-    switch (Settings.librarySortType) {
-      case 'path':
-          fn = sortByPath;
-        break;
-      case 'album':
-          fn = sortByAlbum;
-        break;
-      case 'artist':
-      default:
-        fn = sortByArtist;
-        break;
-    }
-
-    this.albums.sort(fn);
-  }
+	};
 }
