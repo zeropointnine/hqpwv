@@ -103,9 +103,6 @@ export default class App {
       cl(`init - async calls time ${duration}ms`);
 
       this.libraryView.update();
-
-      // temp:
-      this.showHqpSettingsView();
     };
 
     const step2 = () => {
