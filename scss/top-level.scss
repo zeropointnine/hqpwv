@@ -37,13 +37,32 @@
   position:absolute;
   top:-33px;
   left:-7px;
-  font-size:74px;
-  font-weight:900;
-  color:$color-listitem;
+
+  span {
+    font-size:74px;
+    font-weight:900;
+    color:$color-listitem;
+  }
+  span.q {
+    margin-left:-6px;
+  }
+  span.p {
+    margin-left:-6px;
+  }
+  span.w {
+    margin-left:-2px;
+  }
+  span.v {
+    margin-left:-0px;
+  }
+
   @include mobile {
     top:-26px;
     left:-5px;
-    font-size: 60px;
+    span {
+      font-size: 60px;
+      margin-left:0 !important;
+    }
   }
 }
 #appTitle {

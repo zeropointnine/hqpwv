@@ -63,7 +63,7 @@ class PresetUtil {
    *
    * @preset should exist and have values.
    */
-  applyPresetAndPlayTrack(preset, trackValue) {
+  applyPresetAndRestartTrackIfNecessary(preset, trackValue) {
 
     // todo block starting here maybe
 
@@ -75,10 +75,14 @@ class PresetUtil {
         Statuser.ignoreNextNewTrackDetected = true;
 
         const s = `Applied preset: <em>${this.toString(preset)}</em>`;
-        $(document).trigger('show-toast', s)
-      }
-      if (trackValue) {
-        Service.queueCommandFront(Commands.selectTrack(trackValue)); // done
+        $(document).trigger('show-toast', s);
+
+        if (trackValue) {
+          Service.queueCommandFront(Commands.selectTrack(trackValue)); // done
+        }
+
+      } else {
+        // no need to manually 'restart' track
       }
     });
   }

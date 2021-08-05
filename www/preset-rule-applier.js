@@ -71,7 +71,7 @@ class PresetRuleApplier {
       return;
     }
 
-    PresetUtil.applyPresetAndPlayTrack(preset, Model.statusData['@_track']);
+    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.statusData['@_track']);
   }
 
   doAb() {
@@ -81,7 +81,7 @@ class PresetRuleApplier {
     if (!preset) {
       return;
     }
-    PresetUtil.applyPresetAndPlayTrack(preset, Model.statusData['@_track']);
+    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.statusData['@_track']);
   }
 
   getPresetByOptionValue(value) {

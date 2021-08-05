@@ -21,8 +21,11 @@ export default class HqpFiltersView {
   $filterSelect;
   $shaperSelect;
   $info;
+  $outputBitrate;
+  $outputBitrateValue;
 
   presetsView;
+  outputBitrateString = null;
 
   // todo `<FiltersItem index= name= value= />` [?]
 
@@ -38,6 +41,9 @@ export default class HqpFiltersView {
     this.$shaperSelect.on('change', this.onSelectChange);
 
     this.$info = this.$el.find('#hqpFiltersInfo');
+    this.$outputBitrate = this.$el.find('#outputBitrate');
+    this.$outputBitrateValue = this.$el.find('#outputBitrateValue');
+
 
     this.presetsView = new HqpPresetsView(this.$el.find('#hqpPresetsView'));
     this.presetsView.updateLoadPresetsText();
@@ -54,6 +60,8 @@ export default class HqpFiltersView {
   onShow() {
     this.populateSelects();
     $(document).on('model-status-updated', this.onModelStatusUpdated);
+
+    this.updateOutputBitrate();
 
     ViewUtil.setDisplayed(this.$info, !ModelUtil.isStopped());
   }
@@ -108,6 +116,22 @@ export default class HqpFiltersView {
       }
     }
     $select.html(optionsHtml);
+  }
+
+  updateOutputBitrate() {
+    const lastOutputBitrateString = this.outputBitrateString;
+    const rate = Model.statusData['@_active_rate'] || '';
+    const bits = Model.statusData['@_active_bits'] || '';
+    this.outputBitrateString = '';
+    if (rate) {
+      this.outputBitrateString = rate;
+      if (bits) {
+        this.outputBitrateString += '/' + bits;
+      }
+    }
+    if (this.outputBitrateString != lastOutputBitrateString) {
+      this.$outputBitrateValue.text(this.outputBitrateString);
+    }
   }
 
   onSelectChange = (e) => {
@@ -180,6 +204,8 @@ export default class HqpFiltersView {
     if (ModelUtil.isStopped()) {
       ViewUtil.setDisplayed(this.$info, false);
     }
+
+    this.updateOutputBitrate();
 
     // Diff status vs lastStatus
     const mode = Model.statusData['@_active_mode'];

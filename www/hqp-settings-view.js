@@ -28,12 +28,11 @@ export default class HqpSettingsView extends Subview {
     this.rulesView = new HqpRulesView(this.$el.find('#hqpPresetRulesView'));
 
     this.$rulesToggle = this.$el.find('#settingsExperimentalLine');
-    ViewUtil.setDisplayed(this.rulesView.$el, !!Settings.currentRule);
     this.$rulesToggle.on('click tap', () => {
       const b = ViewUtil.isDisplayed(this.rulesView.$el);
-      ViewUtil.setDisplayed(this.rulesView.$el, !b);
+      this.expandRules(!b);
     });
-
+    this.expandRules(!!Settings.currentRule);
   }
 
   show() {
@@ -50,5 +49,14 @@ export default class HqpSettingsView extends Subview {
     super.hide();
     this.filtersView.onHide();
     this.rulesView.onHide();
+  }
+
+  expandRules(shouldExpand) {
+    ViewUtil.setDisplayed(this.rulesView.$el, shouldExpand);
+    if (shouldExpand) {
+      this.$rulesToggle.addClass('isExpanded');
+    } else {
+      this.$rulesToggle.removeClass('isExpanded');
+    }
   }
 }

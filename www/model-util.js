@@ -110,21 +110,6 @@ class ModelUtil {
       cl('result !OK', dataObject);
     }
     return b;
-
-    // todo remove
-    //if (!dataObject[key]) {
-    //  cl('warning: could be wrong top-level key', key, dataObject);
-    //  return false;
-    //}
-    //if (dataObject[key]['@_result'] === undefined) {
-    //  cl('warning: no result property', dataObject);
-    //  return false;
-    //}
-    //const b = dataObject[key]['@_result'] == 'OK';
-    //if (!b) {
-    //  cl('result !OK', dataObject);
-    //}
-    //return b;
   }
 }
 

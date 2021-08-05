@@ -25,15 +25,15 @@ Demo video
  TODO
  
 # Roadmap, possible TODOs
-- Consider supporting HQPlayer Embedded.
-- Consider supporting older versions of Desktop Safari and Mobile Safari.
-- Consider signing executables.
+- Support (or validate use with) HQPlayer Embedded.
+- Consider supporting older versions of Desktop Safari and Mobile Safari?
+- Consider signing executables?
 - Volume control (lol).
+- Support repeat and (maybe) random playback.
 - Filter (search) controls to the library view.
 - Pagination system for extremely-large user libraries?
 - Flat track listing view, with filter controls.
 - Zoomed-in "now playing" view.
-- Playlist shuffle.
 - Saved playlists.
 - Add 'metadata layer' to track number of plays and likes.
 - ~~Allow for running HQPWV on a different machine than HQPlayer.~~ done

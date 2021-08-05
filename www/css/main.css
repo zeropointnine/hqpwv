@@ -316,15 +316,32 @@ li:before {
   position: absolute;
   top: -33px;
   left: -7px;
+}
+#appLogoInner span {
   font-size: 74px;
   font-weight: 900;
   color: #282828;
+}
+#appLogoInner span.q {
+  margin-left: -6px;
+}
+#appLogoInner span.p {
+  margin-left: -6px;
+}
+#appLogoInner span.w {
+  margin-left: -2px;
+}
+#appLogoInner span.v {
+  margin-left: 0px;
 }
 @media (max-width: 480px) {
   #appLogoInner {
     top: -26px;
     left: -5px;
+  }
+  #appLogoInner span {
     font-size: 60px;
+    margin-left: 0 !important;
   }
 }
 
@@ -1378,22 +1395,25 @@ select * {
 }
 
 .hqpSettingsInner {
-  width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 32px;
 }
 @media (max-width: 768px) {
   .hqpSettingsInner {
-    width: 100%;
+    margin-left: 16px;
+  }
+}
+@media (max-width: 480px) {
+  .hqpSettingsInner {
+    margin-left: 0;
   }
 }
 
 #hqpFiltersView {
-  margin-top: 24px;
+  margin-top: 18px;
 }
 @media (max-width: 480px) {
   #hqpFiltersView {
-    margin-top: 16px;
+    margin-top: 12px;
   }
 }
 
@@ -1458,6 +1478,25 @@ select * {
   }
 }
 
+#outputBitrate {
+  margin-left: 87px;
+  margin-top: 2px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+}
+@media (max-width: 480px) {
+  #outputBitrate {
+    margin-left: 53px;
+    margin-top: 0px;
+    margin-bottom: 16px;
+  }
+}
+
+#outputBitrateValue {
+  color: #ccc;
+}
+
 #hqpFiltersInfo {
   margin-left: 75px;
   margin-top: 20px;
@@ -1473,7 +1512,7 @@ select * {
 .experimentalDivider {
   width: 100%;
   height: 1px;
-  margin-top: 32px;
+  margin-top: 28px;
   margin-bottom: 4px;
   background-color: #282828;
 }
@@ -1492,6 +1531,10 @@ select * {
 #settingsExperimentalLine .text {
   line-height: 36px;
   margin-left: 0px;
+}
+
+#settingsExperimentalLine.isExpanded .expandIcon:before {
+  background-image: url("./../img/icons/expand_less_white_24dp.svg");
 }
 
 #hqpPresetRulesView {
