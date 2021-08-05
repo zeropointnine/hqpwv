@@ -99,16 +99,14 @@ export default class PlaybarView {
           ? `Stopped`
           : `<span class="colorTextLess">Playlist is empty</span>`;
     } else {
-      if (Model.status.data['metadata']) {
-        if (Model.status.data['metadata']['@_artist']) {
-          s += Model.status.data['metadata']['@_artist'];
+      if (Model.status.metadata['@_artist']) {
+        s += Model.status.metadata['@_artist'];
+      }
+      if (Model.status.metadata['@_song']) {
+        if (s) {
+          s += ' - ';
         }
-        if (Model.status.data['metadata']['@_song']) {
-          if (s) {
-            s += ' - ';
-          }
-          s += Model.status.data['metadata']['@_song'];
-        }
+        s += Model.status.metadata['@_song'];
       }
       if (!s) {
         s = '---'; // stopped?

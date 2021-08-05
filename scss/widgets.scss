@@ -1,0 +1,109 @@
+// Higher-level 'widget' definitions
+
+.contextMenu {
+  position:absolute; // gets positioned programmatically
+  z-index:10001;
+  visibility:hidden;
+  top:0;
+  background: $color-bg;
+  border:1px solid $color-listitem;
+  .contextItem {
+    padding-left:16px;
+    padding-right:16px;
+    padding-top:8px;
+    padding-bottom:8px;
+    cursor:pointer;
+    &:hover {
+      background-color: $color-listitem;
+    }
+  }
+}
+
+.dropdown {
+  height:36px;
+  position:relative;
+  width:150px; // must have hardcoded width; override this
+  display:none;
+
+  .dropdownTitle {
+    height: 36px;
+    padding-left:12px;
+    padding-right:12px;
+    color:$color-text;
+    font-size:13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height:36px;
+    background-color:$color-listitem-selected;
+  }
+  .dropdownItems {
+    position:absolute;
+    z-index:10001;
+    left:0;
+    top:36px;
+    width:100%;
+    background:$color-listitem;
+
+    .dropdownItem {
+      $ht: 36px;
+      line-height: $ht;
+      padding:0 16px 0 34px;
+      cursor: pointer;
+      &:hover {
+        background-color: $color-listitem-over;
+      }
+      &.isSelected {
+        cursor: default;
+        &:hover {
+          background-color:$color-listitem;
+        }
+        &:before {
+          display: block;
+          position: absolute;
+          content: '';
+          left: 6px;
+          width: 24px;
+          height: $ht;
+          background-image: url('./../img/icons/check_white_24dp.svg');
+          background-repeat: no-repeat;
+          background-position: left center;
+          background-size: 24px 24px;
+          opacity: 0.7;
+        }
+      }
+    }
+    .dropdownItem.isMulti {
+      &.isSelected {
+        cursor: pointer;
+        &:hover {
+          background-color:$color-listitem-over;
+        }
+      }
+    }
+  }
+}
+
+.checkbox {
+  display:inline-block;
+  width:$icon-button-side;
+  height:$icon-button-side;
+  border:2px solid $color-listitem-selected;
+  margin-right:6px;
+
+  cursor:pointer;
+
+  &.isChecked {
+    &:before {
+      display:block;
+      content: '';
+      margin:2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      background-color: $color-listitem-selected;
+    }
+  }
+
+  .isDisabled {
+    cursor:default;
+  }
+}

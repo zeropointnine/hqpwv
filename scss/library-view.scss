@@ -12,28 +12,48 @@
 #libraryHeaderView {
   margin-left:$space-unit;
   margin-right:$space-unit;
-  flex:1;
-  display:flex;
   height:36px;
+  flex:1;
+
+  display:flex;
   flex-direction: row;
+  align-items:center;
   @include mobile {
     margin-left:$space-unit-mobile;
     margin-right:$space-unit-mobile;
   }
 }
 
+#libraryNumbers {
+  margin-left:8px;
+  font-size: $font-size-smaller;
+  padding-top:3px;
+  color:$color-text-least;
+}
+
 #libraryOptionsView {
   margin-left:auto;
   display:flex;
 
+  #libraryBitrateDropdown {
+    width:175px;
+    margin-right:4px;
+  }
   #librarySortDropdown {
-    width:150px;
-    margin-right:12px;
+    width:175px;
+    margin-right:4px;
   }
 
-  #libraryOptionsButton:before {
-    background-image: url('./../img/icons/sort_white_24dp.svg');
-    opacity:0.7;
+  #libraryBitrateButton {
+    &:before {
+      background-image: url('./../img/icons/filter_alt_white_24dp.svg');
+    }
+  }
+  #librarySortButton {
+    margin-left: 4px;
+    &:before {
+      background-image: url('./../img/icons/sort_white_24dp.svg');
+    }
   }
 }
 

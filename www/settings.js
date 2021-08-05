@@ -8,6 +8,7 @@ class Settings {
 
   storage = window.localStorage;
 
+  _libraryBitratesArray;
   _librarySortType;
   _presetsArray;
   _currentRule;
@@ -19,9 +20,17 @@ class Settings {
   }
 
   initFromLocalStorage() {
+    let s = this.storage.getItem('libraryBitratesArray');
+    try {
+      this._libraryBitratesArray = JSON.parse(s) || ['all'];
+    } catch (exc) {
+      cl('warning', s, exc);
+      this._libraryBitratesArray = ['all'];
+    }
+
     this._librarySortType = this.storage.getItem('librarySortType') || 'artist';
 
-    let s = this.storage.getItem('presetsArray');
+    s = this.storage.getItem('presetsArray');
     try {
       this._presetsArray = JSON.parse(s) || [];
     } catch (exc) {
@@ -59,6 +68,15 @@ class Settings {
   set librarySortType(s) {
     this._librarySortType = s;
     this.storage.setItem('librarySortType', s);
+  }
+
+  get libraryBitratesArray() {
+    return this._libraryBitratesArray;
+  }
+
+  commitLibraryBitratesArray() {
+    const s = JSON.stringify(this._libraryBitratesArray);
+    this.storage.setItem('libraryBitratesArray', s);
   }
 
   get presetsArray() {
@@ -109,14 +127,7 @@ class Settings {
   commitAbRule() {
     const s = JSON.stringify(this._abRule);
     this.storage.setItem('abRule', s);
-    cl('abrule is now', s)
   }
-
-  isAbRuleValid() {
-    cl('todo');
-    return false;
-  }
-
 }
 
 export default new Settings();

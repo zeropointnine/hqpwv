@@ -14,7 +14,10 @@ export default class StatusVo {
     return this._data;
   }
 
-  /** Returns the currently playing song's metadata, or empty-object */
+  /**
+   * Returns the currently playing song's metadata, or empty-object
+   * @NonNull
+   */
   get metadata() {
     const meta = this._data['metadata'];
     if (!meta) {
@@ -24,6 +27,7 @@ export default class StatusVo {
       // Meta is still returned after 'stop'.
       // Note too that the hqp app does _not_ go into a 'real' stopped state at this point,
       // which may have implications...
+      cl('hello meta')
       return {};
     }
     return meta;
@@ -36,7 +40,10 @@ export default class StatusVo {
     return this._data['@_state'] == '1';
   }
   get isStopped() {
-    return this._data['@_stopped'] == '2';
+    return (!this.isPlaying && !this.isPaused);
+  }
+  get isStoppedExplicit() {
+    return this._data['@_state'] == '2';
   }
 
   /** Returns the 1-indexed track number (as integer) in the playlist, or -1. */

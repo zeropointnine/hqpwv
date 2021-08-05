@@ -11,26 +11,36 @@ export default class Dropdown {
   $el;
   $items;
   selectedIndex = -1;
+  isMulti = false;
 
   /**
    * $el is expected to have the following structure:
+   *
    * <div class='dropdown'>
    *   <div class='dropdownTitle'>
-   *     <div class='dropdownItems>
-   *       <div class='dropdownItem>
-   *       <div class='dropdownItem>...
+   *     <div class='dropdownItems'>
+   *       <div class='dropdownItem' data-value='something'>
+   *       <div class='dropdownItem' data-value='something'>...
    */
-  constructor($el) {
+  constructor($el, isMulti) {
     this.$el = $el;
-    this.$items = $el.find('.dropdownItem');
+    this.isMulti = isMulti;
 
+    this.$items = $el.find('.dropdownItem');
     this.$items.on('click tap', this. onItemClick);
   }
 
-  selectItem(index) {
+  selectItems(arrayOfValues) {
     for (let i = 0; i < this.$items.length; i++) {
       const $item = $(this.$items[i]);
-      if (i == index) {
+      let hit = false;
+      for (const value of arrayOfValues) {
+        if ($item.attr('data-value') === value) {
+          hit = true;
+          break;
+        }
+      }
+      if (hit) {
         $item.addClass('isSelected');
       } else {
         $item.removeClass('isSelected');
@@ -39,20 +49,23 @@ export default class Dropdown {
   }
 
   show() {
-    ViewUtil.setVisible(this.$el, true);
+    ViewUtil.setDisplayed(this.$el, true);
   }
 
   hide() {
-    ViewUtil.setVisible(this.$el, false);
+    ViewUtil.setDisplayed(this.$el, false);
   }
 
   onItemClick = (e) => {
-    if ($(e.currentTarget).hasClass('isSelected')) {
+    if (!this.isMulti && $(e.currentTarget).hasClass('isSelected')) {
       return;
     }
-    // Note: Event params are the dropdown id and item index
-    //       Handler of event must be the one to hide the dropdown, for reasons
-    const index = Util.jqueryObjectIndexOf(this.$items, e.currentTarget);
-    $(document).trigger('dropdown-item-select', [this.$el.attr('id'), index]);
+    const value = $(e.currentTarget).attr('data-value');
+    if (!value) {
+      cl('warning dropdown item missing data-value');
+      return;
+    }
+    // Event params are the dropdown id and `data-value` value
+    $(document).trigger('dropdown-item-select', [this.$el.attr('id'), value]);
   }
 }

@@ -14,6 +14,7 @@ class Model {
 	_playlistData = [];
   _infoData = {};
 
+  // @NonNull
 	get libraryData() {
 		return this._libraryData;
 	}
@@ -23,10 +24,12 @@ class Model {
 		$(document).trigger('model-library-updated');
 	}
 
+  // @NonNull
 	get status() {
 		return this._status;
 	}
 
+  // @NonNull
   get lastStatus() {
     return this._lastStatus;
   }
@@ -37,6 +40,7 @@ class Model {
 		$(document).trigger('model-status-updated');
 	}
 
+  // @NonNull
 	get playlistData() {
 		return this._playlistData;
 	}

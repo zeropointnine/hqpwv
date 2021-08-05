@@ -6,89 +6,134 @@ import Settings from './settings.js';
 import Dropdown from './dropdown.js';
 
 /**
- * Is a row of controls along the top of the lib view.
- * Manages the options button and one or more dropdowns
- * which the button toggles on or off.
+ * Row of controls along the top of the lib view.
+ * Manages dropdown toggle buttons and their dropdowns.
  */
 export default class LibraryOptionsView {
 
-  $button = $('#libraryOptionsButton');
+  $bitrateButton = $('#libraryBitrateButton');
+  bitrateDropdown = new Dropdown($('#libraryBitrateDropdown'), true);
+
+  $sortButton = $('#librarySortButton');
   sortDropdown = new Dropdown($('#librarySortDropdown'));
+
+  dropdowns = [this.bitrateDropdown, this.sortDropdown];
 
   constructor($el) {
     this.$el = $el;
-    this.$button.on('click tap', e => this.toggleControls());
+    this.$sortButton.on('click tap', e => this.toggleDropdown(this.sortDropdown));
+    this.$bitrateButton.on('click tap', e => this.toggleDropdown(this.bitrateDropdown));
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
   }
 
-  toggleControls() {
-    ViewUtil.isVisible(this.sortDropdown.$el) ? this.hideControls() : this.showControls();
-    // test will change as more controls are added
+  toggleDropdown(dropdown) {
+    ViewUtil.isDisplayed(dropdown.$el)
+        ? this.hideDropdowns()
+        : this.selectDropdown(dropdown);
   }
 
-  showControls() {
-    const index = this.librarySortTypeToDropdownIndex(Settings.librarySortType);
-    this.sortDropdown.selectItem(index);
-    this.sortDropdown.show();
+  selectDropdown(dropdown) {
+    // Select corresponding button (not great)
+    if (dropdown == this.bitrateDropdown) {
+      this.$sortButton.removeClass('isSelected');
+      this.$bitrateButton.addClass('isSelected');
+    } else { // is sortDropdown
+      this.$bitrateButton.removeClass('isSelected');
+      this.$sortButton.addClass('isSelected');
+    }
+
+    // Show given dropdown only
+    for (const item of this.dropdowns) {
+      if (item != dropdown) {
+        item.hide();
+      }
+    }
+    dropdown.show();
+
+    // Update dropdown item selection/s
+    const items = (dropdown == this.bitrateDropdown)
+        ? Settings.libraryBitratesArray
+        : [Settings.librarySortType]
+    dropdown.selectItems(items);
 
     // Tricky: Get any click on document
     setTimeout(() => $(document).on('click tap', this.onDocumentClick), 1);
-    // And disable all pointer events on #page (except this view)
+    // And disable all pointer events on #page (except this-view)
     $('#page').css('pointer-events', 'none');
     this.$el.css('pointer-events', 'auto');
   }
 
-  hideControls() {
-    this.sortDropdown.hide();
+  hideDropdowns() {
+    this.$sortButton.removeClass('isSelected');
+    this.$bitrateButton.removeClass('isSelected');
+
+    for (const dropdown of this.dropdowns) {
+      dropdown.hide();
+    }
     // Restore things
     $(document).off('click tap', this.onDocumentClick);
     $('#page').css('pointer-events', '');
     this.$el.css('pointer-events', '');
   }
 
-  onDropdownItemSelect = (e, dropdownId, dropdownItemIndex) => {
-    if (dropdownId == 'librarySortDropdown') {
-      this.hideControls();
-      const value = this.librarySortTypeDropdownIndexToValue(dropdownItemIndex);
-      Settings.librarySortType = value;
-      $(document).trigger('library-sort-type-changed');
-    }
-  };
-
   onDocumentClick = (e) => {
     const isThis = (this.$el.has($(e.target)).length > 0);
     if (!isThis) {
-      this.hideControls()
+      this.hideDropdowns();
     }
   };
 
-  librarySortTypeDropdownIndexToValue(index) {
-    switch (index) {
-      case 0:
-        return 'artist';
-      case 1:
-        return 'album';
-      case 2:
-        return 'path';
-      case 3:
-        return 'random';
-      default:
-        return null;
+  onDropdownItemSelect = (e, dropdownId, value) => {
+    if (dropdownId == 'librarySortDropdown') {
+      this.handleSortSelect(value);
+    } else if (dropdownId == 'libraryBitrateDropdown') {
+      this.handleBitrateSelect(value)
     }
+  };
+
+  handleSortSelect(value) {
+    this.hideDropdowns();
+    Settings.librarySortType = value;
+    $(document).trigger('library-settings-changed');
   }
 
-  librarySortTypeToDropdownIndex(value) {
-    switch (value) {
-      case 'artist':
-        return 0;
-      case 'album':
-        return 1;
-      case 'path':
-        return 2;
-      case 'random':
-        return 3;
-      default:
-        return -1;
+  handleBitrateSelect(value) {
+    if (value == 'all') {
+
+      Settings.libraryBitratesArray.splice(0, Settings.libraryBitratesArray.length); // ie, clear()
+      Settings.libraryBitratesArray.push('all');
+
+    } else {
+
+      // Toggle item
+      const index = Settings.libraryBitratesArray.indexOf(value);
+      if (index > -1) { // remove item
+        Settings.libraryBitratesArray.splice(index, 1);
+      } else {
+        Settings.libraryBitratesArray.push(value);
+      }
+
+      if (Settings.libraryBitratesArray.length == 0) {
+        Settings.libraryBitratesArray.push('all'); // default back to 'all'
+      } else {
+        const indexAllItem = Settings.libraryBitratesArray.indexOf('all');
+        if (indexAllItem > -1) {
+          Settings.libraryBitratesArray.splice(indexAllItem, 1); // remove 'all'
+        }
+      }
+
+      if (Settings.libraryBitratesArray.length == this.bitrateDropdown.$items.length - 1) {
+        // must have selected all items except 'all',
+        // which is tantamount to selecting 'all', so.
+        Settings.libraryBitratesArray.splice(0, Settings.libraryBitratesArray.length); // ie, clear()
+        Settings.libraryBitratesArray.push('all');
+      }
+
     }
+    Settings.commitLibraryBitratesArray();
+    this.bitrateDropdown.selectItems(Settings.libraryBitratesArray);
+    $(document).trigger('library-settings-changed');
   }
+
+
 }

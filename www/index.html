@@ -38,19 +38,34 @@
 
 				<div id="libraryView" class="subview" tabindex="0">
 						<div id="libraryHeaderView">
-							<span class="viewTitle">Library</span>
+							<span class="viewTitle">Library</span><span id="libraryNumbers"></span>
 
 							<div id="libraryOptionsView">
+
+								<div id="libraryBitrateDropdown" class="dropdown">
+									<div class="dropdownTitle">Filter by</div>
+									<div class="dropdownItems">
+										<div class="dropdownItem" data-value="all">Show all</div>
+										<div class="dropdownItem isMulti" data-value="pcm1fs">44/48k</div>
+										<div class="dropdownItem isMulti" data-value="pcm2fs">88/96k</div>
+										<div class="dropdownItem isMulti" data-value="pcm4fs">176/192k</div>
+										<div class="dropdownItem isMulti" data-value="pcm8fs">352/384k</div>
+										<div class="dropdownItem isMulti" data-value="pcm16fs_plus">705/768k+</div>
+										<div class="dropdownItem isMulti" data-value="dsd_all">DSD</div>
+									</div>
+								</div>
 								<div id="librarySortDropdown" class="dropdown">
 									<div class="dropdownTitle">Sort by</div>
 									<div class="dropdownItems">
-										<div class="dropdownItem">Artist</div>
-										<div class="dropdownItem">Album</div>
-										<div class="dropdownItem">Directory path</div>
-										<div class="dropdownItem">Random</div>
+										<div class="dropdownItem" data-value="artist">Artist</div>
+										<div class="dropdownItem" data-value="album">Album</div>
+										<div class="dropdownItem" data-value="dir">Directory path</div>
+										<div class="dropdownItem" data-value="random">Random</div>
 									</div>
 								</div>
-								<div id="libraryOptionsButton" class="iconButton"></div>
+
+								<div id="libraryBitrateButton" class="iconButton toggleButton"></div>
+								<div id="librarySortButton" class="iconButton toggleButton"></div>
 							</div>
 
 						</div>

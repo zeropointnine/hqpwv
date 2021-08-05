@@ -90,7 +90,7 @@ class Statuser {
         sendEventMaybe('play-to-play');
       }
     } else {
-      const isStopToPlay = (Model.lastStatus.isStopped && !Model.status.isStopped);
+      const isStopToPlay = (Model.lastStatus.isStoppedExplicit && !Model.status.isStopped);
       if (isStopToPlay) {
         cl('statuser detected stop-to-play');
         sendEventMaybe('stop-to-play');

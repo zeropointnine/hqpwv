@@ -137,7 +137,7 @@ li:before {
   width: 36px;
   height: 36px;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: #282828;
   position: relative;
 }
 .iconButton:before {
@@ -153,7 +153,7 @@ li:before {
   background-size: 24px 24px;
 }
 .iconButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: #323232;
 }
 
 .iconButton.isDisabled {
@@ -161,6 +161,28 @@ li:before {
 }
 .iconButton.isDisabled:before {
   opacity: 0.5;
+}
+
+.toggleButton {
+  background-color: transparent;
+}
+.toggleButton:before {
+  opacity: 0.25;
+}
+.toggleButton:hover {
+  background-color: #323232;
+}
+.toggleButton:hover:before {
+  opacity: 0.7;
+}
+.toggleButton.isSelected {
+  background-color: #383838;
+}
+.toggleButton.isSelected:before {
+  opacity: 0.7;
+}
+.toggleButton.isSelected:hover {
+  background-color: #424242;
 }
 
 .moreButton:before {
@@ -185,11 +207,11 @@ li:before {
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: #282828;
   cursor: pointer;
 }
 .textButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: #323232;
 }
 
 .textButton.isDisabled {
@@ -220,38 +242,59 @@ li:before {
   height: 36px;
   position: relative;
   width: 150px;
-  visibility: hidden;
+  display: none;
 }
 .dropdown .dropdownTitle {
   height: 36px;
   padding-left: 12px;
   padding-right: 12px;
-  color: #999;
+  color: #ccc;
   font-size: 13px;
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: #282828;
+  background-color: #383838;
 }
 .dropdown .dropdownItems {
   position: absolute;
   z-index: 10001;
   left: 0;
   top: 36px;
+  width: 100%;
   background: #282828;
 }
 .dropdown .dropdownItems .dropdownItem {
-  width: 150px;
   line-height: 36px;
-  padding: 0 16px 0 16px;
+  padding: 0 16px 0 34px;
   cursor: pointer;
 }
 .dropdown .dropdownItems .dropdownItem:hover {
-  background-color: #383838;
+  background-color: #323232;
 }
 .dropdown .dropdownItems .dropdownItem.isSelected {
-  background-color: #383838;
   cursor: default;
+}
+.dropdown .dropdownItems .dropdownItem.isSelected:hover {
+  background-color: #282828;
+}
+.dropdown .dropdownItems .dropdownItem.isSelected:before {
+  display: block;
+  position: absolute;
+  content: "";
+  left: 6px;
+  width: 24px;
+  height: 36px;
+  background-image: url("./../img/icons/check_white_24dp.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 24px 24px;
+  opacity: 0.7;
+}
+.dropdown .dropdownItems .dropdownItem.isMulti.isSelected {
+  cursor: pointer;
+}
+.dropdown .dropdownItems .dropdownItem.isMulti.isSelected:hover {
+  background-color: #323232;
 }
 
 .checkbox {
@@ -332,7 +375,7 @@ li:before {
   margin-left: -2px;
 }
 #appLogoInner span.v {
-  margin-left: 0px;
+  margin-left: -4px;
 }
 @media (max-width: 480px) {
   #appLogoInner {
@@ -365,7 +408,7 @@ li:before {
   opacity: 0.66;
 }
 #settingsButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: #323232;
 }
 
 .settingsView #settingsButton,
@@ -381,7 +424,7 @@ li:before {
   opacity: 0.66;
 }
 #hqpSettingsButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: #323232;
 }
 
 .settingsView #hqpSettingsButton,
@@ -749,7 +792,7 @@ li:before {
 }
 
 .playlistView #showPlaylistButton {
-  background-color: rgba(255, 255, 255, 0.28);
+  background-color: #383838;
 }
 
 #playlistNumberAt {
@@ -929,13 +972,13 @@ li:before {
   cursor: pointer;
 }
 .playlistItem:hover {
-  background-color: #383838;
+  background-color: #323232;
 }
 .playlistItem.selected {
   background-color: #383838;
 }
 .playlistItem.selected:hover {
-  background-color: #484848;
+  background-color: #424242;
 }
 @media (max-width: 480px) {
   .playlistItem {
@@ -1015,10 +1058,11 @@ li:before {
 #libraryHeaderView {
   margin-left: 16px;
   margin-right: 16px;
+  height: 36px;
   flex: 1;
   display: flex;
-  height: 36px;
   flex-direction: row;
+  align-items: center;
 }
 @media (max-width: 480px) {
   #libraryHeaderView {
@@ -1027,17 +1071,33 @@ li:before {
   }
 }
 
+#libraryNumbers {
+  margin-left: 8px;
+  font-size: 14px;
+  padding-top: 3px;
+  color: #666;
+}
+
 #libraryOptionsView {
   margin-left: auto;
   display: flex;
 }
-#libraryOptionsView #librarySortDropdown {
-  width: 150px;
-  margin-right: 12px;
+#libraryOptionsView #libraryBitrateDropdown {
+  width: 175px;
+  margin-right: 4px;
 }
-#libraryOptionsView #libraryOptionsButton:before {
+#libraryOptionsView #librarySortDropdown {
+  width: 175px;
+  margin-right: 4px;
+}
+#libraryOptionsView #libraryBitrateButton:before {
+  background-image: url("./../img/icons/filter_alt_white_24dp.svg");
+}
+#libraryOptionsView #librarySortButton {
+  margin-left: 4px;
+}
+#libraryOptionsView #librarySortButton:before {
   background-image: url("./../img/icons/sort_white_24dp.svg");
-  opacity: 0.7;
 }
 
 #libraryList {

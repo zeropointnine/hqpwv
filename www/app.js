@@ -56,7 +56,7 @@ export default class App {
     Util.addAppListener(this, 'busy-end', this.updateBusyClass);
     this.updateStateClasses();
 
-    Util.addAppListener(this, 'library-sort-type-changed', this.onLibrarySortTypeChanged);
+    Util.addAppListener(this, 'library-settings-changed', this.onLibrarySettingsChanged);
 		Util.addAppListener(this, 'library-item-click', this.showAlbumView);
 		Util.addAppListener(this, 'album-view-close-button', this.hideAlbumView);
 		Util.addAppListener(this, 'playbar-show-playlist', this.onPlaybarPlaylistButton);
@@ -327,7 +327,6 @@ export default class App {
 
   onKeydown = (e) => {
     if (this.$pageHolder.css('pointer-events') == 'none') {
-      cl('no')
       return;
     }
     if (new Date().getTime() - this.lastHandledKeypressTime < 666) {
@@ -368,8 +367,8 @@ export default class App {
     }
   };
 
-  onLibrarySortTypeChanged() {
-    this.libraryView.update(); // hah
+  onLibrarySettingsChanged() {
+    this.libraryView.update();
   }
 
   /** Triggers resize logic 100ms after last resize event. */

@@ -1,6 +1,6 @@
 import Util from './util.js';
 import Values from './values.js';
-import AlbumSortUtil from './album-sort-util.js';
+import LibraryUtil from './library-util.js';
 import Settings from './settings.js';
 import Subview from './subview.js';
 import Breakpoint from './breakpoint.js';
@@ -22,6 +22,7 @@ const MAX_COLS = 6;
 export default class LibraryView extends Subview {
 
   $list;
+  $itemCount;
   optionsView;
 
   intersectionObs;
@@ -29,8 +30,8 @@ export default class LibraryView extends Subview {
 
   constructor() {
     super($("#libraryView"));
-
   	this.$list = this.$el.find("#libraryList");
+    this.$itemCount = this.$el.find('#libraryNumbers');
   	this.updateListWidth();
 
     this.optionsView = new LibraryOptionsView(this.$el.find("#libraryOptionsView"));
@@ -48,8 +49,11 @@ export default class LibraryView extends Subview {
       this.intersectionObs.disconnect();
     }
 
-    this.albums = Model.libraryData ? [...Model.libraryData] : [];
-    AlbumSortUtil.sortAlbums(this.albums, Settings.librarySortType);
+    // Prep the albums array
+    const a = Model.libraryData ? [...Model.libraryData] : [];
+    this.albums = LibraryUtil.makeFilteredAlbumsArray(a);
+    LibraryUtil.sortAlbums(this.albums, Settings.librarySortType);
+
     this.$list.empty();
 
     if (this.albums.length == 0) {
@@ -67,6 +71,9 @@ export default class LibraryView extends Subview {
       }
     }
 		this.updateListWidth();
+
+
+    this.$itemCount.text(`(${this.albums.length}/${Model.libraryData.length})`);
 
     const duration = new Date().getTime() - startTime;
     cl(`init - lib populate time ${duration}ms`);
@@ -91,13 +98,17 @@ export default class LibraryView extends Subview {
   }
 
   makeNoneItem() {
-    let s = '';
-    s += `<div id="libraryNoneItem">`;
-    s += `<span class="colorAccent">Library is empty.</span><br><br>`;
-    s += `<span class="colorTextLess">Add music to your HQPlayer library<br>`;
-    s += `<em>(HQPlayer > File > Library...)</em><br>`;
-    s += `and reload page.</span>`;
-    s += `</div>`;
+    let s;
+    if (Model.libraryData && Model.libraryData.length > 0) {
+      s = `<div id="libraryNoneItem">No items</div>`;
+    } else {
+      s = `<div id="libraryNoneItem">`;
+      s += `<span class="colorAccent">Library is empty.</span><br><br>`;
+      s += `<span class="colorTextLess">Add music to your HQPlayer library<br>`;
+      s += `<em>(HQPlayer > File > Library...)</em><br>`;
+      s += `and reload page.</span>`;
+      s += `</div>`;
+    }
     return $(s);
   }
 
