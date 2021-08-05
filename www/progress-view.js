@@ -5,7 +5,7 @@ import Commands from './commands.js';
 import Service from './service.js';
 
 /**
- * Horizontal progressbar with draggable thumb.
+ * Clickable horizontal progressbar with draggable thumb.
  */
 export default class ProgressView {
 
@@ -49,9 +49,11 @@ export default class ProgressView {
   };
 
   onDrag = (e) => {
-    const ratio = this.eventToRatioX(e);
-    this.update(ratio, true);
+    this.dragRatio = this.eventToRatioX(e);
+    this.update(this.dragRatio, true);
   };
+
+  dragRatio = 0;
 
   endDrag = (e) => {
     this.isDragging = false;
@@ -62,8 +64,8 @@ export default class ProgressView {
     this.$el.off('click tap');
     setTimeout(() => this.$el.on('click tap', this.onTrackClick), 500);
 
-    // Note, touchend does NOT provide any number values, so using last stored value.
-    const seconds = Model.getStatusTrackSecondsFromRatio(this.ratio);
+    // touchend does NOT provide any number values, so must use last stored value.
+    const seconds = Model.status.getSecondsFromRatio(this.dragRatio);
     if (seconds != -1) {
       Service.queueCommandFrontAndGetStatus(Commands.seek(seconds));
     }
@@ -71,7 +73,7 @@ export default class ProgressView {
 
   onTrackClick = (e) => {
     const ratio = this.eventToRatioX(e);
-    const seconds = Model.getStatusTrackSecondsFromRatio(ratio);
+    const seconds = Model.status.getSecondsFromRatio(ratio);
     if (seconds != -1) {
       Service.queueCommandFrontAndGetStatus(Commands.seek(seconds));
     }

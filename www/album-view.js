@@ -106,8 +106,8 @@ export default class AlbumView extends Subview {
 		if (!this.tracks) {
 			return;
 		}
-    const meta = ModelUtil.getPlayingSongMetadata();
-    const song = meta ? meta['@_song'] : '';
+    const meta = Model.status.metadata;
+    const song = meta['@_song'] || '';
     if (song === this.currentPlayingSong) {
      return;
     }

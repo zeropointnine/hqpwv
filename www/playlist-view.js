@@ -72,13 +72,13 @@ export default class PlaylistView extends Subview {
 	}
 
 	updateSelectedItem = (e) => {
-		if (Model.playlistData.length != Model.statusData['@_tracks_total']) {
+		if (Model.playlistData.length != Model.status.data['@_tracks_total']) {
 			// playlist data is obviously out of sync
 			this.selectItemByIndex(-1);
-		} else if (!Model.playlistData.length || !(Model.statusData['@_tracks_total'] > -1)) {
+		} else if (!Model.playlistData.length || !(Model.status.data['@_tracks_total'] > -1)) {
 			this.selectItemByIndex(-1);
 		} else {
-			this.selectItemByIndex(Model.statusData['@_track'] - 1); // bc 1-indexed
+			this.selectItemByIndex(Model.status.data['@_track'] - 1); // bc 1-indexed
 		}
 	};
 

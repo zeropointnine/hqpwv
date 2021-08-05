@@ -1,3 +1,4 @@
+import StatusVo from './status-vo.js';
 import Util from './util.js';
 import Values from './values.js';
 import Model from './model.js';
@@ -11,7 +12,7 @@ const INTERVAL_PLAYING = 1000;
 const INTERVAL_NOT_PLAYING = 10000;
 
 /**
- * Makes `status` calls periodically, based on app state and activity.
+ * Makes <Status /> calls periodically, based on app state and activity.
  * Idea is to make calls more frequently when there's a known delay btw
  * a 'command' and an hqp state change. Plus fast interval while playing, ofc.
  */
@@ -21,8 +22,6 @@ class Statuser {
    * The id of the last setTimeout that was called.
    */
   timeoutId;
-  currentStatus = {};
-  lastStatus = {};
 
   ignoreNextNewTrackDetected = false;
   
@@ -46,21 +45,15 @@ class Statuser {
     if (Busyer.isBusy) {
       duration = INTERVAL_FAST;
     } else {
-      duration = ModelUtil.isPlaying() ? INTERVAL_PLAYING : INTERVAL_NOT_PLAYING;
+      duration = Model.status.isPlaying ? INTERVAL_PLAYING : INTERVAL_NOT_PLAYING;
     }
     this.timeoutId = setTimeout(() => this.doNext(), duration);
   }
-  
+
   onServiceResponseHandled = (e, type, data) => {
 
     if (type == 'Status') {
-
-      this.lastStatus = this.currentStatus;
-      this.currentStatus = data['Status'];
-
-      // cl(`${Values.uptimeString} got status, state= ${this.currentStatus['@_state']} laststate=${this.lastStatus['@_state']}`);
-
-      this.detectNewTrack(data);
+    this.detectNewTrack(data);
     } else if (type == 'Play' || type == 'SelectTrack') {
       this.doNext();
     }
@@ -83,24 +76,25 @@ class Statuser {
       }
     };
 
-    const isPlayToPlay = (this.lastStatus['@_state'] != '0' && this.currentStatus['@_state'] != '0');
-    const isStopToPlay = (this.lastStatus['@_state'] == '0' && this.currentStatus['@_state'] != '0');
-
+    const isPlayToPlay = (Model.lastStatus.isPlaying && Model.status.isPlaying);
     if (isPlayToPlay) {
-      const lastTrack = parseInt(this.lastStatus['@_track']);
-      const currentTrack = parseInt(this.currentStatus['@_track']);
-      if (isNaN(lastTrack) || isNaN(currentTrack)) {
-        cl('warning current or last status track - bad data');
-      } else {
-        const didTrackChange = (currentTrack != lastTrack);
-        if (didTrackChange) {
-          cl('statuser detected track change');
-          sendEventMaybe('play-to-play');
-        }
+      const lastTrack = Model.lastStatus.trackNum;
+      const currentTrack = Model.status.trackNum;
+      if (lastTrack == -1 || currentTrack == -1) {
+        cl('warning bad data for track');
+        return;
       }
-    } else if (isStopToPlay) {
-      cl('statuser detected stop-to-play');
-      sendEventMaybe('stop-to-play');
+      const didTrackChange = (currentTrack != lastTrack);
+      if (didTrackChange) {
+        cl('statuser detected track change');
+        sendEventMaybe('play-to-play');
+      }
+    } else {
+      const isStopToPlay = (Model.lastStatus.isStopped && !Model.status.isStopped);
+      if (isStopToPlay) {
+        cl('statuser detected stop-to-play');
+        sendEventMaybe('stop-to-play');
+      }
     }
 
     // todo take duration between samples into account?!

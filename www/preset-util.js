@@ -26,13 +26,13 @@ class PresetUtil {
   }
 
    isPresetSameAsStatus(preset) {
-    if (preset['mode'] !== Model.statusData['@_active_mode']) {
+    if (preset['mode'] !== Model.status.data['@_active_mode']) {
       return false;
     }
-    if (preset['filter'] !== Model.statusData['@_active_filter']) {
+    if (preset['filter'] !== Model.status.data['@_active_filter']) {
       return false;
     }
-    if (preset['shaper'] !== Model.statusData['@_active_shaper']) {
+    if (preset['shaper'] !== Model.status.data['@_active_shaper']) {
       return false;
     }
     return true;
@@ -110,7 +110,7 @@ class PresetUtil {
     };
 
     // Set mode and then get filter/shaper data as needed
-    if (preset['mode'] == Model.statusData['@_active_mode']) {
+    if (preset['mode'] == Model.status.data['@_active_mode']) {
       didSetMode = false;
       step2();
     } else {

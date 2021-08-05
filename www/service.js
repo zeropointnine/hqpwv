@@ -5,11 +5,13 @@ import Model from './model.js';
 /**
  * Manages calls to webservice `commands` endpoint.
  * Rem, the service can only handle a single request at a time.
- * That's why requests get put in a queue.
+ * That's why requests get put in a queue and are called one-by-one.
  *
- * Also automatically stores the model data coming from those calls
- * (namely, library and playlist), and automatically sends app events
- * when they get updated.
+ * Also automatically stores the the data coming from those calls
+ * (namely, status, library and playlist) into `Model`,
+ * which then triggers app events.
+ *
+ * All calls to the `commands` endpoint should be made through here.
  */
 class Service {
 
@@ -138,7 +140,7 @@ class Service {
     // Store model data if applicable;
 		// model will send event that it's been updated.
 		if (data['Status']) {
-			Model.setStatusDataUsingResponseObject(data['Status']);
+			Model.setStatusUsingResponseObject(data['Status']);
 		} else if (data['PlaylistGet']) {
 			Model.setPlaylistDataUsingResponseObject(data);
 		} else if (data['LibraryGet']) {

@@ -77,7 +77,7 @@ export default class PlaybarView {
   _updatePlaylistNumbers() {
     // nb: status has a totaltracks property but appears to be bugged so not using
     const totalTracks = parseInt(Model.playlistData.length) || 0;
-    const atTrack = parseInt(Model.statusData['@_track']) || 0;
+    const atTrack = parseInt(Model.status.data['@_track']) || 0;
     if (totalTracks == this.totalTracks && atTrack == this.atTrack) {
       return;
     }
@@ -94,20 +94,20 @@ export default class PlaybarView {
    */
   _updatePlayingText() {
     let s = '';
-    if (ModelUtil.isStopped()) {
+    if (Model.status.isStopped) {
       s = (Model.playlistData.length > 0)
           ? `Stopped`
           : `<span class="colorTextLess">Playlist is empty</span>`;
     } else {
-      if (Model.statusData['metadata']) {
-        if (Model.statusData['metadata']['@_artist']) {
-          s += Model.statusData['metadata']['@_artist'];
+      if (Model.status.data['metadata']) {
+        if (Model.status.data['metadata']['@_artist']) {
+          s += Model.status.data['metadata']['@_artist'];
         }
-        if (Model.statusData['metadata']['@_song']) {
+        if (Model.status.data['metadata']['@_song']) {
           if (s) {
             s += ' - ';
           }
-          s += Model.statusData['metadata']['@_song'];
+          s += Model.status.data['metadata']['@_song'];
         }
       }
       if (!s) {
@@ -122,7 +122,7 @@ export default class PlaybarView {
 
   _updateSecondsAndThumb() {
     let previous = this.trackCurrentSeconds;
-    this.trackCurrentSeconds = Model.getStatusTrackCurrentSeconds();
+    this.trackCurrentSeconds = Model.status.seconds;
     if (this.trackCurrentSeconds != previous) {
       const seconds = (this.trackCurrentSeconds == -1) ? 0 : this.trackCurrentSeconds;
       const s = Util.durationText(seconds);
@@ -130,7 +130,7 @@ export default class PlaybarView {
     }
 
     previous = this.trackTotalSeconds;
-    this.trackTotalSeconds = Model.getStatusTrackTotalSeconds();
+    this.trackTotalSeconds = Model.status.totalSeconds;
     if (this.trackTotalSeconds != previous) {
       const s = (this.trackTotalSeconds == -1) ? '--:--' : Util.durationText(this.trackTotalSeconds);
       this.$trackLength.text(s);
@@ -150,7 +150,7 @@ export default class PlaybarView {
   }
 
   onPlayButton = (e) => {
-    const xml = ModelUtil.isPlaying() ? Commands.pause() : Commands.play();
+    const xml = Model.status.isPlaying ? Commands.pause() : Commands.play();
     Service.queueCommandFrontAndGetStatus(xml);
   };
 }

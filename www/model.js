@@ -1,4 +1,6 @@
 import Commands from './commands.js';
+import StatusVo from './status-vo.js';
+
 
 /**
  * Model
@@ -7,8 +9,8 @@ import Commands from './commands.js';
 class Model {
 
 	_libraryData = [];
-	_statusData = {};
-  _lastStatusData = {};
+	_status = new StatusVo();
+  _lastStatus = new StatusVo();
 	_playlistData = [];
   _infoData = {};
 
@@ -21,17 +23,17 @@ class Model {
 		$(document).trigger('model-library-updated');
 	}
 
-	get statusData() {
-		return this._statusData;
+	get status() {
+		return this._status;
 	}
 
-  get lastStatusData() {
-    return this._lastStatusData;
+  get lastStatus() {
+    return this._lastStatus;
   }
 
-	setStatusDataUsingResponseObject(data) {
-		this._lastStatusData = this._statusData;
-    this._statusData = data;
+	setStatusUsingResponseObject(data) {
+		this._lastStatus = this._status;
+    this._status = new StatusVo(data);
 		$(document).trigger('model-status-updated');
 	}
 
@@ -93,47 +95,6 @@ class Model {
       }
     }
     return libraryItem;
-  }
-
-  /** Returns -1 if bad data. */
-  getStatusTrackCurrentSeconds() {
-    if (!this._statusData) {
-      return -1
-    }
-    const min = parseInt(this._statusData['@_min']);
-    if (isNaN(min)) {
-      return -1;
-    }
-    const sec = parseInt(this._statusData['@_sec']);
-    if (isNaN(sec)) {
-      return -1;
-    }
-    return (min * 60) + sec;
-  }
-
-  /** Returns -1 if bad data. */
-  getStatusTrackTotalSeconds() {
-    if (!this._statusData) {
-      return -1;
-    }
-    const min = parseInt(this._statusData['@_total_min']);
-    if (isNaN(min)) {
-      return -1;
-    }
-    const sec = parseInt(this._statusData['@_total_sec']);
-    if (isNaN(sec)) {
-      return -1;
-    }
-    return (min * 60) + sec;
-  }
-
-  /** Returns -1 if bad data. */
-  getStatusTrackSecondsFromRatio(ratio) {
-    let sec = this.getStatusTrackTotalSeconds();
-    if (sec == -1) {
-      return -1;
-    }
-    return Math.floor(ratio * sec);
   }
 
   /** Returns empty string on bad data. */

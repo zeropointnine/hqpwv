@@ -43,7 +43,7 @@ class PresetRuleApplier {
     }
 
     let trackRate = 0;
-    const metadata = Model.statusData['metadata'];
+    const metadata = Model.status.data['metadata'];
     if (metadata) {
       trackRate = parseInt(metadata['@_samplerate']);
     }
@@ -71,7 +71,7 @@ class PresetRuleApplier {
       return;
     }
 
-    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.statusData['@_track']);
+    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.status.trackNum);
   }
 
   doAb() {
@@ -81,7 +81,7 @@ class PresetRuleApplier {
     if (!preset) {
       return;
     }
-    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.statusData['@_track']);
+    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.status.trackNum);
   }
 
   getPresetByOptionValue(value) {

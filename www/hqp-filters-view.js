@@ -63,7 +63,7 @@ export default class HqpFiltersView {
 
     this.updateOutputBitrate();
 
-    ViewUtil.setDisplayed(this.$info, !ModelUtil.isStopped());
+    ViewUtil.setDisplayed(this.$info, !Model.status.isStopped);
   }
 
   onHide() {
@@ -71,14 +71,14 @@ export default class HqpFiltersView {
   }
   
   populateSelects = () => {
-    const mode = Model.statusData['@_active_mode'];
+    const mode = Model.status.data['@_active_mode'];
     this.populateSelect(this.$modeSelect, HqpConfigModel.modesArray, '@_name', '@_index', mode);
 
-    const filterName = Model.statusData['@_active_filter'];
+    const filterName = Model.status.data['@_active_filter'];
     const filtersArray = HqpConfigModel.filtersData[mode];
     this.populateSelect(this.$filterSelect, filtersArray, '@_name', '@_index', filterName);
 
-    const shaperName = Model.statusData['@_active_shaper'];
+    const shaperName = Model.status.data['@_active_shaper'];
     const shapersArray = HqpConfigModel.shapersData[mode];
     this.populateSelect(this.$shaperSelect, shapersArray, '@_name', '@_index', shaperName);
   };
@@ -120,8 +120,8 @@ export default class HqpFiltersView {
 
   updateOutputBitrate() {
     const lastOutputBitrateString = this.outputBitrateString;
-    const rate = Model.statusData['@_active_rate'] || '';
-    const bits = Model.statusData['@_active_bits'] || '';
+    const rate = Model.status.data['@_active_rate'] || '';
+    const bits = Model.status.data['@_active_bits'] || '';
     this.outputBitrateString = '';
     if (rate) {
       this.outputBitrateString = rate;
@@ -181,9 +181,9 @@ export default class HqpFiltersView {
   };
 
   onSavePresetButton(index) {
-    const mode = Model.statusData['@_active_mode'];
-    const filter = Model.statusData['@_active_filter'];
-    const shaper = Model.statusData['@_active_shaper'];
+    const mode = Model.status.data['@_active_mode'];
+    const filter = Model.status.data['@_active_filter'];
+    const shaper = Model.status.data['@_active_shaper'];
     const o = { mode: mode, filter: filter, shaper: shaper };
     Settings.presetsArray[index] = o;
     Settings.commitPresetsArray();
@@ -201,24 +201,24 @@ export default class HqpFiltersView {
   }
 
   onModelStatusUpdated = () => {
-    if (ModelUtil.isStopped()) {
+    if (Model.status.isStopped) {
       ViewUtil.setDisplayed(this.$info, false);
     }
 
     this.updateOutputBitrate();
 
     // Diff status vs lastStatus
-    const mode = Model.statusData['@_active_mode'];
-    if (Model.statusData['@_active_mode'] != Model.lastStatusData['@_active_mode']) {
+    const mode = Model.status.data['@_active_mode'];
+    if (Model.status.data['@_active_mode'] != Model.lastStatus.data['@_active_mode']) {
       this.populateSelect(this.$modeSelect, HqpConfigModel.modesArray, '@_name', '@_index', mode);
     }
-    if (Model.statusData['@_active_filter'] != Model.lastStatusData['@_active_filter']) {
-      const filterName = Model.statusData['@_active_filter'];
+    if (Model.status.data['@_active_filter'] != Model.lastStatus.data['@_active_filter']) {
+      const filterName = Model.status.data['@_active_filter'];
       const filtersArray = HqpConfigModel.filtersData[mode];
       this.populateSelect(this.$filterSelect, filtersArray, '@_name', '@_index', filterName);
     }
-    if (Model.statusData['@_active_shaper'] != Model.lastStatusData['@_active_shaper']) {
-      const shaperName = Model.statusData['@_active_shaper'];
+    if (Model.status.data['@_active_shaper'] != Model.lastStatus.data['@_active_shaper']) {
+      const shaperName = Model.status.data['@_active_shaper'];
       const shapersArray = HqpConfigModel.shapersData[mode];
       this.populateSelect(this.$shaperSelect, shapersArray, '@_name', '@_index', shaperName);
     }

@@ -204,9 +204,9 @@ export default class App {
    */
   updateStateClasses() {
     // playing, paused, stopped (mutually exclusive)
-    if (ModelUtil.isPlaying()) {
+    if (Model.status.isPlaying) {
       this.$pageHolder.addClass('isPlaying').removeClass('isPaused isStopped');
-    } else if (ModelUtil.isPaused()) {
+    } else if (Model.status.isPaused) {
       this.$pageHolder.addClass('isPaused').removeClass('isPlaying isStopped');
     } else {
       this.$pageHolder.addClass('isStopped').removeClass('isPlaying isPaused');

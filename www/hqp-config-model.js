@@ -91,12 +91,12 @@ class HqpConfigModel {
 
     const onGetFilters = (data) => {
       const a = ModelUtil.getArrayFrom(data, 'GetFilters', 'FiltersItem');
-      const modeName = Model.statusData['@_active_mode'];
+      const modeName = Model.status.data['@_active_mode'];
       this.filtersData[modeName] = a;
     };
     const onGetShapers = (data) => {
       const a = ModelUtil.getArrayFrom(data, 'GetShapers', 'ShapersItem');
-      const modeName = Model.statusData['@_active_mode'];
+      const modeName = Model.status.data['@_active_mode'];
       this.shapersData[modeName] = a;
     };
     const onGetRatesAndFinish = (data) => {
@@ -108,7 +108,7 @@ class HqpConfigModel {
           break;
         }
       }
-      const modeName = Model.statusData['@_active_mode'];
+      const modeName = Model.status.data['@_active_mode'];
       this.ratesData[modeName] = a;
       if (modeName == this.MODE_PCM) {
         this.initPcmFsMultiples();
@@ -119,7 +119,7 @@ class HqpConfigModel {
 
     const step2 = () => {
 
-      const modeName = Model.statusData['@_active_mode'];
+      const modeName = Model.status.data['@_active_mode'];
       let b = true;
       b = b && (this.filtersData[modeName] && this.filtersData[modeName].length > 0);
       b = b && (this.shapersData[modeName] && this.shapersData[modeName].length > 0);

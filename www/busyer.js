@@ -53,7 +53,7 @@ class Busyer {
       if (type == 'Play' || type == 'SelectTrack' || type == 'Previous' || type == 'Next') {
         shouldChangeToTrue = true;
       } else if (type == 'Status') {
-        if ( ModelUtil.isPlaying() && parseFloat(Model.statusData['@_position']) == 0) {
+        if ( Model.status.isPlaying && Model.status.position == 0) {
           shouldChangeToTrue = true;
         }
       }
@@ -67,8 +67,8 @@ class Busyer {
         cl('warning busy timeout, will clear');
         shouldChangeToFalse = true;
       } else if (type == 'Status') {
-        if (ModelUtil.isPlaying()) {
-          if (parseFloat(Model.statusData['@_position']) > 0) {
+        if (Model.status.isPlaying) {
+          if (Model.status.position > 0) {
             shouldChangeToFalse = true;
           }
         }
