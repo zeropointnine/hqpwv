@@ -13,13 +13,14 @@ export default class PlaybarView {
   $el;
   progressView;
 
-  playingText;
-  trackCurrentSeconds;
-  trackTotalSeconds;
-  trackCurrentRatio = -1;
   totalTracks = -1;
   atTrack = -1;
   state = '';
+
+  playingText;
+  currentSecondsText;
+  totalSecondsText;
+  ratio;
 
   constructor() {
   	this.$el = $("#playbarView");
@@ -49,8 +50,9 @@ export default class PlaybarView {
     this.$showPlaylistButton.on("click tap", () => $(document).trigger('playbar-show-playlist'));
     this.$playingText.on("click tap", () => $(document).trigger('playbar-show-playlist'));
 
-    Util.addAppListener(this, 'model-status-updated', this.update);
-    Util.addAppListener(this, 'model-playlist-updated', this.update);
+    Util.addAppListener(this, 'model-status-updated', this.onModelStatusUpdated);
+    Util.addAppListener(this, 'model-playlist-updated', this.onModelPlaylistUpdated);
+    Util.addAppListener(this, 'progress-thumb-drag', this.onProgressThumbDrag);
   }
 
   get $el() {
@@ -59,7 +61,9 @@ export default class PlaybarView {
 
   update() {
     this._updatePlayingText();
-    this._updateSecondsAndThumb();
+    this._updateThumb();
+    this._updateCurrentSeconds();
+    this._updateTotalSeconds();
     this._updatePlaylistNumbers();
 
     /*
@@ -118,37 +122,64 @@ export default class PlaybarView {
     }
   }
 
-  _updateSecondsAndThumb() {
-    let previous = this.trackCurrentSeconds;
-    this.trackCurrentSeconds = Model.status.seconds;
-    if (this.trackCurrentSeconds != previous) {
-      const seconds = (this.trackCurrentSeconds == -1) ? 0 : this.trackCurrentSeconds;
-      const s = Util.durationText(seconds);
-      this.$trackCurrentTime.text(s);
+  _updateThumb() {
+    const seconds = (Model.status.seconds == -1) ? 0 : Model.status.seconds;
+    const totalSeconds = (Model.status.totalSeconds == -1) ? 0 : Model.status.totalSeconds;
+    let ratio = seconds / totalSeconds;
+    if (isNaN(ratio)) {
+      ratio = 0;
     }
+    if (ratio == this.ratio) {
+      return;
+    }
+    this.ratio = ratio;
+    this.progressView.update(this.ratio);
+  }
 
-    previous = this.trackTotalSeconds;
-    this.trackTotalSeconds = Model.status.totalSeconds;
-    if (this.trackTotalSeconds != previous) {
-      const s = (this.trackTotalSeconds == -1) ? '--:--' : Util.durationText(this.trackTotalSeconds);
-      this.$trackLength.text(s);
+  _updateCurrentSeconds() {
+    const seconds = (Model.status.seconds == -1) ? 0 : Model.status.seconds;
+    const s = Util.durationText(seconds);
+    if (this.currentSecondsText == s) {
+      return;
     }
+    this.currentSecondsText = s;
+    this.$trackCurrentTime.text(this.currentSecondsText);
+  }
 
-    previous = this.trackCurrentRatio;
-    if (this.trackCurrentSeconds == -1 || this.trackTotalSeconds <= 0) {
-      this.trackCurrentRatio = 0;
-    } else {
-      this.trackCurrentRatio = this.trackCurrentSeconds / this.trackTotalSeconds;
-      this.trackCurrentRatio = Math.max(this.trackCurrentRatio, 0);
-      this.trackCurrentRatio = Math.min(this.trackCurrentRatio, 1);
+  _updateTotalSeconds() {
+    const seconds = (Model.status.totalSeconds == -1) ? 0 : Model.status.totalSeconds;
+    const s = (seconds == -1) ? '--:--' : Util.durationText(seconds);
+    if (this.totalSecondsText == s) {
+      return;
     }
-    if (this.trackCurrentRatio != previous) {
-      this.progressView.update(this.trackCurrentRatio);
+    this.totalSecondsText = s;
+    this.$trackLength.text(this.totalSecondsText);
+  }
+
+  onModelStatusUpdated(e) {
+    this._updatePlayingText();
+    if (!this.progressView.isDragging) {
+      this._updateThumb();
+      this._updateCurrentSeconds();
     }
+    this._updateTotalSeconds();
+    this._updatePlaylistNumbers();
+  }
+
+  onModelPlaylistUpdated(e) {
+    this._updatePlaylistNumbers();
   }
 
   onPlayButton = (e) => {
     const xml = Model.status.isPlaying ? Commands.pause() : Commands.play();
     Service.queueCommandFrontAndGetStatus(xml);
   };
+
+  onProgressThumbDrag() {
+    // Update current seconds text based on thumb's current position ratio
+    // (during the course of the drag gesture only)
+    const seconds = Model.status.getSecondsFromRatio(this.progressView.dragRatio);
+    const s = Util.durationText(seconds);
+    this.$trackCurrentTime.text(s);
+  }
 }

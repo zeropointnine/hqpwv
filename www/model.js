@@ -1,7 +1,6 @@
 import Commands from './commands.js';
 import StatusVo from './status-vo.js';
 
-
 /**
  * Model
  * Data comes from hqp and is json-converted by the webserver.
@@ -13,6 +12,14 @@ class Model {
   _lastStatus = new StatusVo();
 	_playlistData = [];
   _infoData = {};
+
+  constructor() {
+    // Dev convenience:
+    if (!window.hqpwv) {
+      window.hqpwv = {};
+    }
+    window.hqpwv.Model = this;
+  }
 
   // @NonNull
 	get libraryData() {
@@ -86,8 +93,7 @@ class Model {
    * (Rem, a playlist item does not have to exist in the library)
 	 *
    * uri example: "file:///Volumes/MUSICBIG/nZk/01_AZ.flac"
-   * path example: "/Volumes/MUSICBIG/nZk"
-   * (this is on mac; hopefully this works out for windows as well)
+   * path example: "/Volumes/MUSICBIG/nZk" (MacOS)
    */
   getLibraryItemByTrackUri(uri) {
     let libraryItem;

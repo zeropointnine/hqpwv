@@ -46,11 +46,13 @@ export default class ProgressView {
     $(window).on("mouseup touchend touchcancel", this.endDrag);
     const ratio = this.eventToRatioX(e);
     this.update(ratio, true);
+    $(document).trigger('progress-thumb-drag', ratio);
   };
 
   onDrag = (e) => {
     this.dragRatio = this.eventToRatioX(e);
     this.update(this.dragRatio, true);
+    $(document).trigger('progress-thumb-drag', this.dragRatio);
   };
 
   dragRatio = 0;
