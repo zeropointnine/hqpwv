@@ -166,6 +166,7 @@ export default class AlbumView extends Subview {
 		const genre = this.album['@_genre'];
 		const rate = this.album['@_rate'];
 		const bits = this.album['@_bits'];
+    const filetypeText = this.getFiletypeText();
 
     let s = '';
 
@@ -175,7 +176,7 @@ export default class AlbumView extends Subview {
 		if (genre) {
 			s = s ? (s + ' | ' + genre) : genre;
 		}
-		if (rate || bits) {
+		if (rate || bits || filetypeText) {
 			let s2 = '';
 			if (rate) {
 				s2 = rate;
@@ -183,7 +184,10 @@ export default class AlbumView extends Subview {
 			if (bits) {
 				s2 = s2 ? (rate + '/' + bits) : bits;
 			}
-			s = s ? s + '<br>' + s2 : s2;
+      if (filetypeText) {
+        s2 = s2 ? s2 + ' ' + filetypeText : filetypeText;
+      }
+			s = s ? (s + '<br>' + s2) : s2;
 		}
     if (duration) {
       s = s ? s + ('<br>' + duration) : duration;
@@ -207,6 +211,30 @@ export default class AlbumView extends Subview {
     }
     const result = Util.durationTextHoursMinutes(albumSeconds);
     return result;
+  }
+
+  getFiletypeText() {
+    // fwiw hqp appears to filter out 'outlier' music files from a given directory,
+    // so this logic may not ever come into play.
+    let lastGoodSuffix = null;
+    for (const item of this.tracks) {
+      const suffix = Util.getFileSuffix(item['@_name']);
+      if (!suffix) {
+        continue; // meh keep going
+      }
+      if (suffix != lastGoodSuffix) {
+        if (!lastGoodSuffix) {
+          lastGoodSuffix = suffix;
+        } else {
+          cl('multiple suffixes detected', suffix, 'vs', lastGoodSuffix);
+          return null;
+        }
+      }
+    }
+    if (!lastGoodSuffix) {
+      return null;
+    }
+    return lastGoodSuffix.toUpperCase();
   }
 
   /**
@@ -244,4 +272,5 @@ export default class AlbumView extends Subview {
     const delta = itemBottom - listBottom;
     return delta;
   }
+
 }

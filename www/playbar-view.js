@@ -170,11 +170,13 @@ export default class PlaybarView {
   }
 
   showVolumePanel() {
+    this.$volumeToggle.addClass('isSelected');
     this.volumePanel.show();
     this.pointerUtil.start();
   }
 
   hideVolumePanel() {
+    this.$volumeToggle.removeClass('isSelected');
     this.volumePanel.hide();
     this.pointerUtil.clear();
   }

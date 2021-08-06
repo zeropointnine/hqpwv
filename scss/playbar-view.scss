@@ -10,23 +10,22 @@
 
 // ---
 
-#playingTextOuter {
-  display:flex;
-  margin-left:12px;
-  margin-right:118px;
-  margin-bottom:12px;
-  @include mobile {
-    margin-right:106px;
-  }
-}
 #playingText {
-	flex:1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  display:inline-block;
+  margin-left:12px;
+  margin-bottom:12px;
+  max-width: calc(100% - 84px);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   cursor:pointer;
   &:hover {
     opacity:0.8;
+  }
+  @include mobile {
+    max-width: calc(100% - 108px);
   }
 }
 
@@ -399,7 +398,7 @@ $thumb-width: 20px;
   position:absolute;
   width:100%;
   height: 55px;
-  top:-56px;
+  top:-55px;
   overflow:clip;
 
   #snackInner {

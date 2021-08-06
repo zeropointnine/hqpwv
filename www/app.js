@@ -421,7 +421,7 @@ export default class App {
 
   showFatalError(errorCode) {
     Statuser.stop();
-    this.libraryView.hideSpinner();
+    this.libraryView.setSpinnerState(false);
 
     let msg = `HQPWV Server can't connect to HQPlayer`;
     msg += `<br>Please make sure HQPlayer is running.`;

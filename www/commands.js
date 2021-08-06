@@ -167,7 +167,7 @@ Commands.addTrackUsingAlbumAndIndices = (album, startIndex=-1, endIndex=-1, isPl
 		items.push( xml);
 	}
 	if (isPlayNow) {
-    // todo 'playNow' unreliable maybe bc 'stop' can take a while; consider settimeout or smth
+    // todo 'playNow' unreliable maybe bc 'stop' can take a while?
 		items.push(Commands.play());
 	}
 

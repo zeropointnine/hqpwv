@@ -317,12 +317,16 @@ const postProcessLibrary = (json) => {
   }
 
   let numDropped = 0;
-  const albums1 = json['LibraryGet']['LibraryDirectory'];
+  let albums1 = json['LibraryGet']['LibraryDirectory'];
+  if (!Array.isArray(albums1)) {
+    albums1 = [albums1];
+  }
   const albums2 = [];
   for (let item of albums1) {
     if (item['LibraryFile']) {
       albums2.push(item);
     } else {
+      // console.log('dropped', item);
       numDropped++;
     }
   }

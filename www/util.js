@@ -118,3 +118,15 @@ Util.shuffleArray = (array) => {
     array[j] = temp;
   }
 };
+
+Util.getFileSuffix = (filename) => {
+  if (!filename) {
+    return null;
+  }
+  const i = filename.lastIndexOf('.');
+  if (i == -1) {
+    return null;
+  }
+  const s = filename.substr(i + 1);
+  return s;
+};

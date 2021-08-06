@@ -565,20 +565,11 @@ li:before {
   z-index: 10000;
 }
 
-#playingTextOuter {
-  display: flex;
-  margin-left: 12px;
-  margin-right: 118px;
-  margin-bottom: 12px;
-}
-@media (max-width: 480px) {
-  #playingTextOuter {
-    margin-right: 106px;
-  }
-}
-
 #playingText {
-  flex: 1;
+  display: inline-block;
+  margin-left: 12px;
+  margin-bottom: 12px;
+  max-width: calc(100% - 84px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -586,6 +577,11 @@ li:before {
 }
 #playingText:hover {
   opacity: 0.8;
+}
+@media (max-width: 480px) {
+  #playingText {
+    max-width: calc(100% - 108px);
+  }
 }
 
 #playbarButtons {
@@ -1008,7 +1004,7 @@ li:before {
   position: absolute;
   width: 100%;
   height: 55px;
-  top: -56px;
+  top: -55px;
   overflow: clip;
 }
 #snack #snackInner {

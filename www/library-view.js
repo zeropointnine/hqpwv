@@ -88,7 +88,6 @@ export default class LibraryView extends Subview {
     }
 		this.updateListWidth();
 
-
     this.$itemCount.text(`(${this.albums.length}/${Model.libraryData.length})`);
 
     const duration = new Date().getTime() - startTime;
