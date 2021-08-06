@@ -90,6 +90,8 @@ export default class App {
   /** Performs series of required asynchronous calls */
   init() {
 
+    this.libraryView.setSpinnerState(true);
+
     // This is done in parallel to the hqp service calls
     Native.getInfo(this.instanceId, (data) => {
       Values.setImagesEndpointUsing(data.hqplayer_ip_address);
@@ -419,6 +421,8 @@ export default class App {
 
   showFatalError(errorCode) {
     Statuser.stop();
+    this.libraryView.hideSpinner();
+
     let msg = `HQPWV Server can't connect to HQPlayer`;
     msg += `<br>Please make sure HQPlayer is running.`;
     msg += `<br><br><a href="${Values.TROUBLESHOOTING_HREF}" class="colorTextLess">Troubleshooting tips<a>`;

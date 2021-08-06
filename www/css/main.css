@@ -317,6 +317,36 @@ li:before {
   cursor: default;
 }
 
+.spinner:before {
+  content: " ";
+  display: block;
+  opacity: 0.7;
+  position: absolute;
+  left: -12px;
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  background-size: 24px 24px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("./../img/icons/hourglass_empty_white_24dp.svg");
+  animation: spinner 2s infinite;
+}
+
+@keyframes spinner {
+  0% {
+    rotate: 0deg;
+  }
+  33% {
+    rotate: 120deg;
+  }
+  66% {
+    rotate: 240deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
 #page {
   display: flex;
   flex-direction: column;
@@ -1082,22 +1112,38 @@ li:before {
   margin-left: auto;
   display: flex;
 }
-#libraryOptionsView #libraryBitrateDropdown {
-  width: 175px;
-  margin-right: 4px;
-}
-#libraryOptionsView #librarySortDropdown {
-  width: 175px;
-  margin-right: 4px;
-}
-#libraryOptionsView #libraryBitrateButton:before {
+
+#libraryBitrateButton:before {
   background-image: url("./../img/icons/filter_alt_white_24dp.svg");
 }
-#libraryOptionsView #librarySortButton {
+
+#librarySortButton {
   margin-left: 4px;
 }
-#libraryOptionsView #librarySortButton:before {
+#librarySortButton:before {
   background-image: url("./../img/icons/sort_white_24dp.svg");
+}
+
+#libraryBitrateDropdown {
+  width: 175px;
+  margin-right: 4px;
+}
+
+#librarySortDropdown {
+  width: 175px;
+  margin-right: 4px;
+}
+
+.isDisabled #libraryOptionsView {
+  pointer-events: none;
+}
+
+#librarySpinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  opacity: 0;
+  transition: opacity 1s linear 1s;
 }
 
 #libraryList {

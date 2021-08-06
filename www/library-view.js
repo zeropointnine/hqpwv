@@ -1,5 +1,6 @@
 import Util from './util.js';
 import Values from './values.js';
+import ViewUtil from './view-util.js';
 import LibraryUtil from './library-util.js';
 import Settings from './settings.js';
 import Subview from './subview.js';
@@ -23,6 +24,7 @@ export default class LibraryView extends Subview {
 
   $list;
   $itemCount;
+  $spinner;
   optionsView;
 
   intersectionObs;
@@ -32,6 +34,7 @@ export default class LibraryView extends Subview {
     super($("#libraryView"));
   	this.$list = this.$el.find("#libraryList");
     this.$itemCount = this.$el.find('#libraryNumbers');
+    this.$spinner = this.$el.find('#librarySpinner');
   	this.updateListWidth();
 
     this.optionsView = new LibraryOptionsView(this.$el.find("#libraryOptionsView"));
@@ -43,7 +46,20 @@ export default class LibraryView extends Subview {
     this.intersectionObs = new IntersectionObserver(this.onIntersection, config);
   }
 
+  setSpinnerState(b) {
+    if (b) {
+      this.$el.addClass('isDisabled');
+      ViewUtil.setDisplayed(this.$spinner, true);
+      this.$spinner.css('opacity', 1);
+    } else {
+      this.$el.removeClass('isDisabled');
+      ViewUtil.setDisplayed(this.$spinner, false);
+    }
+  }
+
   update() {
+    this.setSpinnerState(false);
+
     const startTime = new Date().getTime();
 		if (this.intersectionObs) {
       this.intersectionObs.disconnect();

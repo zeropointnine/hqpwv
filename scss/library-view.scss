@@ -34,27 +34,38 @@
 #libraryOptionsView {
   margin-left:auto;
   display:flex;
+}
+#libraryBitrateButton {
+  &:before {
+    background-image: url('./../img/icons/filter_alt_white_24dp.svg');
+  }
+}
+#librarySortButton {
+  margin-left: 4px;
+  &:before {
+    background-image: url('./../img/icons/sort_white_24dp.svg');
+  }
+}
+#libraryBitrateDropdown {
+  width:175px;
+  margin-right:4px;
+}
+#librarySortDropdown {
+  width:175px;
+  margin-right:4px;
+}
 
-  #libraryBitrateDropdown {
-    width:175px;
-    margin-right:4px;
-  }
-  #librarySortDropdown {
-    width:175px;
-    margin-right:4px;
-  }
 
-  #libraryBitrateButton {
-    &:before {
-      background-image: url('./../img/icons/filter_alt_white_24dp.svg');
-    }
-  }
-  #librarySortButton {
-    margin-left: 4px;
-    &:before {
-      background-image: url('./../img/icons/sort_white_24dp.svg');
-    }
-  }
+.isDisabled #libraryOptionsView {
+  pointer-events: none;
+}
+
+#librarySpinner {
+  position:absolute;
+  left:50%;
+  top:50%;
+  opacity:0;
+  transition: opacity 1s linear 1s;
 }
 
 #libraryList {
