@@ -4,6 +4,7 @@ import ViewUtil from './view-util.js';
 import Model from './model.js';
 import Commands from './commands.js';
 import Service from './service.js';
+import ModalPointerUtil from './modal-pointer-util.js';
 import PlaylistContextMenu from './playlist-context-menu.js';
 
 /**

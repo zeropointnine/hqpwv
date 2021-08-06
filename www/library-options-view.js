@@ -4,6 +4,7 @@ import Model from './model.js';
 import Service from './service.js';
 import Settings from './settings.js';
 import Dropdown from './dropdown.js';
+import ModalPointerUtil from './modal-pointer-util.js';
 
 /**
  * Row of controls along the top of the lib view.
@@ -19,11 +20,15 @@ export default class LibraryOptionsView {
 
   dropdowns = [this.bitrateDropdown, this.sortDropdown];
 
+  pointerUtil;
+
+
   constructor($el) {
     this.$el = $el;
     this.$sortButton.on('click tap', e => this.toggleDropdown(this.sortDropdown));
     this.$bitrateButton.on('click tap', e => this.toggleDropdown(this.bitrateDropdown));
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
+    this.pointerUtil = new ModalPointerUtil(this.$el, () => this.hideDropdowns());
   }
 
   toggleDropdown(dropdown) {
@@ -53,14 +58,10 @@ export default class LibraryOptionsView {
     // Update dropdown item selection/s
     const items = (dropdown == this.bitrateDropdown)
         ? Settings.libraryBitratesArray
-        : [Settings.librarySortType]
+        : [Settings.librarySortType];
     dropdown.selectItems(items);
 
-    // Tricky: Get any click on document
-    setTimeout(() => $(document).on('click tap', this.onDocumentClick), 1);
-    // And disable all pointer events on #page (except this-view)
-    $('#page').css('pointer-events', 'none');
-    this.$el.css('pointer-events', 'auto');
+    this.pointerUtil.start();
   }
 
   hideDropdowns() {
@@ -70,10 +71,8 @@ export default class LibraryOptionsView {
     for (const dropdown of this.dropdowns) {
       dropdown.hide();
     }
-    // Restore things
-    $(document).off('click tap', this.onDocumentClick);
-    $('#page').css('pointer-events', '');
-    this.$el.css('pointer-events', '');
+
+    this.pointerUtil.clear();
   }
 
   onDocumentClick = (e) => {

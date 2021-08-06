@@ -1,5 +1,5 @@
 /**
- * Value object simple wrapper around the hqp <Status /> object.
+ * Simple value object wrapper around hqp <Status /> object.
  */
 export default class StatusVo {
 
@@ -25,9 +25,8 @@ export default class StatusVo {
     }
     if (this.isStopped) {
       // Meta is still returned after 'stop'.
-      // Note too that the hqp app does _not_ go into a 'real' stopped state at this point,
-      // which may have implications...
-      cl('hello meta')
+      // Note too that hqp does _not_ go into its 'real' stopped state when it reports is-stopped
+      // (does not free output device), which may have implications.
       return {};
     }
     return meta;
@@ -90,5 +89,24 @@ export default class StatusVo {
       return -1;
     }
     return Math.floor(ratio * sec);
+  }
+
+  /**
+   * Returns volume value, or NaN
+   *
+   * NB: Never cast a bad value to 0 (ie, full volume!!)
+   */
+  get volume() {
+    const s = this._data['@_volume'];
+    if (!s) {
+      cl('warning no volume property');
+      return NaN;
+    }
+    const volume = parseInt(s);
+    if (isNaN(volume)) {
+      cl('warning bad volume value');
+      return NaN;
+    }
+    return volume;
   }
 }

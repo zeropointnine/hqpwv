@@ -1,9 +1,12 @@
 import Util from './util.js';
+import ViewUtil from './view-util.js';
+import ModalPointerUtil from './modal-pointer-util.js';
 import Model from './model.js';
 import ModelUtil from './model-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import ProgressView from './progress-view.js';
+import VolumePanel from './volume-panel.js';
 
 /**
  * Library view containing a list of albums.
@@ -12,6 +15,8 @@ export default class PlaybarView {
   
   $el;
   progressView;
+  volumePanel;
+  pointerUtil;
 
   totalTracks = -1;
   atTrack = -1;
@@ -38,7 +43,10 @@ export default class PlaybarView {
     this.$showPlaylistButton = this.$el.find("#showPlaylistButton");
     this.$playlistNumberAt = this.$el.find("#playlistNumberAt");
     this.$playlistNumberTotal = this.$el.find("#playlistNumberTotal");
+    this.$volumeToggle = this.$el.find('#volumeToggleButton');
+
     this.progressView = new ProgressView();
+    this.volumePanel = new VolumePanel(this.$el.find('#volumePanel'));
 
     this.$playButton.on('click tap', this.onPlayButton);
     this.$stopButton.on('click tap', () => Service.queueCommandFrontAndGetStatus(Commands.stop()));
@@ -49,10 +57,15 @@ export default class PlaybarView {
 
     this.$showPlaylistButton.on("click tap", () => $(document).trigger('playbar-show-playlist'));
     this.$playingText.on("click tap", () => $(document).trigger('playbar-show-playlist'));
+    this.$volumeToggle.on('click tap', this.onVolumeToggle);
 
     Util.addAppListener(this, 'model-status-updated', this.onModelStatusUpdated);
     Util.addAppListener(this, 'model-playlist-updated', this.onModelPlaylistUpdated);
     Util.addAppListener(this, 'progress-thumb-drag', this.onProgressThumbDrag);
+
+    this.pointerUtil = new ModalPointerUtil(
+        [this.$volumeToggle, this.volumePanel.$el],
+        () => this.hideVolumePanel());
   }
 
   get $el() {
@@ -156,6 +169,15 @@ export default class PlaybarView {
     this.$trackLength.text(this.totalSecondsText);
   }
 
+  showVolumePanel() {
+    this.volumePanel.show();
+    this.pointerUtil.start();
+  }
+
+  hideVolumePanel() {
+    this.volumePanel.hide();
+    this.pointerUtil.clear();
+  }
   onModelStatusUpdated(e) {
     this._updatePlayingText();
     if (!this.progressView.isDragging) {
@@ -182,4 +204,12 @@ export default class PlaybarView {
     const s = Util.durationText(seconds);
     this.$trackCurrentTime.text(s);
   }
+
+  onVolumeToggle = (e) => {
+    if (!this.volumePanel.isShowing) {
+      this.showVolumePanel();
+    } else {
+      this.hideVolumePanel();
+    }
+  };
 }

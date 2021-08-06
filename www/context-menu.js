@@ -1,4 +1,5 @@
 import ViewUtil from './view-util.js';
+import ModalPointerUtil from './modal-pointer-util.js';
 
 /**
  * A "context menu" that pops up upon clicking a "more" button.
@@ -7,6 +8,7 @@ export default class ContextMenu {
 
   $el;
   $items;
+  ModalPointerUtil;
 
   /**
    * Element is expected to have this structure:
@@ -21,28 +23,11 @@ export default class ContextMenu {
     this.$items = this.$el.find('.contextItem');
     this.$items.on('click tap', e => this.onItemClick(e));
 
+    this.ModalPointerUtil = new ModalPointerUtil(this.$el, () => this.hide());
+
     if (!this.$el.length || !this.$el.length || !this.$items.length) {
       cl('WARNING: ContextMenu - incorrect dom structure or properties');
     }
-  }
-
-  /**
-   * @param buttonX and buttonY is button position in same coord space as the $el
-   * @param ...rest any data params that subclass may need to pass
-   */
-  show(buttonX, buttonY, ...rest) {
-    // Position context menu in relation to the list item's context menu button
-    const x = buttonX - this.$el.outerWidth() - 10;
-    const y = buttonY;
-    this.$el.css("left", x);
-    this.$el.css("top", y);
-    ViewUtil.setVisible(this.$el, true);
-
-    // Tricky: Get any click on document
-    setTimeout(() => $(document).on('click tap', this.onDocumentClick), 1);
-    // Tricky: Disable all pointer events on #page, except the options view
-    $('#page').css('pointer-events', 'none');
-    this.$el.css('pointer-events', 'auto');
   }
 
   /**
@@ -65,20 +50,12 @@ export default class ContextMenu {
     this.$el.css("top", y);
     ViewUtil.setVisible(this.$el, true);
 
-    // Tricky: Get any click on document
-    setTimeout(() => $(document).on('click tap', this.onDocumentClick), 1);
-    // Tricky: Disable all pointer events on #page, except the options view
-    $('#page').css('pointer-events', 'none');
-    this.$el.css('pointer-events', 'auto');
+    this.ModalPointerUtil.start();
   }
 
   hide() {
     ViewUtil.setVisible(this.$el, false);
-
-    // Restore things
-    $(document).off('click tap', this.onDocumentClick);
-    $('#page').css('pointer-events', '');
-    this.$el.css('pointer-events', '');
+    this.ModalPointerUtil.clear();
   }
 
   /**
@@ -88,11 +65,4 @@ export default class ContextMenu {
   onItemClick(event) {
     this.hide();
   }
-
-  onDocumentClick = (e) => {
-    const isThis = (this.$el.has($(e.target)).length > 0);
-    if (!isThis) {
-      this.hide()
-    }
-  };
 }

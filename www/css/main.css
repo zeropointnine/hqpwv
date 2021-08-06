@@ -568,12 +568,12 @@ li:before {
 #playingTextOuter {
   display: flex;
   margin-left: 12px;
-  margin-right: 76px;
+  margin-right: 118px;
   margin-bottom: 12px;
 }
 @media (max-width: 480px) {
   #playingTextOuter {
-    margin-right: 60px;
+    margin-right: 106px;
   }
 }
 
@@ -743,6 +743,75 @@ li:before {
   #playingTrackLength {
     display: none;
   }
+}
+
+.isStopped #playingTrackCurrentTime,
+.isStopped #playingTrackLength {
+  color: #999;
+}
+
+#volumeToggleButton {
+  position: absolute;
+  right: 72px;
+  top: 12px;
+}
+#volumeToggleButton.isSelected {
+  background-color: #282828;
+}
+#volumeToggleButton:before {
+  background-image: url("./../img/icons/volume_up_white_24dp.svg");
+  background-position: 8px center;
+}
+@media (max-width: 480px) {
+  #volumeToggleButton {
+    right: 60px;
+  }
+}
+
+#volumePanel {
+  visibility: hidden;
+  position: absolute;
+  width: 68px;
+  right: 54px;
+  bottom: 100%;
+  overflow-y: hidden;
+}
+@media (max-width: 480px) {
+  #volumePanel {
+    right: 44px;
+  }
+}
+
+#volumePanelInner {
+  position: relative;
+  width: 68px;
+  display: flex;
+  flex-direction: column;
+  background-color: #1c1c1c;
+  padding: 8px 8px 0 8px;
+  transition: top 166ms ease-out;
+}
+
+#volumeText {
+  line-height: 36px;
+  width: 52px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #282828;
+}
+
+.volumePanelButton {
+  border-radius: 0;
+  width: 52px;
+  text-align: center;
+  font-weight: normal;
+}
+
+.volumePanelButtonSpacer {
+  width: 52px;
+  height: 8px;
+  background: #282828;
 }
 
 #playProgressView {

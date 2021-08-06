@@ -119,6 +119,18 @@ Commands.setRate = (value) => {
   return `<SetRate value="${value}" />`;
 };
 
+Commands.volume = (value) => { // float
+  return `<Volume value=${value} />`;
+};
+
+Commands.volumeUp = () => {
+  return `<VolumeUp />`;
+};
+
+Commands.volumeDown = () => {
+  return `<VolumeDown />`;
+};
+
 // Higher-level functions that take service json data as arguments or reaches out to Model
 // todo move out of Commands
 

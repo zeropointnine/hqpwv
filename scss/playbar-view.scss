@@ -13,10 +13,10 @@
 #playingTextOuter {
   display:flex;
   margin-left:12px;
-  margin-right:76px;
+  margin-right:118px;
   margin-bottom:12px;
   @include mobile {
-    margin-right:60px;
+    margin-right:106px;
   }
 }
 #playingText {
@@ -146,6 +146,69 @@
   @include mobile {
     display:none;
   }
+}
+.isStopped #playingTrackCurrentTime,
+.isStopped #playingTrackLength {
+  color: $color-text-less;
+}
+
+// ---
+
+#volumeToggleButton {
+  position:absolute;
+  right:72px;
+  top:12px;
+  &.isSelected {
+    background-color:$color-listitem;
+  }
+  &:before {
+    background-image: url('./../img/icons/volume_up_white_24dp.svg');
+    background-position: 8px center;
+  }
+
+  @include mobile {
+    right:60px;
+  }
+}
+
+#volumePanel {
+  visibility: hidden;
+  position:absolute;
+  width:68px;
+  right:54px;
+  bottom:100%;
+  overflow-y: hidden;
+  @include mobile {
+    right:44px;
+  }
+}
+#volumePanelInner {
+  position:relative;
+  width:68px;
+  display:flex;
+  flex-direction:column;
+  background-color:$color-listitem-less;
+  padding: 8px 8px 0 8px;
+  transition: top 166ms ease-out;
+}
+#volumeText {
+  line-height: 36px;
+  width:52px;
+  text-align: center;
+  font-size: $font-size-smaller;
+  font-weight: bold;
+  background-color:$color-listitem;
+}
+.volumePanelButton {
+  border-radius:0;
+  width:52px;
+  text-align: center;
+  font-weight: normal;
+}
+.volumePanelButtonSpacer {
+  width:52px;
+  height:8px;
+  background:$color-listitem;
 }
 
 // ---
