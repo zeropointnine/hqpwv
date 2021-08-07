@@ -8,6 +8,7 @@ export default class Util {}
 /** 
  * Shortcut for hooking up custom events off of document.
  * todo/nb: doesnt work correctly when target is not same object as where this fn is invoked from [?]
+ * todo/nb: no way to remove listnr :/
  */
 Util.addAppListener = (context, eventName, callback) => {
 	$(document).on(eventName, (e, ...rest) => callback.call(context, ...rest));

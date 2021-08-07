@@ -13,6 +13,7 @@ import AlbumContextMenu from './album-context-menu.js';
  */
 export default class AlbumView extends Subview {
 
+  $picture;
   $list;
   listItems$;
   contextMenu;
@@ -25,6 +26,7 @@ export default class AlbumView extends Subview {
 
   constructor() {
     super($("#albumView"));
+    this.$picture = $("#albumViewPicture");
 
   	this.$list = this.$el.find("#albumList");
 
@@ -33,6 +35,7 @@ export default class AlbumView extends Subview {
 		$("#albumPlayNowButton").on("click tap", this.onPlayNowButton);
 		$("#albumQueueButton").on("click tap", this.onQueueButton);
 		$("#albumCloseButton").on("click tap", () => $(document).trigger('album-view-close-button', this.album, true));
+    this.$picture.on('click tap', () => $(document).trigger('album-picture-click', this.$picture));
   }
 
   show() {
@@ -80,7 +83,7 @@ export default class AlbumView extends Subview {
 
   updateInfoArea() {
     const imgPath = ModelUtil.getAlbumImageUrl(this.album);
-    $("#albumViewPicture").attr('src', imgPath);
+    this.$picture.attr('src', imgPath);
 
     $("#albumViewTitle").html(this.album['@_album']);
     $("#albumViewArtist").html(this.album['@_artist']);

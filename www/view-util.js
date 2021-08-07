@@ -113,3 +113,24 @@ ViewUtil.doStockFadeIn = ($el, callback=null) => {
       () => $el.css('opacity', 1),
       () => { if (callback) callback(); } );
 };
+
+/** Returns { x, y, w, h } */
+ViewUtil.fitInRect = (srcW, srcH, destW, destH) => {
+  const srcAr = srcW / srcH;
+  const destAr = destW / destH;
+  const mult = (srcAr > destAr) ? (destW / srcW) : (destH / srcH);
+  const resultW = srcW * mult;
+  const resultH = srcH * mult;
+  const resultX = (destW - resultW) / 2;
+  const resultY = (destH - resultH) / 2;
+  return { x: resultX, y: resultY, w: resultW, h: resultH };
+  // todo return 4-element array to be consistent w/ theotherstuff
+};
+
+/** Assumes absolutely positioned element. */
+ViewUtil.setXYWH = ($el, x, y, w, h) => {
+  $el.css('left', x + 'px');
+  $el.css('top', y + 'px');
+  $el.css('width', w + 'px');
+  $el.css('height', h + 'px');
+};

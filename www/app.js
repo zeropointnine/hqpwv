@@ -18,6 +18,7 @@ import PlaybarView from './playbar-view.js';
 import TopBar from './top-bar.js';
 import SettingsView from './settings-view.js';
 import HqpSettingsView from './hqp-settings-view.js';
+import AlbumOverlay from './album-overlay.js';
 import DialogView from './dialog-view.js';
 import SnackView from './snack-view.js';
 import ToastView from './toast-view.js';
@@ -83,6 +84,7 @@ export default class App {
     ViewUtil.setVisible(this.playbarView.$el, true);
 
     PresetRuleApplier.noop();
+    AlbumOverlay.noop();
 
     this.init();
 	}
@@ -164,6 +166,14 @@ export default class App {
     this.hideSubview(this.hqpSettingsView);
   }
 
+  hideOnEscape() {
+    // first account for overlays, etc
+    if (ViewUtil.isDisplayed(AlbumOverlay.$overlayScreen)) {
+      AlbumOverlay.animateOut();
+      return;
+    }
+    this.hideTopSubview();
+  }
   hideTopSubview() {
     const subview = this.getTopSubview();
     switch (subview) {
@@ -179,8 +189,13 @@ export default class App {
       case this.hqpSettingsView:
         this.hideHqpSettingsView();
         break;
+      case this.libraryView:
+        // do nothing
+        break;
       default:
-        if (subview) { cl('not accounted for'); }
+        if (subview) {
+          cl('not accounted for');
+        }
         break;
     }
   }
@@ -331,13 +346,14 @@ export default class App {
     if (this.$pageHolder.css('pointer-events') == 'none') {
       return;
     }
-    if (new Date().getTime() - this.lastHandledKeypressTime < 666) {
-      // prevent issues from autorepeat or monkey-presses
+    if (new Date().getTime() - this.lastHandledKeypressTime < 350) {
+      // avoid any issues from autorepeat or monkey-presses
       return;
     }
+    this.lastHandledKeypressTime = new Date().getTime();
     switch (e.key) {
       case 'Escape':
-        this.hideTopSubview();
+        this.hideOnEscape();
         break;
       case 'q':
         this.playbarView.$showPlaylistButton.click();

@@ -1,6 +1,7 @@
 #albumView {
-  padding-bottom:0px; // bc last list item
-  transition: top 333ms cubic-bezier(0,.5,.3,1.0),
+  padding-bottom:0; // bc last list item
+  transition:
+      top 333ms cubic-bezier(0,.5,.3,1.0),
       opacity 333ms cubic-bezier(0,.5,.3,1.0);
 }
 
@@ -19,9 +20,12 @@
 }
 #albumViewPicture {
   width:50%;
-  //max-width: 640px;
+  max-height:75vh;
   object-fit:contain;
-  object-position:center top;
+  // object-position:center top;
+  background:$color-listitem-less;
+
+  cursor:pointer;
 }
 #albumViewTexts {
   width:50%;
