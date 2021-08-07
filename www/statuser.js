@@ -22,8 +22,8 @@ class Statuser {
    * The id of the last setTimeout that was called.
    */
   timeoutId;
-
   ignoreNextNewTrackDetected = false;
+  newTrackTimeoutId;
   
   constructor() {
     $(document).on('service-response-handled', this.onServiceResponseHandled);
@@ -73,6 +73,9 @@ class Statuser {
       } else {
         // cl(`statuser sending ${name}`);
         $(document).trigger(name);
+
+        clearTimeout(this.newTrackTimeoutId);
+        this.newTrackTimeoutId = setTimeout(onNewTrackTimeout, 5000);
       }
     };
 
@@ -100,6 +103,23 @@ class Statuser {
     // todo take duration between samples into account?!
     // todo also, verify play @_position?
   }
+
+  onNewTrackTimeout = () => {
+    cl('ontt');
+    // Hopefully <Status> is up to date.
+    if (Model.status.isStopped) {
+      return;
+    }
+    if (Model.trackNum == -1) {
+      return;
+    }
+    const playlistTrack = Model.playlistData[Model.status.trackNum];
+    if (!playlistTrack) {
+      return;
+    }
+
+    // ...
+  };
 }
 
 export default new Statuser();

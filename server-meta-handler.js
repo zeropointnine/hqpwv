@@ -44,12 +44,12 @@ const go = (request, response) => {
     return;
   }
 
-  if (request.query['updateTrackRating'] !== undefined) {
+  if (request.query['updateTrackFavorite'] !== undefined) {
     if (!hash || !value) {
       response.status(400).json( {error: 'missing_required_sub_param'} );
       return;
     }
-    meta.updateTrackRating(hash, value);
+    meta.updateTrackFavorite(hash, value);
     response.status(200).send('');
     return;
   }

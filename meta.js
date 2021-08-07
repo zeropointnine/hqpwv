@@ -6,8 +6,13 @@ const fs = require("fs");
 const path = require('path');
 const FILENAME = 'hqpwv-metadata.json'; // todo put this in the right docs dir?
 const PATH = path.resolve(FILENAME);
+const ACTIVITY_COUNTER_THRESH = 10;
+const ACTIVITY_TIMEOUT_DURATION = 5 * 60 * 1000;
+
 let tracks = {};
 let isEnabled = false;
+let activityCounter = 0;
+let activityTimeoutId = 0;
 
 const init = (resultCallback) => {
 
@@ -49,20 +54,25 @@ const init = (resultCallback) => {
   console.log('- loaded metadata');
   console.log('  ' + PATH);
   tracks = o;
-  isEnabled = true;
+  finishInit();
   resultCallback(true); // init done
 };
 
 const createFile = (resultCallback) => {
   console.log('- will create new meta file');
   tracks = {};
-  commit((result) => {
-    if (result) {
-      isEnabled = true;
+  saveToFile(saveResult => {
+    if (saveResult) {
+      finishInit();
     }
-    resultCallback()
+    resultCallback(saveResult);
   });
 };
+
+finishInit = () => {
+  isEnabled = true;
+  startActivityTimeout();
+}
 
 // ---
 
@@ -74,26 +84,30 @@ const getIsEnabled = () => {
   return isEnabled;
 };
 
-const commit = (resultCallback) => {
-  // todo save to intermediate file and swap on success, etc
+const saveToFile = (resultCallback) => {
+  // todo save to intermediate file and swap on success?
   try {
     fs.writeFileSync(FILENAME, JSON.stringify(tracks), {encoding: 'utf8'});
   } catch (err) {
     console.log('- warning error saving meta file', err.code);
     console.log('  ' + PATH);
-    resultCallback(false);
+    if (resultCallback != null) {
+      resultCallback(false);
+    }
     return;
   }
   console.log('- saved meta file');
   console.log('  ' + PATH);
-  resultCallback(true);
+  if (resultCallback != null) {
+    resultCallback(true);
+  }
 };
 
 /**
  * Removes entries which are not in library.
- * todo
  */
 const clean = (resultCallback) => {
+  // todo
   resultCallback(true);
 };
 
@@ -108,15 +122,51 @@ const updateTrackViews = (hash, views) => {
     tracks[hash] = o;
   }
   o['views'] = views;
+  activityTouch();
 };
 
-const updateTrackRating = (hash, rating) => {
+const updateTrackFavorite = (hash, isFavorite) => {
   let o = tracks[hash];
   if (!o) {
     o = {};
     tracks[hash] = o;
   }
-  o['rating'] = rating;
+  o['favorite'] = isFavorite;
+  activityTouch();
+};
+
+// Cheesy auto-save logic
+
+activityTouch = () => {
+  activityCounter++;
+  // console.log('x counter', activityCounter);
+  if (activityCounter >= ACTIVITY_COUNTER_THRESH) {
+    // console.log('x reached counter thresh');
+    activitySaveMetaAndStartTimeout();
+  }
+};
+
+startActivityTimeout = () => {
+  // console.log('x timeout-start');
+  activityTimeoutId = setTimeout(onActivityTimeout, ACTIVITY_TIMEOUT_DURATION);
+};
+
+onActivityTimeout = () => {
+  // console.log('x on-timeout');
+  if (activityCounter > 0) {
+    activitySaveMetaAndStartTimeout();
+  } else {
+
+    startActivityTimeout();
+  }
+};
+
+activitySaveMetaAndStartTimeout = () => {
+  // console.log('x save');
+  activityCounter = 0;
+  clearTimeout(activityTimeoutId);
+  saveToFile();
+  startActivityTimeout();
 };
 
 // ---
@@ -125,9 +175,9 @@ module.exports = {
   init: init,
   getIsEnabled: getIsEnabled,
   getFilepath: getFilepath,
-  commit: commit,
+  saveToFile: saveToFile,
   clean: clean,
   getTracks: getTracks,
   updateTrackViews: updateTrackViews,
-  updateTrackRating: updateTrackRating
+  updateTrackFavorite: updateTrackFavorite
 };

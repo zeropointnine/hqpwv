@@ -137,7 +137,7 @@ li:before {
   width: 36px;
   height: 36px;
   cursor: pointer;
-  background-color: #282828;
+  background-color: rgba(255, 255, 255, 0.16);
   position: relative;
 }
 .iconButton:before {
@@ -153,7 +153,7 @@ li:before {
   background-size: 24px 24px;
 }
 .iconButton:hover {
-  background-color: #323232;
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 .iconButton.isDisabled {
@@ -170,7 +170,7 @@ li:before {
   opacity: 0.25;
 }
 .toggleButton:hover {
-  background-color: #323232;
+  background-color: rgba(255, 255, 255, 0.22);
 }
 .toggleButton:hover:before {
   opacity: 0.7;
@@ -207,11 +207,11 @@ li:before {
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: #282828;
+  background-color: rgba(255, 255, 255, 0.16);
   cursor: pointer;
 }
 .textButton:hover {
-  background-color: #323232;
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 .textButton.isDisabled {
@@ -438,7 +438,7 @@ li:before {
   opacity: 0.66;
 }
 #settingsButton:hover {
-  background-color: #323232;
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 .settingsView #settingsButton,
@@ -454,7 +454,7 @@ li:before {
   opacity: 0.66;
 }
 #hqpSettingsButton:hover {
-  background-color: #323232;
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 .settingsView #hqpSettingsButton,
@@ -906,7 +906,7 @@ li:before {
 }
 
 .playlistView #showPlaylistButton {
-  background-color: #383838;
+  background-color: rgba(255, 255, 255, 0.28);
 }
 
 #playlistNumberAt {
@@ -1464,6 +1464,27 @@ li:before {
   }
 }
 
+.favoriteButton {
+  background-color: transparent;
+}
+.favoriteButton:before {
+  opacity: 0.25;
+  background-image: url("./../img/icons/favorite_border_white_24dp.svg");
+}
+.favoriteButton:hover {
+  background-color: transparent;
+}
+.favoriteButton:hover:before {
+  opacity: 0.7;
+}
+.favoriteButton.isSelected {
+  background-color: transparent;
+}
+.favoriteButton.isSelected:before {
+  opacity: 0.7;
+  background-image: url("./../img/icons/favorite_white_24dp.svg");
+}
+
 #albumViewTexts * {
   -moz-user-select: text;
   -webkit-user-select: text;
@@ -1505,8 +1526,7 @@ li:before {
   user-select: text;
   -o-user-select: text;
 }
-
-.albumItemDuration {
+.albumItemMain .albumItemDuration {
   color: #999;
   -moz-user-select: text;
   -webkit-user-select: text;
@@ -1515,13 +1535,35 @@ li:before {
   -o-user-select: text;
 }
 
-.albumItemRight {
+.albumItemMeta {
+  height: 36px;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.albumItemViews {
+  font-size: 14px;
+  color: #666;
+  margin-right: 4px;
+}
+
+.albumItemContext {
   height: 36px;
   margin-left: 12px;
 }
 
 .settingsSubheading {
   margin-bottom: 8px;
+}
+
+.settingsMeta {
+  margin-top: 24px;
+  display: flex;
+}
+.settingsMeta .settingsMetaInner {
+  margin-left: 4px;
+  margin-top: 6px;
 }
 
 #settingsHotkeys table {

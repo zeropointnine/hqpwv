@@ -4,6 +4,16 @@
   margin-bottom: 8px;
 }
 
+.settingsMeta {
+  margin-top:24px;
+  display:flex;
+  .settingsMetaInner {
+    margin-left:4px;
+    margin-top:6px;
+  }
+}
+
+
 #settingsHotkeys {
   table {
     padding:0;

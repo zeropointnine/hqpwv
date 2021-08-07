@@ -142,6 +142,29 @@
   }
 }
 
+// decorates iconButton
+.favoriteButton {
+  background-color: transparent;
+  &:before {
+    opacity:0.25;
+    background-image: url('./../img/icons/favorite_border_white_24dp.svg');
+  }
+  &:hover {
+    &:before {
+      opacity:0.7;
+    }
+    background-color: transparent;
+  }
+  &.isSelected {
+    background-color:transparent;
+    &:before {
+      opacity:0.7;
+      background-image: url('./../img/icons/favorite_white_24dp.svg');
+    }
+  }
+}
+
+
 // Selectability-related:
 
 #albumViewTexts * {
@@ -161,12 +184,23 @@
 .albumItemMain {
 	flex:1;
   @include userSelect(text);
+  .albumItemDuration {
+    color: $color-text-less;
+    @include userSelect(text);
+  }
 }
-.albumItemDuration {
-  color: $color-text-less;
-  @include userSelect(text);
+.albumItemMeta {
+  height:$icon-button-side; // w/o this, is too tall, not sure why
+  margin-left:12px;
+  display:flex;
+  align-items:center;
 }
-.albumItemRight {
+.albumItemViews {
+  font-size: $font-size-smaller;
+  color:$color-text-least;
+  margin-right:4px;
+}
+.albumItemContext {
   height:$icon-button-side; // w/o this, is too tall, not sure why
 	margin-left:12px;
 }

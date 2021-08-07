@@ -8,6 +8,7 @@ class Settings {
 
   storage = window.localStorage;
 
+  _metaEnabled;
   _libraryBitratesArray;
   _librarySortType;
   _presetsArray;
@@ -20,7 +21,11 @@ class Settings {
   }
 
   initFromLocalStorage() {
-    let s = this.storage.getItem('libraryBitratesArray');
+    let s;
+
+    this._metaEnabled = this.storage.getItem('metaEnabled') || 'true';
+
+    s = this.storage.getItem('libraryBitratesArray');
     try {
       this._libraryBitratesArray = JSON.parse(s) || ['all'];
     } catch (exc) {
@@ -59,6 +64,16 @@ class Settings {
     if (!this._abRule) {
       this._abRule = AbRuleView.getDefaultValues();
     }
+  }
+
+  get isMetaEnabled() {
+    return (this._metaEnabled === 'true');
+  }
+
+  set isMetaEnabled(b) {
+    const s = (b === true || b === 'true') ? 'true' : 'false';
+    this._metaEnabled = s;
+    this.storage.setItem('metaEnabled', s);
   }
 
   get librarySortType() {

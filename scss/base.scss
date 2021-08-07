@@ -20,9 +20,12 @@ $color-text-least: #666;
 
 $color-accent: #ff2200;
 
-$color-button-bg: $color-listitem; //  rgba(255,255,255,0.16); // 0x28 divided by 256
-$color-button-over: $color-listitem-over; // rgba(255,255,255,0.22); // 0x38 divided by 256
-$color-button-selected: $color-listitem-selected; // rgba(255,255,255,0.28); // 0x48 divided by 256
+//$color-button-bg: $color-listitem;
+//$color-button-over: $color-listitem-over;
+//$color-button-selected: $color-listitem-selected;
+$color-button-bg: rgba(255,255,255,0.16); // 0x28 divided by 256
+$color-button-over: rgba(255,255,255,0.22); // 0x38 divided by 256
+$color-button-selected: rgba(255,255,255,0.28); // 0x48 divided by 256
 
 $space-unit: 16px;
 $space-unit-mobile: 12px;

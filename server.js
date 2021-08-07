@@ -40,6 +40,7 @@ app.get('/endpoints/command', (request, response) => {
     isBusy = false;
   });  
 });
+// todo if no call to `command` in X seconds, save meta if necessary
 
 /**
  * Endpoint for 'native' REST requests.
@@ -58,7 +59,7 @@ app.get('/endpoints/native', (request, response) => {
 });
 
 /**
- * Endpoint for 'native' REST requests.
+ * Endpoint for 'meta' REST requests.
  */
 app.get('/endpoints/meta', (request, response) => {
   metaHandler.go(request, response);

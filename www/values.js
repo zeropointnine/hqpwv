@@ -10,6 +10,7 @@ class Values {
   ENDPOINTS_BASE_URL = window.location.origin + '/endpoints/'; // default
   COMMAND_ENDPOINT = this.ENDPOINTS_BASE_URL + "command";
   NATIVE_ENDPOINT = this.ENDPOINTS_BASE_URL + 'native';
+  META_ENDPOINT = this.ENDPOINTS_BASE_URL + 'meta';
 
   _hqpwvVersion = '';
   _imagesEndpoint;

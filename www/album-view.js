@@ -6,6 +6,7 @@ import Commands from './commands.js';
 import Model from './model.js';
 import Service from './service.js';
 import ViewUtil from './view-util.js'
+import MetaUtil from './meta-util.js'
 import AlbumContextMenu from './album-context-menu.js';
 
 /**
@@ -73,6 +74,7 @@ export default class AlbumView extends Subview {
       const $item = $(this.makeListItem(i, item));
       $item.on("click tap", e => this.onItemClick(e));
       $item.find(".moreButton").on("click tap", e => this.onItemContextButtonClick(e));
+      $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
       this.listItems$.push($item);
       this.$list.append($item);
     }
@@ -95,11 +97,19 @@ export default class AlbumView extends Subview {
 		const seconds = parseInt(item['@_length']);
 		const duration = seconds ? ` <span class="albumItemDuration">(${Util.durationText(seconds)})</span>` : '';
 		const song = item['@_song'];
+    const isFavorite = MetaUtil.isFavorite(item['wvmeta']);
+		const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
 		let s = '';
-		s += `<div class="albumItem" data-index="${index}">`;
-		s += `  <div class="albumItemLeft">${index+1}</div>`;
-		s += `  <div class="albumItemMain">${song}${duration}</div>`;
-		s += `  <div class="albumItemRight"><div class="iconButton moreButton" data-index="${index}"></div></div>`;
+    s += `<div class="albumItem" data-index="${index}">`;
+		s += `<div class="albumItemLeft">${index+1}</div>`;
+		s += `<div class="albumItemMain">${song}${duration}</div>`;
+    if (MetaUtil.isEnabled) {
+      s += `<div class="albumItemMeta">`;
+      s += `<div class="albumItemViews">666</div>`;
+      s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
+      s += `</div>`;
+    }
+		s += `<div class="albumItemContext"><div class="iconButton moreButton" data-index="${index}"></div></div>`;
 		s += `</div>`;
 		return $(s);
 		// also: [$]["name"] is filename; [$]["hash"];
@@ -163,7 +173,35 @@ export default class AlbumView extends Subview {
     this.contextMenu.show(this.$el, $button, this.album, index);
 	}
 
-	makeStatsText() {
+  onItemFavoriteButtonClick(event) {
+    event.stopPropagation(); // prevent listitem from responding to same event
+    const $button = $(event.currentTarget);
+    const index = parseInt($button.attr("data-index"));
+    const track = this.tracks[index];
+    // update model
+    let meta = track['wvmeta'];
+    if (!meta) {
+      meta = {};
+      track['wvmeta'] = meta;
+    }
+    const oldValue = MetaUtil.isFavorite(meta);
+    const newValue = !oldValue;
+    meta['favorite'] = newValue;
+    // update button
+    if (newValue) {
+      $button.addClass('isSelected');
+    } else {
+      $button.removeClass('isSelected');
+    }
+    // push to server
+    const hash = track['@_hash'];
+    if (!hash) {
+      return; // shouldn't happen
+    }
+    MetaUtil.updateTrackFavorite(hash, newValue);
+  }
+
+  makeStatsText() {
     const duration = this.makeAlbumDurationText();
 		const date = this.album['@_date'];
 		const genre = this.album['@_genre'];
@@ -275,5 +313,4 @@ export default class AlbumView extends Subview {
     const delta = itemBottom - listBottom;
     return delta;
   }
-
 }

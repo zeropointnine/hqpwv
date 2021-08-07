@@ -1,6 +1,7 @@
 import Values from './values.js';
 import Util from './util.js';
 import ViewUtil from './view-util.js';
+import MetaUtil from './meta-util.js';
 import Commands from './commands.js';
 import Settings from './settings.js';
 import Model from './model.js';
@@ -94,11 +95,14 @@ export default class App {
 
     this.libraryView.setSpinnerState(true);
 
-    // This is done in parallel to the hqp service calls
+    // These are done in parallel to the hqp service calls
     Native.getInfo(this.instanceId, (data) => {
       Values.setImagesEndpointUsing(data.hqplayer_ip_address);
       Values.hqpwvVersion = data.hqpwv_version;
     });
+    if (Settings.isMetaEnabled) {
+      MetaUtil.init();
+    }
 
     const step3 = (data) => {
       if (data.error != undefined) {
@@ -106,7 +110,7 @@ export default class App {
       }
       const duration = new Date().getTime() - startTime;
       cl(`init - async calls time ${duration}ms`);
-
+      MetaUtil.mergeIfPossible();
       this.libraryView.update();
     };
 
