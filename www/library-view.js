@@ -42,7 +42,7 @@ export default class LibraryView extends Subview {
     $(document).on('debounced-window-resize', e => this.updateListWidth());
     $(document).on('init-images-finished', e => this.forceReloadImages());
 
-    const config = { root: this.$el[0], rootMargin: '200px', threshold: 0  };
+    const config = { root: this.$el[0], rootMargin: (window.screen.height * 0.66) + 'px', threshold: 0  };
     this.intersectionObs = new IntersectionObserver(this.onIntersection, config);
   }
 

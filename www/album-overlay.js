@@ -33,9 +33,8 @@ class AlbumOverlay {
     // Set overlay image to use same src as the source image.
     this.$overlayImage.attr('src', this.$sourceImage.attr('src'));
 
-    // Overlay height must be set manually to
-    // full size of page down to the playbar :/
-    const h = $('#page').height(); // todo will need to do this on-resize
+    // Overlay height must be set programmatically
+    const h = $('#page').height() - $('#playbarView').height();
     this.$overlayScreen.css('height', h);
 
     const startRect = this.getConvertedStartRect(this.$sourceImage);
@@ -99,7 +98,8 @@ class AlbumOverlay {
   }
 
   onWindowResize = () => {
-    const h = $('#page').height();
+    // Overlay height must be set programmatically
+    const h = $('#page').height() - $('#playbarView').height();
     this.$overlayScreen.css('height', h);
 
     const r = this.getEndRect(this.$sourceImage);
