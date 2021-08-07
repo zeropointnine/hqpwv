@@ -49,7 +49,7 @@ export default class VolumePanel {
   		null);
     this.update();
 
-    $(document).on('model-status-updated', () => this.update());
+    $(document).on('model-status-updated', this.onModelStatus);
   }
 
   hide() {
@@ -59,7 +59,7 @@ export default class VolumePanel {
         () => { this.$inner.css('top', endY + 'px'); },
         () => { ViewUtil.setVisible(this.$el, false); } );
 
-    $(document).off('model-status-updated', this.onModelStatusUpdated);
+    $(document).off('model-status-updated', this.onModelStatus);
   }
 
   update() {
@@ -82,5 +82,9 @@ export default class VolumePanel {
     }
     commands.push(Commands.status());
     Service.queueCommandsFront(commands);
+  }
+
+  onModelStatus = () => {
+    this.update();
   }
 }

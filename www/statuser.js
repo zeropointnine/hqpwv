@@ -68,10 +68,10 @@ class Statuser {
 
     const sendEventMaybe = (name) => {
       if (this.ignoreNextNewTrackDetected) {
-        cl('statuser ignoring detect');
+        // cl('statuser ignoring detect');
         this.ignoreNextNewTrackDetected = false;
       } else {
-        cl(`statuser sending ${name}`);
+        // cl(`statuser sending ${name}`);
         $(document).trigger(name);
       }
     };
@@ -86,13 +86,13 @@ class Statuser {
       }
       const didTrackChange = (currentTrack != lastTrack);
       if (didTrackChange) {
-        cl('statuser detected track change');
+        // cl('statuser detected track change');
         sendEventMaybe('play-to-play');
       }
     } else {
       const isStopToPlay = (Model.lastStatus.isStoppedExplicit && !Model.status.isStopped);
       if (isStopToPlay) {
-        cl('statuser detected stop-to-play');
+        // cl('statuser detected stop-to-play');
         sendEventMaybe('stop-to-play');
       }
     }

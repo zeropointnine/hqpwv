@@ -1,9 +1,16 @@
+/**
+ * Server entrypoint.
+ * Plain js.
+ */
+
 const path = require('path');
 const express = require('express');
 const app = express();
 const ip = require('ip');
 const packageJson = require('./package.json');
 const proxy = require('./proxy');
+const meta = require('./meta');
+const metaHandler = require('./server-meta-handler');
 const APP_FILENAME = `hqpwv`;
 const WEBPAGE_DIR = path.join( __dirname, './www' );
 const DEFAULT_PORT = 8000;
@@ -36,11 +43,9 @@ app.get('/endpoints/command', (request, response) => {
 
 /**
  * Endpoint for 'native' REST requests.
- *
- * This could be blown out in the future if we add extra
- * layers of functionality on top of HQPlayer.
  */
 app.get('/endpoints/native', (request, response) => {
+
   if (request.query.info !== undefined) {
     response.send({
       hqplayer_ip_address: hqpIp,
@@ -48,12 +53,33 @@ app.get('/endpoints/native', (request, response) => {
     });
     return;
   }
-  response.status(400).json( {error: 'Bad param data'} );
+  // No recognized param
+  response.status(400).json( {error: 'bad_param_data'} );
+});
+
+/**
+ * Endpoint for 'native' REST requests.
+ */
+app.get('/endpoints/meta', (request, response) => {
+  metaHandler.go(request, response);
 });
 
 const onProxyReady = (ip) => {
   hqpIp = ip;
+  // Start server
   server = app.listen(port, onSuccess).on('error', onError);
+
+  initMeta();
+};
+
+const initMeta = () => {
+  meta.init((result) => {
+    if (!result) {
+      console.log('- warning meta init failed, hqpwv metadata disabled')
+    } else {
+      console.log('- meta ready');
+    }
+  });
 };
 
 const onError = (e) => {
@@ -105,6 +131,8 @@ const exitOnKeypress = () => {
   process.stdin.resume();
   process.stdin.on('data', process.exit.bind(process, 1))
 };
+
+// ---
 
 console.log('\nHQPWV Server', packageJson.version);
 console.log('Project page: ' + packageJson.homepage + '\n');

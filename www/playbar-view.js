@@ -26,6 +26,7 @@ export default class PlaybarView {
   currentSecondsText;
   totalSecondsText;
   ratio;
+  isVolumePanelShowing = false;
 
   constructor() {
   	this.$el = $("#playbarView");
@@ -170,12 +171,17 @@ export default class PlaybarView {
   }
 
   showVolumePanel() {
+    if (this.isVolumePanelShowing) {
+      return;
+    }
+    this.isVolumePanelShowing = true;
     this.$volumeToggle.addClass('isSelected');
     this.volumePanel.show();
     this.pointerUtil.start();
   }
 
   hideVolumePanel() {
+    this.isVolumePanelShowing = false;
     this.$volumeToggle.removeClass('isSelected');
     this.volumePanel.hide();
     this.pointerUtil.clear();

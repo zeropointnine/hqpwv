@@ -172,6 +172,10 @@ export default class App {
       AlbumOverlay.animateOut();
       return;
     }
+    if (this.playbarView.volumePanel.isShowing) {
+      this.playbarView.hideVolumePanel();
+      return;
+    }
     this.hideTopSubview();
   }
   hideTopSubview() {
@@ -343,14 +347,31 @@ export default class App {
 	}
 
   onKeydown = (e) => {
-    if (this.$pageHolder.css('pointer-events') == 'none') {
-      return;
-    }
+
     if (new Date().getTime() - this.lastHandledKeypressTime < 350) {
       // avoid any issues from autorepeat or monkey-presses
       return;
     }
+
+    // Ignore keypresses if a modal popup is up (eg context menu, etc)
+    // except for the following cases:
+    if (this.$pageHolder.css('pointer-events') == 'none') {
+      let isWhitelisted = false;
+      switch (e.key) {
+        case 'Escape':
+        case '+':
+        case '=':
+        case '-':
+          isWhitelisted = true;
+          break;
+      }
+      if (!isWhitelisted) {
+        return;
+      }
+    }
+
     this.lastHandledKeypressTime = new Date().getTime();
+
     switch (e.key) {
       case 'Escape':
         this.hideOnEscape();
@@ -381,6 +402,15 @@ export default class App {
         break;
       case '.':
         this.playbarView.$seekForwardButton.click();
+        break;
+      case '+':
+      case '=':
+        this.playbarView.showVolumePanel();
+        this.playbarView.volumePanel.$plus1.click();
+        break;
+      case '-':
+        this.playbarView.showVolumePanel();
+        this.playbarView.volumePanel.$minus1.click();
         break;
     }
   };
