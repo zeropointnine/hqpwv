@@ -55,6 +55,10 @@ Commands.playlistMoveDown = (index) => {
 	return `<PlaylistMoveDown index="${index}" />`;
 }
 
+Commands.setRepeat = (value) => {
+  return `<SetRepeat value="${value}" />`;
+};
+
 Commands.selectTrack = (index) => {
 	return `<SelectTrack index="${index}" />`;
 };

@@ -1071,6 +1071,40 @@ li:before {
   margin-bottom: 8px;
 }
 
+#playlistRepeatButton {
+  position: relative;
+  margin-left: auto;
+  padding-left: 42px;
+  background-color: transparent;
+  text-transform: none;
+  font-weight: normal;
+}
+#playlistRepeatButton:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  left: 4px;
+  width: 36px;
+  opacity: 0.7;
+  background-image: url("./../img/icons/repeat_white_24dp.svg");
+}
+#playlistRepeatButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+#playlistRepeatButton.isAll:before {
+  background-image: url("./../img/icons/repeat_on_white_24dp.svg");
+}
+#playlistRepeatButton.isOne:before {
+  background-image: url("./../img/icons/repeat_one_on_white_24dp.svg");
+}
+
 #playlistNonItem {
   padding-top: 16px;
   color: #999;

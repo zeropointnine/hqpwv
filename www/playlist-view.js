@@ -16,16 +16,19 @@ export default class PlaylistView extends Subview {
   contextMenu;
   currentItems;
   listItems$;
+  $repeatButton;
 
   constructor() {
   	super($("#playlistView"));
 
   	this.$list = this.$el.find("#playlistList");
+    this.$repeatButton = this.$el.find('#playlistRepeatButton');
 
     this.contextMenu = new PlaylistContextMenu();
 
   	this.$el.find("#playlistCloseButton").on("click tap", () => $(document).trigger('playlist-close-button'));
 		this.$el.find("#playlistClearButton").on("click tap", this.onClearButton);
+    this.$repeatButton.on('click tap', this.onRepeatButton);
 
     Util.addAppListener(this, 'model-playlist-updated', this.update);
     Util.addAppListener(this, 'model-library-updated', this.update);
@@ -33,28 +36,38 @@ export default class PlaylistView extends Subview {
 	}
 
   show() {
-    $(document).on('model-status-updated', this.updateSelectedItem);
   	super.show();
   	ViewUtil.animateCss(this.$el,
   		() => this.$el.css("top", this.$el.height() + "px"),
   		() => this.$el.css('top', '0px'),
   		null);
+
+    $(document).on('model-status-updated', this.updateSelectedItem);
+    $(document).on('model-state-updated', this.updateRepeatButton);
+
+    Service.queueCommandFront(Commands.state());
   }
 
   hide() {
-    $(document).off('model-status-updated', this.updateSelectedItem);
     ViewUtil.animateCss(this.$el,
         null,
         () => this.$el.css("top", this.$el.outerHeight() + "px"),
         () => ViewUtil.setVisible(this.$el, false));
     this.contextMenu.hide();
-  }
+
+    $(document).off('model-status-updated', this.updateSelectedItem);
+    $(document).off('model-state-updated', this.updateRepeatButton);  }
 
   update() {
+
+    this.updateRepeatButton();
+
     if (this.arePlaylistArraysEqual(this.currentItems, Model.playlistData)
         && (Model.playlistData.length > 0 &&  Model.library.array.length == 0)) {
       return;
     }
+
+    // Populate list items
     this.currentItems = [];
     this.listItems$ = [];
 		this.$list.empty();
@@ -80,7 +93,7 @@ export default class PlaylistView extends Subview {
 		this.updateSelectedItem();
 	}
 
-	updateSelectedItem = (e) => {
+	updateSelectedItem = () => {
 		if (Model.playlistData.length != Model.status.data['@_tracks_total']) {
 			// playlist data is obviously out of sync
 			this.selectItemByIndex(-1);
@@ -90,6 +103,19 @@ export default class PlaylistView extends Subview {
 			this.selectItemByIndex(Model.status.data['@_track'] - 1); // bc 1-indexed
 		}
 	};
+
+  updateRepeatButton = () => {
+    if (Model.state.isRepeatAll) {
+      this.$repeatButton.removeClass('isOne').addClass('isAll');
+      this.$repeatButton.text('Repeat all');
+    } else if (Model.state.isRepeatOne) {
+      this.$repeatButton.removeClass('isAll').addClass('isOne');
+      this.$repeatButton.text('Repeat track');
+    } else { // no-repeat
+      this.$repeatButton.removeClass('isAll isOne');
+      this.$repeatButton.text('Repeat off');
+    }
+  };
 
 	selectItemByIndex(index) {
 		this.$list.children().each((i, item) => {
@@ -190,6 +216,19 @@ export default class PlaylistView extends Subview {
   onClearButton = (e) => {
     Service.queueCommandsFront(
         [Commands.playlistClear(), Commands.playlistGet()]);
+  };
+
+  onRepeatButton = (e) => {
+    // none -> all -> one
+    let value;
+    if (this.$repeatButton.hasClass('isAll')) {
+      value = '1'; // set to one
+    } else if (this.$repeatButton.hasClass('isOne')) {
+      value = '0'; // set to none
+    } else { // is-none
+      value = '2'; // set to all
+    }
+    Service.queueCommandsFront([Commands.setRepeat(value), Commands.state()]);
   };
 
   onItemFavoriteButtonClick(event) {

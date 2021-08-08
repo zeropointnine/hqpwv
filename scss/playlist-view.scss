@@ -6,6 +6,38 @@
 	margin-bottom: 8px;
 }
 
+#playlistClearButton { }
+
+#playlistRepeatButton {
+  position:relative;
+  margin-left:auto;
+  padding-left:42px;
+  background-color:transparent;
+  text-transform: none;
+  font-weight: normal;
+
+  &:before {
+    @include iconBefore;
+    left:4px;
+    width:$icon-button-side;
+    opacity: 0.7;
+    background-image: url('./../img/icons/repeat_white_24dp.svg');
+  }
+  &:hover {
+    background-color: $color-button-over;
+  }
+  &.isAll {
+    &:before {
+      background-image: url('./../img/icons/repeat_on_white_24dp.svg');
+    }
+  }
+  &.isOne {
+    &:before {
+      background-image: url('./../img/icons/repeat_one_on_white_24dp.svg');
+    }
+  }
+}
+
 #playlistNonItem {
   padding-top:$space-unit;
   color:$color-text-less;

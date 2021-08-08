@@ -1,5 +1,6 @@
 import Commands from './commands.js';
 import StatusVo from './status-vo.js';
+import StateVo from './state-vo.js';
 import LibraryVo from './library-vo.js';
 
 /**
@@ -11,6 +12,7 @@ class Model {
 	_library = new LibraryVo();
 	_status = new StatusVo();
   _lastStatus = new StatusVo();
+  _state = new StateVo();
 	_playlistData = [];
   _infoData = {};
 
@@ -49,12 +51,23 @@ class Model {
 	}
 
   // @NonNull
+  get state() {
+    return this._state;
+  }
+
+  setStateUsingResponseObject(data) {
+    this._state = new StateVo(data);
+    $(document).trigger('model-state-updated');
+  }
+
+  // @NonNull
 	get playlistData() {
 		return this._playlistData;
 	}
 
 	setPlaylistDataUsingResponseObject(data) {
 		if (!data['PlaylistGet'] || !data['PlaylistGet']['PlaylistItem']) {
+      cl('warning missing expected property', data);
       this._playlistData = [];
     } else {
       this._playlistData = data['PlaylistGet']['PlaylistItem'];

@@ -140,7 +140,9 @@ class Service {
     // Store model data if applicable;
 		// model will send event that it's been updated.
 		if (data['Status']) {
-			Model.setStatusUsingResponseObject(data['Status']);
+      Model.setStatusUsingResponseObject(data['Status']);
+    } else if (data['State']) {
+      Model.setStateUsingResponseObject(data);
 		} else if (data['PlaylistGet']) {
 			Model.setPlaylistDataUsingResponseObject(data);
 		} else if (data['LibraryGet']) {

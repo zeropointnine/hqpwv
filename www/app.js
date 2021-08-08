@@ -114,8 +114,9 @@ export default class App {
     };
 
     const step2 = () => {
-      Statuser.start();
+      Statuser.start(); // calls Status
       Service.queueCommandsFront([
+        { xml: Commands.state() },
         { xml: Commands.playlistGet() },
         { xml: Commands.libraryGet(), callback: step3 }
       ])
