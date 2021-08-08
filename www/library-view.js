@@ -66,7 +66,7 @@ export default class LibraryView extends Subview {
     }
 
     // Prep the albums array
-    const a = Model.libraryData ? [...Model.libraryData] : [];
+    const a = Model.library.array;
     this.albums = LibraryUtil.makeFilteredAlbumsArray(a);
     LibraryUtil.sortAlbums(this.albums, Settings.librarySortType);
 
@@ -88,7 +88,7 @@ export default class LibraryView extends Subview {
     }
 		this.updateListWidth();
 
-    this.$itemCount.text(`(${this.albums.length}/${Model.libraryData.length})`);
+    this.$itemCount.text(`(${this.albums.length}/${Model.library.array.length})`);
 
     const duration = new Date().getTime() - startTime;
     cl(`init - lib populate time ${duration}ms`);
@@ -114,7 +114,7 @@ export default class LibraryView extends Subview {
 
   makeNoneItem() {
     let s;
-    if (Model.libraryData && Model.libraryData.length > 0) {
+    if (Model.library.array && Model.library.array.length > 0) {
       s = `<div id="libraryNoneItem">No items</div>`;
     } else {
       s = `<div id="libraryNoneItem">`;

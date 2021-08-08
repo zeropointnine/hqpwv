@@ -6,13 +6,12 @@
 $mobile-max-width: 480px;
 $tablet-max-width: 768px;
 
-$color-bg: #101010;
-
-$color-listitem-less: #1c1c1c;
-$color-listitem: #282828;
-$color-listitem-over: #323232;
-$color-listitem-selected: #383838;
-$color-listitem-selected-over: #424242;
+$color-bg: #101010; // 16 0.062
+$color-listitem-less: #1c1c1c; // 28 0.11
+$color-listitem: #282828; // 40 0.15
+$color-listitem-over: #323232; // 50 0.20
+$color-listitem-selected: #383838; // 56 0.22
+$color-listitem-selected-over: #424242; // 66 0.26
 
 $color-text: #ccc;
 $color-text-less: #999;
@@ -20,12 +19,9 @@ $color-text-least: #666;
 
 $color-accent: #ff2200;
 
-//$color-button-bg: $color-listitem;
-//$color-button-over: $color-listitem-over;
-//$color-button-selected: $color-listitem-selected;
-$color-button-bg: rgba(255,255,255,0.16); // 0x28 divided by 256
-$color-button-over: rgba(255,255,255,0.22); // 0x38 divided by 256
-$color-button-selected: rgba(255,255,255,0.28); // 0x48 divided by 256
+$color-button-bg: rgba(255,255,255,0.15); // 0x28
+$color-button-over: rgba(255,255,255,0.20); // 0x32
+$color-button-selected: rgba(255,255,255,0.22); // 0x48
 
 $space-unit: 16px;
 $space-unit-mobile: 12px;

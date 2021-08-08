@@ -161,6 +161,9 @@
       opacity:0.7;
       background-image: url('./../img/icons/favorite_white_24dp.svg');
     }
+    &:hover {
+      background-color: transparent;
+    }
   }
 }
 
@@ -202,5 +205,5 @@
 }
 .albumItemContext {
   height:$icon-button-side; // w/o this, is too tall, not sure why
-	margin-left:12px;
+	margin-left:6px;
 }

@@ -14,28 +14,38 @@
 .playlistItem {
 	display:flex;
 	align-items:center;
-	background-color:$color-listitem;
+	background-color:$color-listitem-less;
 	padding: 10px 12px 10px 12px;
   margin-top: 4px;
 	margin-bottom: 4px;
 	cursor:pointer;
 	&:hover {
-		background-color:$color-listitem-over;
+		background-color:$color-listitem;
 	}
-
 	&.selected {
-		background-color: $color-listitem-selected;	
+		background-color: $color-listitem;
 		&:hover {
-			background-color:$color-listitem-selected-over;
+			background-color:$color-listitem-selected;
 		}
 	}
-
   @include mobile {
     padding: 8px 8px 8px 8px;
   }
 }
+.playlistItemMeta {
+  height:$icon-button-side; // w/o this, is too tall, not sure why
+  margin-left:12px;
+  display:flex;
+  align-items:center;
+}
+.playlistItemViews {
+  font-size: $font-size-smaller;
+  color:$color-text-least;
+  margin-right:4px;
+}
 
-$margin1: 6px;
+
+$margin1: 0px;
 $margin2: 18px;
 
 .playlistItem.groupFirst {
@@ -43,6 +53,9 @@ $margin2: 18px;
   border-top-right-radius: $space-unit;
   margin-top:$margin2;
   margin-bottom:$margin1;
+  border-top:1px solid $color-listitem;
+  border-left:1px solid $color-listitem;
+  border-right:1px solid $color-listitem;
   @include mobile {
     border-top-left-radius: $space-unit-mobile;
     border-top-right-radius: $space-unit-mobile;
@@ -51,12 +64,17 @@ $margin2: 18px;
 .playlistItem.groupMiddle {
   margin-top:$margin1;
   margin-bottom:$margin1;
+  border-left:1px solid $color-listitem;
+  border-right:1px solid $color-listitem;
 }
 .playlistItem.groupLast {
   border-bottom-left-radius: $space-unit;
   border-bottom-right-radius: $space-unit;
   margin-top:$margin1;
   margin-bottom:$margin2;
+  border-left:1px solid $color-listitem;
+  border-right:1px solid $color-listitem;
+  border-bottom:1px solid $color-listitem;
   @include mobile {
     border-bottom-left-radius: $space-unit-mobile;
     border-bottom-right-radius: $space-unit-mobile;
@@ -66,6 +84,7 @@ $margin2: 18px;
   //border-radius: 16px;
   margin-top:$margin2;
   margin-bottom:$margin2;
+  border: 1px solid $color-listitem;
 }
 
 .playlistItemLeft {

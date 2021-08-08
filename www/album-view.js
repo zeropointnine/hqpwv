@@ -46,7 +46,10 @@ export default class AlbumView extends Subview {
   		() => { this.$el.css("top", this.$el.height() / 3 + "px"); this.$el.css('opacity', 0); },
   		() => { this.$el.css('top', '0px'); this.$el.css('opacity', 1); },
   		null);
+
     $(document).on('model-status-updated', this.updateHighlightedTrack);
+    $(document).on('track-numviews-updated', this.onTrackNumViewsUpdated);
+
     this.currentPlayingSongAlbumIndex = -1;
   }
 
@@ -54,6 +57,7 @@ export default class AlbumView extends Subview {
     super.hide();
     this.contextMenu.hide();
     $(document).off('model-status-updated', this.updateHighlightedTrack);
+    $(document).off('track-numviews-updated', this.onTrackNumViewsUpdated);
   }
 
   update(album) {
@@ -97,15 +101,17 @@ export default class AlbumView extends Subview {
 		const seconds = parseInt(item['@_length']);
 		const duration = seconds ? ` <span class="albumItemDuration">(${Util.durationText(seconds)})</span>` : '';
 		const song = item['@_song'];
-    const isFavorite = MetaUtil.isFavorite(item['wvmeta']);
-		const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
+    const hash = item['@_hash'];
 		let s = '';
     s += `<div class="albumItem" data-index="${index}">`;
 		s += `<div class="albumItemLeft">${index+1}</div>`;
 		s += `<div class="albumItemMain">${song}${duration}</div>`;
     if (MetaUtil.isEnabled) {
+      const isFavorite = MetaUtil.isFavoriteFor(hash);
+      const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
+      const numViews = MetaUtil.getNumViewsFor(hash);
       s += `<div class="albumItemMeta">`;
-      s += `<div class="albumItemViews">666</div>`;
+      s += `<div class="albumItemViews">${numViews || ''}</div>`;
       s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
       s += `</div>`;
     }
@@ -164,6 +170,7 @@ export default class AlbumView extends Subview {
 	onItemClick(event) {
 		const index = $(event.currentTarget).attr("data-index");
 		const item = this.tracks[index];
+    cl(item['@_hash'])
 	}
 
 	onItemContextButtonClick(event) {
@@ -178,27 +185,28 @@ export default class AlbumView extends Subview {
     const $button = $(event.currentTarget);
     const index = parseInt($button.attr("data-index"));
     const track = this.tracks[index];
-    // update model
-    let meta = track['wvmeta'];
-    if (!meta) {
-      meta = {};
-      track['wvmeta'] = meta;
-    }
-    const oldValue = MetaUtil.isFavorite(meta);
+    const hash = track['@_hash'];
+    const oldValue = MetaUtil.isFavoriteFor(hash);
     const newValue = !oldValue;
-    meta['favorite'] = newValue;
     // update button
     if (newValue) {
       $button.addClass('isSelected');
     } else {
       $button.removeClass('isSelected');
     }
-    // push to server
-    const hash = track['@_hash'];
-    if (!hash) {
-      return; // shouldn't happen
+    // update model
+    MetaUtil.setFavoriteFor(hash, newValue);
+  }
+
+  onTrackNumViewsUpdated = (e, hash, numViews) => {
+    for (let i = 0; i < this.tracks.length; i++) {
+      const track = this.tracks[i];
+      const $item = this.listItems$[i];
+      if (track['@_hash'] == hash) {
+        $item.find('.albumItemViews').text(numViews);
+        break;
+      }
     }
-    MetaUtil.updateTrackFavorite(hash, newValue);
   }
 
   makeStatsText() {

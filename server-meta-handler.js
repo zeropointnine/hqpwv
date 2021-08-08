@@ -28,6 +28,12 @@ const go = (request, response) => {
     return;
   }
 
+  if (request.query['getTracksDownload'] !== undefined) {
+    response.setHeader('Content-Type', 'text/json');
+    response.setHeader('Content-disposition', 'attachment;filename=hqpwv-metadata.json');
+    response.send(meta.getTracks());
+    return;
+  }
   // ---
   // 'put' methods
 

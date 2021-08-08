@@ -250,16 +250,9 @@
 
 					<div id="settingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
 
-					<div style="margin-top:8px">
+					<div style="position:relative; margin-right:56px;">
 						<div id="settingsVersion" class="viewTitle"></div>
-						<a id="settingsProjectAnchor" class="colorTextLess"></a>
-					</div>
-
-					<div class="settingsMeta">
-						<div id="settingsMetaCheckbox" class="checkbox ruleCheckbox" data-settings-value="meta"></div>
-						<div class="settingsMetaInner">
-							<span>HQPWV metadata</span><br><span class="fontSizeSmaller">Updates and displays play count and liked tracks</span>
-						</div>
+						<a id="settingsProjectAnchor" class="colorTextLess" style="position:relative; top:-6px;"></a>
 					</div>
 
 					<div id="settingsHotkeys" style="margin-top:28px;">
@@ -281,8 +274,17 @@
 						</table>
 					</div>
 
-					<div id="settingsInfoView" style="margin-top:28px; ">
-						<div class="settingsSubheading">Your HQPlayer version:</div>
+					<div class="settingsMeta">
+						<div id="settingsMetaCheckbox" class="checkbox ruleCheckbox" data-settings-value="meta"></div>
+						<div class="settingsMetaInner">
+							<span>HQPWV metadata</span><br>
+							<div class="fontSizeSmaller" style="margin-top:4px;">Updates and displays play count and liked tracks</div>
+							<div><a id="metaDownload" href="#"><span class="fontSizeSmaller colorTextLess">Download backup file</span></a></div>
+						</div>
+					</div>
+
+					<div id="settingsInfoView" style="margin-top:32px; ">
+						<div class="settingsSubheading" style="margin-bottom:4px;">Your HQPlayer version:</div>
 						<div id="hqpVersion" class="colorTextLess" style="margin-left:28px">&nbsp;<br>&nbsp;</div>
 					</div>
 				</div>

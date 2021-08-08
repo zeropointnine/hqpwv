@@ -333,14 +333,14 @@ const postProcessLibrary = (json) => {
   // replace with new filtered version
   json['LibraryGet']['LibraryDirectory'] = albums2;
   if (numDropped > 0) {
-    console.log('library - dropped ' + numDropped + ' empty entries');
+    console.log('- library - dropped ' + numDropped + ' empty entries');
   }
   return json;
 };
 
 const doCallback = (json) => {
   if (json.error) {
-    console.log('sending error response to client:', json.error);
+    console.log('- sending error response to client:', json.error);
   }
   responseCallback(json);
   clearValues();    

@@ -11,6 +11,7 @@ class Values {
   COMMAND_ENDPOINT = this.ENDPOINTS_BASE_URL + "command";
   NATIVE_ENDPOINT = this.ENDPOINTS_BASE_URL + 'native';
   META_ENDPOINT = this.ENDPOINTS_BASE_URL + 'meta';
+  META_DOWNLOAD_LINK = this.ENDPOINTS_BASE_URL + 'meta?getTracksDownload';
 
   _hqpwvVersion = '';
   _imagesEndpoint;

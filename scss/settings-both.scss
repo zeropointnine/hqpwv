@@ -1,11 +1,13 @@
-#settingsView { }
+#settingsView {
+  padding-bottom: 24px;
+}
 
 .settingsSubheading {
   margin-bottom: 8px;
 }
 
 .settingsMeta {
-  margin-top:24px;
+  margin-top:32px;
   display:flex;
   .settingsMetaInner {
     margin-left:4px;

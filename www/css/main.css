@@ -137,7 +137,7 @@ li:before {
   width: 36px;
   height: 36px;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.15);
   position: relative;
 }
 .iconButton:before {
@@ -153,7 +153,7 @@ li:before {
   background-size: 24px 24px;
 }
 .iconButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .iconButton.isDisabled {
@@ -170,7 +170,7 @@ li:before {
   opacity: 0.25;
 }
 .toggleButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 .toggleButton:hover:before {
   opacity: 0.7;
@@ -207,11 +207,11 @@ li:before {
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.15);
   cursor: pointer;
 }
 .textButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .textButton.isDisabled {
@@ -301,7 +301,7 @@ li:before {
   display: inline-block;
   width: 36px;
   height: 36px;
-  border: 2px solid #383838;
+  border: 2px solid #424242;
   margin-right: 6px;
   cursor: pointer;
 }
@@ -311,7 +311,7 @@ li:before {
   margin: 2px;
   width: calc(100% - 4px);
   height: calc(100% - 4px);
-  background-color: #383838;
+  background-color: #424242;
 }
 .checkbox .isDisabled {
   cursor: default;
@@ -438,7 +438,7 @@ li:before {
   opacity: 0.66;
 }
 #settingsButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .settingsView #settingsButton,
@@ -454,7 +454,7 @@ li:before {
   opacity: 0.66;
 }
 #hqpSettingsButton:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .settingsView #hqpSettingsButton,
@@ -906,7 +906,7 @@ li:before {
 }
 
 .playlistView #showPlaylistButton {
-  background-color: rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 #playlistNumberAt {
@@ -1079,20 +1079,20 @@ li:before {
 .playlistItem {
   display: flex;
   align-items: center;
-  background-color: #282828;
+  background-color: #1c1c1c;
   padding: 10px 12px 10px 12px;
   margin-top: 4px;
   margin-bottom: 4px;
   cursor: pointer;
 }
 .playlistItem:hover {
-  background-color: #323232;
+  background-color: #282828;
 }
 .playlistItem.selected {
-  background-color: #383838;
+  background-color: #282828;
 }
 .playlistItem.selected:hover {
-  background-color: #424242;
+  background-color: #383838;
 }
 @media (max-width: 480px) {
   .playlistItem {
@@ -1100,11 +1100,27 @@ li:before {
   }
 }
 
+.playlistItemMeta {
+  height: 36px;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.playlistItemViews {
+  font-size: 14px;
+  color: #666;
+  margin-right: 4px;
+}
+
 .playlistItem.groupFirst {
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   margin-top: 18px;
-  margin-bottom: 6px;
+  margin-bottom: 0px;
+  border-top: 1px solid #282828;
+  border-left: 1px solid #282828;
+  border-right: 1px solid #282828;
 }
 @media (max-width: 480px) {
   .playlistItem.groupFirst {
@@ -1114,15 +1130,20 @@ li:before {
 }
 
 .playlistItem.groupMiddle {
-  margin-top: 6px;
-  margin-bottom: 6px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border-left: 1px solid #282828;
+  border-right: 1px solid #282828;
 }
 
 .playlistItem.groupLast {
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
-  margin-top: 6px;
+  margin-top: 0px;
   margin-bottom: 18px;
+  border-left: 1px solid #282828;
+  border-right: 1px solid #282828;
+  border-bottom: 1px solid #282828;
 }
 @media (max-width: 480px) {
   .playlistItem.groupLast {
@@ -1134,6 +1155,7 @@ li:before {
 .playlistItem.single {
   margin-top: 18px;
   margin-bottom: 18px;
+  border: 1px solid #282828;
 }
 
 .playlistItemLeft {
@@ -1484,6 +1506,9 @@ li:before {
   opacity: 0.7;
   background-image: url("./../img/icons/favorite_white_24dp.svg");
 }
+.favoriteButton.isSelected:hover {
+  background-color: transparent;
+}
 
 #albumViewTexts * {
   -moz-user-select: text;
@@ -1550,7 +1575,11 @@ li:before {
 
 .albumItemContext {
   height: 36px;
-  margin-left: 12px;
+  margin-left: 6px;
+}
+
+#settingsView {
+  padding-bottom: 24px;
 }
 
 .settingsSubheading {
@@ -1558,7 +1587,7 @@ li:before {
 }
 
 .settingsMeta {
-  margin-top: 24px;
+  margin-top: 32px;
   display: flex;
 }
 .settingsMeta .settingsMetaInner {

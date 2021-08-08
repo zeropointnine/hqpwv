@@ -115,13 +115,13 @@ const getTracks = () => {
   return tracks;
 };
 
-const updateTrackViews = (hash, views) => {
+const updateTrackViews = (hash, numViews) => {
   let o = tracks[hash];
   if (!o) {
     o = {};
     tracks[hash] = o;
   }
-  o['views'] = views;
+  o['views'] = numViews;
   activityTouch();
 };
 

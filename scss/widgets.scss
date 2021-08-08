@@ -87,7 +87,7 @@
   display:inline-block;
   width:$icon-button-side;
   height:$icon-button-side;
-  border:2px solid $color-listitem-selected;
+  border:2px solid $color-listitem-selected-over;
   margin-right:6px;
 
   cursor:pointer;
@@ -99,7 +99,7 @@
       margin:2px;
       width: calc(100% - 4px);
       height: calc(100% - 4px);
-      background-color: $color-listitem-selected;
+      background-color: $color-listitem-selected-over;
     }
   }
 

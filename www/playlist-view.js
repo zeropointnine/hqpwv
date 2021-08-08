@@ -5,6 +5,7 @@ import Model from './model.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import ModalPointerUtil from './modal-pointer-util.js';
+import MetaUtil from './meta-util.js'
 import PlaylistContextMenu from './playlist-context-menu.js';
 
 /**
@@ -26,6 +27,7 @@ export default class PlaylistView extends Subview {
 		this.$el.find("#playlistClearButton").on("click tap", this.onClearButton);
 
     Util.addAppListener(this, 'model-playlist-updated', this.update);
+    Util.addAppListener(this, 'model-library-updated', this.update);
 	}
 
   show() {
@@ -47,7 +49,8 @@ export default class PlaylistView extends Subview {
   }
 
   update() {
-  	if (this.arePlaylistArraysEqual(this.currentItems, Model.playlistData)) {
+    if (this.arePlaylistArraysEqual(this.currentItems, Model.playlistData)
+        && (Model.playlistData.length > 0 &&  Model.library.array.length == 0)) {
       return;
     }
     this.currentItems = [];
@@ -61,10 +64,11 @@ export default class PlaylistView extends Subview {
         const item = Model.playlistData[i];
         this.currentItems.push(item);
         const itemPrevious = (i > 0) ? Model.playlistData[i - 1] : null;
-        const itemNext = (i < Model.playlistData.length - 1) ? Model.playlistData[i + 1] : null;;
+        const itemNext = (i < Model.playlistData.length - 1) ? Model.playlistData[i + 1] : null;
         const $item = this.makeListItem(i, item, itemPrevious, itemNext);
         $item.on("click tap", e => this.onItemClick(e));
         $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
+        $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
         this.$list.append($item);
       }
     }
@@ -109,6 +113,20 @@ export default class PlaylistView extends Subview {
 		s += `<div class="playlistItem ${cls}" data-index="${index}">`;
 		s += `  <div class="playlistItemLeft">${index+1}</div>`;
 		s += `  <div class="playlistItemMain">${this.makeLabel(item)}</div>`;
+    if (MetaUtil.isEnabled && Model.library.array.length > 0) {
+      const hash = Model.library.uriToHashMap[item['@_uri']];
+      if (!hash) {
+        cl('info no hash for ', item['@_uri']);
+      } else {
+        const isFavorite = MetaUtil.isFavoriteFor(hash);
+        const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
+        const numViews = MetaUtil.getNumViewsFor(hash);
+        s += `<div class="playlistItemMeta">`;
+        s += `<div class="playlistItemViews">${numViews || ''}</div>`;
+        s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
+        s += `</div>`;
+      }
+    }
 		s += `  <div class="playlistItemRight"><div class="contextButton iconButton moreButton" data-index="${index}"></div></div>`;
 		s += `</div>`;
 		return $(s);
@@ -169,6 +187,28 @@ export default class PlaylistView extends Subview {
     Service.queueCommandsFront(
         [Commands.playlistClear(), Commands.playlistGet()]);
   };
+
+  onItemFavoriteButtonClick(event) {
+    event.stopPropagation(); // prevent listitem from responding to same event
+    const $button = $(event.currentTarget);
+    const index = parseInt($button.attr("data-index"));
+    const track = Model.playlistData[index];
+    const hash = Model.library.uriToHashMap[track['@_uri']];
+    if (!hash) {
+      cl('warning no hash for ', item['@_uri']);
+      return;
+    }
+    const oldValue = MetaUtil.isFavoriteFor(hash);
+    const newValue = !oldValue;
+    // update button
+    if (newValue) {
+      $button.addClass('isSelected');
+    } else {
+      $button.removeClass('isSelected');
+    }
+    // update model
+    MetaUtil.setFavoriteFor(hash, newValue);
+  }
 
   arePlaylistArraysEqual(a1, a2) {
     if (a1 == null || a2 == null) {

@@ -110,7 +110,6 @@ export default class App {
       }
       const duration = new Date().getTime() - startTime;
       cl(`init - async calls time ${duration}ms`);
-      MetaUtil.mergeIfPossible();
       this.libraryView.update();
     };
 

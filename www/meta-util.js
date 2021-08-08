@@ -4,7 +4,9 @@ import Settings from './settings.js';
 import Model from './model.js';
 
 /**
- *
+ * Manages hqpwv 'metadata layer'.
+ * Loads data from server.
+ * On any mutate operation, pushes change to server to keep it in sync.
  */
 class MetaUtil {
 
@@ -15,12 +17,24 @@ class MetaUtil {
   isInitialized;
   isReady;
 
+  /**
+   * JSON hash object that comes from hqpwv server
+   * Key is track hash.
+   * Value is an object { favorite, views }
+   */
   meta;
 
   constructor() {}
 
   // todo promises. c'mon.
   init() {
+
+    // Dev convenience:
+    if (!window.hqpwv) {
+      window.hqpwv = {};
+    }
+    window.hqpwv.MetaUtil = this;
+
     this.getInfo((result) => {
       if (!result) {
         return;
@@ -29,7 +43,7 @@ class MetaUtil {
         if (!result) {
           return;
         }
-        this.mergeIfPossible();
+        this.isReady = true;
       });
     });
   }
@@ -64,30 +78,60 @@ class MetaUtil {
     $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 
-  // Iterate library tracks, and 'decorate' w/ meta.
-  mergeIfPossible() {
-    if (Model.libraryData.length == 0 || this.meta == null) {
-      return;
-    }
-    for (const album of Model.libraryData) {
-      const tracks = Model.getTracksOf(album);
-      for (const track of tracks) {
-        this.decorateTrack(track);
-      }
-    }
-    this.isReady = true;
+  get isEnabled() {
+    return (Settings.isMetaEnabled && this.isReady);
   }
 
-  decorateTrack(track) {
-    const hash = track['@_hash'];
+  // ---
+
+  isFavoriteFor(hash) {
+    if (!this.meta[hash]) {
+      return false;
+    }
+    const o = this.meta[hash];
+    const value = o['favorite'];
+    return (value === true || value === 'true');
+  }
+
+  setFavoriteFor(hash, isFavorite) {
+    if (!hash) {
+      return false;
+    }
+    let o = this.meta[hash];
+    if (!o) {
+      this.meta[hash] = {};
+      o = this.meta[hash];
+    }
+    o['favorite'] = isFavorite;
+
+    this.updateTrackFavorite(hash, isFavorite);
+  }
+
+  getNumViewsFor(hash) {
+    let o = this.meta[hash];
+    if (!o) {
+      return 0;
+    }
+    let numViews = parseInt( o['views'] );
+    if (isNaN(numViews)) {
+      numViews = 0;
+    }
+    return numViews;
+  }
+
+  incrementNumViewsFor(hash) {
     if (!hash) {
       return;
     }
-    const o = this.meta[hash];
+    let o = this.meta[hash];
     if (!o) {
-      return;
+      this.meta[hash] = {};
+      o = this.meta[hash];
     }
-    track['wvmeta'] = o;
+    const newValue = this.getNumViewsFor(hash) + 1;
+    o['views'] = newValue;
+
+    this.updateTrackViews(hash, newValue);
   }
 
   // ---
@@ -103,22 +147,17 @@ class MetaUtil {
     $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 
-  // ---
-
-  get isEnabled() {
-    return (Settings.isMetaEnabled && this.isReady);
+  updateTrackViews(hash, numViews) {
+    if (!hash) {
+      cl('warning no hash');
+      return;
+    }
+    const onSuccess = (data, textStatus, jqXHR) => { };
+    const onError = (e) => cl('warning update track views failed', e);
+    const url = `${Values.META_ENDPOINT}?updateTrackViews&hash=${hash}&value=${numViews}`;
+    $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 
-  isFavorite(metaObject) {
-    if (!metaObject) {
-      return false;
-    }
-    const value = metaObject['favorite'];
-    if (value === undefined) {
-      return false;
-    }
-    return (value === true || value === 'true');
-  }
 }
 
 export default new MetaUtil();

@@ -1,5 +1,6 @@
 import Commands from './commands.js';
 import StatusVo from './status-vo.js';
+import LibraryVo from './library-vo.js';
 
 /**
  * Model
@@ -7,7 +8,7 @@ import StatusVo from './status-vo.js';
  */
 class Model {
 
-	_libraryData = [];
+	_library = new LibraryVo();
 	_status = new StatusVo();
   _lastStatus = new StatusVo();
 	_playlistData = [];
@@ -22,12 +23,12 @@ class Model {
   }
 
   // @NonNull
-	get libraryData() {
-		return this._libraryData;
+	get library() {
+		return this._library;
 	}
 
 	setLibraryDataUsingResponseObject(data) {
-		this._libraryData = data['LibraryGet']['LibraryDirectory'] || [];
+		this._library = new LibraryVo(data);
 		$(document).trigger('model-library-updated');
 	}
 
@@ -87,25 +88,6 @@ class Model {
 		const value = albumObject['LibraryFile'];
 		return Array.isArray(value) ? value : [value];
 	}
-
-  /**
-   * Find library item that contains the given track 
-   * (Rem, a playlist item does not have to exist in the library)
-	 *
-   * uri example: "file:///Volumes/MUSICBIG/nZk/01_AZ.flac"
-   * path example: "/Volumes/MUSICBIG/nZk" (MacOS)
-   */
-  getLibraryItemByTrackUri(uri) {
-    let libraryItem;
-    for (const libItem of this._libraryData) {
-      const libItemPath = libItem['@_path'];
-      if (uri.includes(libItemPath)) {
-        libraryItem = libItem;
-        break;
-      }
-    }
-    return libraryItem;
-  }
 
   /** Returns empty string on bad data. */
   makeBitrateDisplayText(album) {

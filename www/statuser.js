@@ -6,11 +6,12 @@ import ModelUtil from './model-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import Busyer from './busyer.js';
+import MetaUtil from './meta-util.js';
 
 const INTERVAL_FAST = 500;
 const INTERVAL_PLAYING = 1000;
 const INTERVAL_NOT_PLAYING = 10000;
-
+const NEW_TRACK_TIMEOUT_DURATION = 10 * 1000;
 /**
  * Makes <Status /> calls periodically, based on app state and activity.
  * Idea is to make calls more frequently when there's a known delay btw
@@ -71,11 +72,11 @@ class Statuser {
         // cl('statuser ignoring detect');
         this.ignoreNextNewTrackDetected = false;
       } else {
-        // cl(`statuser sending ${name}`);
+        cl(`statuser sending ${name}`);
         $(document).trigger(name);
 
         clearTimeout(this.newTrackTimeoutId);
-        this.newTrackTimeoutId = setTimeout(onNewTrackTimeout, 5000);
+        this.newTrackTimeoutId = setTimeout(this.onNewTrackTimeout, NEW_TRACK_TIMEOUT_DURATION);
       }
     };
 
@@ -105,18 +106,28 @@ class Statuser {
   }
 
   onNewTrackTimeout = () => {
-    cl('ontt');
     // Hopefully <Status> is up to date.
     if (Model.status.isStopped) {
       return;
     }
-    if (Model.trackNum == -1) {
+    if (Model.status.trackNum == -1) {
       return;
     }
-    const playlistTrack = Model.playlistData[Model.status.trackNum];
+    const trackIndex = Model.status.trackNum - 1;
+    const playlistTrack = Model.playlistData[trackIndex];
     if (!playlistTrack) {
+      cl('warning no such track (race condition?)');
       return;
     }
+    const uri = playlistTrack['@_uri'];
+    const hash = Model.library.uriToHashMap[uri];
+    if (!hash) {
+      cl('warning lookup failed');
+      return;
+    }
+
+    MetaUtil.incrementNumViewsFor(hash);
+    $(document).trigger('track-numviews-updated', [hash, MetaUtil.getNumViewsFor(hash)]);
 
     // ...
   };
