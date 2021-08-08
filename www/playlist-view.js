@@ -14,7 +14,8 @@ import PlaylistContextMenu from './playlist-context-menu.js';
 export default class PlaylistView extends Subview {
 
   contextMenu;
-  currentItems = null;
+  currentItems;
+  listItems$;
 
   constructor() {
   	super($("#playlistView"));
@@ -28,6 +29,7 @@ export default class PlaylistView extends Subview {
 
     Util.addAppListener(this, 'model-playlist-updated', this.update);
     Util.addAppListener(this, 'model-library-updated', this.update);
+    Util.addAppListener(this, 'track-numviews-updated', this.onTrackNumViewsUpdated);
 	}
 
   show() {
@@ -54,6 +56,7 @@ export default class PlaylistView extends Subview {
       return;
     }
     this.currentItems = [];
+    this.listItems$ = [];
 		this.$list.empty();
 
     if (Model.playlistData.length == 0) {
@@ -69,6 +72,7 @@ export default class PlaylistView extends Subview {
         $item.on("click tap", e => this.onItemClick(e));
         $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
         $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
+        this.listItems$.push($item);
         this.$list.append($item);
       }
     }
@@ -208,6 +212,18 @@ export default class PlaylistView extends Subview {
     }
     // update model
     MetaUtil.setFavoriteFor(hash, newValue);
+  }
+
+  onTrackNumViewsUpdated(hash, count) {
+    for (let i = 0; i < this.currentItems.length; i++) {
+      const item = this.currentItems[i];
+      const $item = this.listItems$[i];
+      const itemHash = Model.library.uriToHashMap[item['@_uri']];
+      if (itemHash == hash) {
+        $item.find('.playlistItemViews').text(count);
+        break;
+      }
+    }
   }
 
   arePlaylistArraysEqual(a1, a2) {

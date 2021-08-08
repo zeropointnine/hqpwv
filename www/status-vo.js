@@ -42,7 +42,7 @@ export default class StatusVo {
     return (!this.isPlaying && !this.isPaused);
   }
   get isStoppedExplicit() {
-    return this._data['@_state'] == '2';
+    return this._data['@_state'] == '0';
   }
 
   /** Returns the 1-indexed track number (as integer) in the playlist, or -1. */

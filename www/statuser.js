@@ -11,11 +11,13 @@ import MetaUtil from './meta-util.js';
 const INTERVAL_FAST = 500;
 const INTERVAL_PLAYING = 1000;
 const INTERVAL_NOT_PLAYING = 10000;
-const NEW_TRACK_TIMEOUT_DURATION = 10 * 1000;
+const NEW_TRACK_TIMEOUT_DURATION = 5 * 1000;
+
 /**
  * Makes <Status /> calls periodically, based on app state and activity.
- * Idea is to make calls more frequently when there's a known delay btw
- * a 'command' and an hqp state change. Plus fast interval while playing, ofc.
+ * Idea is to make calls more frequently while playing, otherwise less so.
+ *
+ * Also, logic to infer when playback has started or track has changed.
  */
 class Statuser {
 
