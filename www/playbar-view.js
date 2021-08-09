@@ -51,8 +51,8 @@ export default class PlaybarView {
 
     this.$playButton.on('click tap', this.onPlayButton);
     this.$stopButton.on('click tap', () => Service.queueCommandFrontAndGetStatus(Commands.stop()));
-    this.$previousButton.on("click tap", () => Service.queueCommandFrontAndGetStatus(Commands.previous()));
-    this.$nextButton.on("click tap", () => Service.queueCommandFrontAndGetStatus(Commands.next()));
+    this.$previousButton.on("click tap", this.onPreviousButton);
+    this.$nextButton.on("click tap", this.onNextButton);
     this.$seekBackwardButton.on("click tap", () => Service.queueCommandFrontAndGetStatus(Commands.backward()));
     this.$seekForwardButton.on("click tap", () => Service.queueCommandFrontAndGetStatus(Commands.forward()));
 
@@ -90,19 +90,20 @@ export default class PlaybarView {
 
   /**
    * Updates the at-track number and total-tracks number.
-   * Uses data from both Model.status and Model.playlist.
+   * Relies on both Model.status and Model.playlist.
    */
   _updatePlaylistNumbers() {
     // nb: status has a totaltracks property but appears to be bugged so not using
-    const totalTracks = parseInt(Model.playlistData.length) || 0;
-    const atTrack = parseInt(Model.status.data['@_track']) || 0;
+    // nb also: status.track is not correct when track is changed while in paused state.
+
+    const totalTracks = Model.playlist.array.length;
+    const atTrack = Model.playlist.getCurrentIndex();
     if (totalTracks == this.totalTracks && atTrack == this.atTrack) {
       return;
     }
     this.totalTracks = totalTracks;
     this.atTrack = atTrack;
-
-    this.$playlistNumberAt.text(this.atTrack);
+    this.$playlistNumberAt.text(atTrack + 1);
     this.$playlistNumberTotal.text(this.totalTracks);
   }
 
@@ -113,7 +114,7 @@ export default class PlaybarView {
   _updatePlayingText() {
     let s = '';
     if (Model.status.isStopped) {
-      s = (Model.playlistData.length > 0)
+      s = (Model.playlist.array.length > 0)
           ? `Stopped`
           : `<span class="colorTextLess">Playlist is empty</span>`;
     } else {
@@ -127,7 +128,8 @@ export default class PlaybarView {
         s += Model.status.metadata['@_song'];
       }
       if (!s) {
-        s = '---'; // stopped?
+        // can occur when 'past' playlist and about to stop
+        s = '&nbsp';
       }
     }
     if (this.playingText != s) {
@@ -203,6 +205,14 @@ export default class PlaybarView {
   onPlayButton = (e) => {
     const xml = Model.status.isPlaying ? Commands.pause() : Commands.play();
     Service.queueCommandFrontAndGetStatus(xml);
+  };
+
+  onPreviousButton = (e) => {
+    Service.queueCommandFrontAndGetStatus(Commands.previous());
+  };
+
+  onNextButton = (e) => {
+    Service.queueCommandFrontAndGetStatus(Commands.next());
   };
 
   onProgressThumbDrag() {

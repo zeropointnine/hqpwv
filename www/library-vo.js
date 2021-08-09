@@ -37,8 +37,27 @@ export default class LibraryVo {
     this.initLookup();
   }
 
-  get uriToHashMap() {
-    return this._lookup;
+  // @Nullable
+  getHashForUri(uri) {
+    const hash = this._lookup[uri];
+    if (!hash) {
+      cl('info no hash for', uri);
+    }
+    return hash;
+  }
+
+  // @Nullable
+  getHashForPlaylistItem(item) {
+    if (!item) {
+      cl('warning playlistitem is null');
+      return null;
+    }
+    if (!item['@_uri']) {
+      cl('warning playlistitem has no uri');
+      return null;
+    }
+    const uri = item['@_uri'];
+    return this.getHashForUri(uri);
   }
 
   /**

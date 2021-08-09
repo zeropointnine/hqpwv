@@ -13,12 +13,12 @@ class DialogView {
 
   constructor() { }
 
-  show(titleText, messageHtmlText, buttonText, isFatal, onButton) {
+  show(titleText, messageHtmlText, buttonText, isFatalStyle, onButton) {
 
-    $('#page').css('pointer-events', 'none');
+    $(document.body).css('pointer-events', 'none');
     this.$dialog.css('pointer-events', 'auto');
 
-    isFatal
+    isFatalStyle
         ? this.$outer.addClass('isFatal')
         : this.$outer.removeClass('isFatal');
 
@@ -29,7 +29,8 @@ class DialogView {
 
     this.$button.on('click tap', e => {
       ViewUtil.setVisible(this.$outer, false);
-      $('#page').css('pointer-events', '');
+      $(document.body).css('pointer-events', '');
+      this.$dialog.css('pointer-events', '');
       onButton();
     });
   }

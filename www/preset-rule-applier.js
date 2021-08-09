@@ -15,8 +15,7 @@ class PresetRuleApplier {
   abCounter = 0;
 
   constructor() {
-    Util.addAppListener(this, 'play-to-play', this.onNewTrackDetected);
-    Util.addAppListener(this, 'stop-to-play', this.onNewTrackDetected);
+    Util.addAppListener(this, 'new-track', this.onNewTrackDetected);
   }
 
   noop() { }
@@ -71,7 +70,7 @@ class PresetRuleApplier {
       return;
     }
 
-    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.status.trackNum);
+    PresetUtil.applyPresetAndResume(preset, Model.playlist.getCurrentIndex() + 1);
   }
 
   doAb() {
@@ -81,7 +80,7 @@ class PresetRuleApplier {
     if (!preset) {
       return;
     }
-    PresetUtil.applyPresetAndRestartTrackIfNecessary(preset, Model.status.trackNum);
+    PresetUtil.applyPresetAndResume(preset, Model.playlist.getCurrentIndex() + 1);
   }
 
   getPresetByOptionValue(value) {

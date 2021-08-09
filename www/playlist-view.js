@@ -6,6 +6,7 @@ import Commands from './commands.js';
 import Service from './service.js';
 import ModalPointerUtil from './modal-pointer-util.js';
 import MetaUtil from './meta-util.js'
+import PlaylistVo from './playlist-vo.js'
 import PlaylistContextMenu from './playlist-context-menu.js';
 
 /**
@@ -13,10 +14,10 @@ import PlaylistContextMenu from './playlist-context-menu.js';
  */
 export default class PlaylistView extends Subview {
 
-  contextMenu;
-  currentItems;
   listItems$;
   $repeatButton;
+  contextMenu;
+  playlist;
 
   constructor() {
   	super($("#playlistView"));
@@ -32,7 +33,6 @@ export default class PlaylistView extends Subview {
 
     Util.addAppListener(this, 'model-playlist-updated', this.update);
     Util.addAppListener(this, 'model-library-updated', this.update);
-    Util.addAppListener(this, 'track-numviews-updated', this.onTrackNumViewsUpdated);
 	}
 
   show() {
@@ -44,6 +44,7 @@ export default class PlaylistView extends Subview {
 
     $(document).on('model-status-updated', this.updateSelectedItem);
     $(document).on('model-state-updated', this.updateRepeatButton);
+    $(document).on('track-numviews-updated', this.onTrackNumViewsUpdated);
 
     Service.queueCommandFront(Commands.state());
   }
@@ -56,53 +57,59 @@ export default class PlaylistView extends Subview {
     this.contextMenu.hide();
 
     $(document).off('model-status-updated', this.updateSelectedItem);
-    $(document).off('model-state-updated', this.updateRepeatButton);  }
+    $(document).off('model-state-updated', this.updateRepeatButton);
+    $(document).off('track-numviews-updated', this.onTrackNumViewsUpdated);
+  }
 
   update() {
-
     this.updateRepeatButton();
 
-    if (this.arePlaylistArraysEqual(this.currentItems, Model.playlistData)
-        && (Model.playlistData.length > 0 &&  Model.library.array.length == 0)) {
-      return;
-    }
-
     // Populate list items
-    this.currentItems = [];
+    this.playlist = Model.playlist;
     this.listItems$ = [];
 		this.$list.empty();
 
-    if (Model.playlistData.length == 0) {
-      const $nonItem = $(`<div id="playlistNonItem">Playlist is empty</span>`)
+    if (this.playlist.array.length == 0) {
+      const $nonItem = $(`<div id="playlistNonItem">Playlist is empty</span>`);
       this.$list.append($nonItem);
-    } else {
-      for (let i = 0; i < Model.playlistData.length; i++) {
-        const item = Model.playlistData[i];
-        this.currentItems.push(item);
-        const itemPrevious = (i > 0) ? Model.playlistData[i - 1] : null;
-        const itemNext = (i < Model.playlistData.length - 1) ? Model.playlistData[i + 1] : null;
-        const $item = this.makeListItem(i, item, itemPrevious, itemNext);
-        $item.on("click tap", e => this.onItemClick(e));
-        $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
-        $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
-        this.listItems$.push($item);
-        this.$list.append($item);
-      }
+      return;
     }
-
-		this.updateSelectedItem();
+    for (let i = 0; i < this.playlist.array.length; i++) {
+      const item = this.playlist.array[i];
+      const itemPrevious = (i > 0) ? Model.playlist.array[i - 1] : null;
+      const itemNext = (i < Model.playlist.array.length - 1) ? Model.playlist.array[i + 1] : null;
+      const $item = this.makeListItem(i, item, itemPrevious, itemNext);
+      $item.on("click tap", e => this.onItemClick(e));
+      $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
+      $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
+      this.listItems$.push($item);
+      this.$list.append($item);
+    }
+    this.updateSelectedItem();
 	}
 
 	updateSelectedItem = () => {
-		if (Model.playlistData.length != Model.status.data['@_tracks_total']) {
-			// playlist data is obviously out of sync
-			this.selectItemByIndex(-1);
-		} else if (!Model.playlistData.length || !(Model.status.data['@_tracks_total'] > -1)) {
-			this.selectItemByIndex(-1);
-		} else {
-			this.selectItemByIndex(Model.status.data['@_track'] - 1); // bc 1-indexed
-		}
+    // nb, must use status.metadata.uri to determine current track.
+		// status[track] is not correct when track is changed while in paused state.
+    const uri = Model.status.metadata['@_uri']; // rem, is undefined when stopped
+    this.selectItemByUri(uri);
 	};
+
+  selectItemByUri(uri=null) {
+    this.$list.children().each((i, item) => {
+      $(item).removeClass("selected");
+    });
+    if (!uri) {
+      return;
+    }
+    const i = Model.playlist.getIndexByUri(uri);
+    if (i == -1) {
+      cl('warning no match for uri')
+      return;
+    }
+    const $item = $(this.$list.children()[i]);
+    $item.addClass("selected");
+  }
 
   updateRepeatButton = () => {
     if (Model.state.isRepeatAll) {
@@ -117,37 +124,28 @@ export default class PlaylistView extends Subview {
     }
   };
 
-	selectItemByIndex(index) {
-		this.$list.children().each((i, item) => {
-			$(item).removeClass("selected");
-		});
-		const $itemToSelect = $(this.$list.children()[index]);
-		$itemToSelect.addClass("selected");
-	}
-
 	makeListItem(index, item, itemPrevious, itemNext) {
-    let cls = '';
+
+    let groupingClass = '';
     const isSameAsPrevious = this.areFromSameAlbum(item, itemPrevious);
     const isSameAsNext = this.areFromSameAlbum(item, itemNext);
     if (!isSameAsPrevious && isSameAsNext) {
-      cls = 'groupFirst';
+      groupingClass = 'groupFirst';
     } else if (isSameAsPrevious && !isSameAsNext) {
-      cls = 'groupLast';
+      groupingClass = 'groupLast';
     } else if (isSameAsPrevious && isSameAsNext) {
-      cls = 'groupMiddle';
+      groupingClass = 'groupMiddle';
     } else { // isSameAsPrevious && isSameAsNext
-      cls = 'single';
+      groupingClass = 'single';
     }
 
 		let s = '';
-		s += `<div class="playlistItem ${cls}" data-index="${index}">`;
+		s += `<div class="playlistItem ${groupingClass}" data-index="${index}">`;
 		s += `  <div class="playlistItemLeft">${index+1}</div>`;
 		s += `  <div class="playlistItemMain">${this.makeLabel(item)}</div>`;
     if (MetaUtil.isEnabled && Model.library.array.length > 0) {
-      const hash = Model.library.uriToHashMap[item['@_uri']];
-      if (!hash) {
-        cl('info no hash for ', item['@_uri']);
-      } else {
+      const hash = Model.library.getHashForPlaylistItem(item);
+      if (hash) {
         const isFavorite = MetaUtil.isFavoriteFor(hash);
         const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
         const numViews = MetaUtil.getNumViewsFor(hash);
@@ -235,8 +233,8 @@ export default class PlaylistView extends Subview {
     event.stopPropagation(); // prevent listitem from responding to same event
     const $button = $(event.currentTarget);
     const index = parseInt($button.attr("data-index"));
-    const track = Model.playlistData[index];
-    const hash = Model.library.uriToHashMap[track['@_uri']];
+    const item = Model.playlist.array[index];
+    const hash = Model.library.getHashForPlaylistItem(item);
     if (!hash) {
       cl('warning no hash for ', item['@_uri']);
       return;
@@ -253,32 +251,15 @@ export default class PlaylistView extends Subview {
     MetaUtil.setFavoriteFor(hash, newValue);
   }
 
-  onTrackNumViewsUpdated(hash, count) {
-    for (let i = 0; i < this.currentItems.length; i++) {
-      const item = this.currentItems[i];
+  onTrackNumViewsUpdated = (e, hash, count) => {
+    for (let i = 0; i < this.playlist.array.length; i++) {
+      const item = this.playlist.array[i];
       const $item = this.listItems$[i];
-      const itemHash = Model.library.uriToHashMap[item['@_uri']];
+      const itemHash = Model.library.getHashForPlaylistItem(item);
       if (itemHash == hash) {
         $item.find('.playlistItemViews').text(count);
         break;
       }
     }
-  }
-
-  arePlaylistArraysEqual(a1, a2) {
-    if (a1 == null || a2 == null) {
-      return (a1 == null && a2 == null);
-    }
-    if (a1.length != a2.length) {
-      return false;
-    }
-    for (let i = 0; i < a1.length; i++) {
-      const el1 = a1[i];
-      const el2 = a2[i];
-      if (el1['@_uri'] != el2['@_uri']) {
-        return false;
-      }
-    }
-    return true;
   }
 }

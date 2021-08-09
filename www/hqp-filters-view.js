@@ -192,10 +192,7 @@ export default class HqpFiltersView {
 
   onLoadPresetButton(index) {
     const preset = Settings.presetsArray[index];
-    PresetUtil.applyPreset(preset, (isSuccess) => {
-      if (!isSuccess) {
-        cl('warning couldnt apply preset')
-      }
+    PresetUtil.applyPreset(preset, () => {
       this.populateSelectsRedundant();
     });
   }

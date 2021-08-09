@@ -14,6 +14,10 @@ export default class StatusVo {
     return this._data;
   }
 
+  get isEmpty() { // yuk
+    return (Object.keys(this._data).length == 0);
+  }
+
   /**
    * Returns the currently playing song's metadata, or empty-object
    * @NonNull
@@ -43,11 +47,6 @@ export default class StatusVo {
   }
   get isStoppedExplicit() {
     return this._data['@_state'] == '0';
-  }
-
-  /** Returns the 1-indexed track number (as integer) in the playlist, or -1. */
-  get trackNum() {
-    return parseInt(this._data['@_track']) || -1 ;
   }
 
   /** Returns playing track's progress in seconds, or -1. */

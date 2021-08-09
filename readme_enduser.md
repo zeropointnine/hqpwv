@@ -3,16 +3,16 @@
 
 HQPWV is a local webserver that allows you to remotely control <a href="https://www.signalyst.com/consumer.html" target="_blank">HQPlayer</a> from any device on your network using a web browser.
 
-HQPlayer 4 Desktop is required.
+HQPlayer 4 Desktop is required (Untested with HQPlayerEmbedded).
   
 [![Demo video](https://i.vimeocdn.com/video/1198463153?mw=1200&mh=751)](https://vimeo.com/579213725 "Demo video")  
-Demo video  
+Demo video (early alpha)
 
 # Requirements    
 1. <a href="https://www.signalyst.com/consumer.html" target="_blank">HQPlayer 4 Desktop</a>
 2. MacOS or Windows 64-bit
 3. A modern desktop or mobile browser, connected to your local network
-   (If using Safari, it must be a recent version, circa April 2021).
+   (If using desktop or mobile Safari, it must be a recent version, circa April 2021)
   
 # Setup  
 1. Get the latest MacOS or Windows (unsigned) executable [here](https://github.com/zeropointnine/hqpwv/releases). Instructions for running unsigned binaries on MacOS can be found [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac). If running an unsigned executable is not an option, consider downloading the source code and run the application using Node.js.
@@ -22,19 +22,20 @@ Demo video
 5. Navigate to the url from any desktop or mobile browser that's on the same network as HQPlayer and HQPWV.
   
 # Troubleshooting tips  
- TODO
+TODO
  
 # Roadmap, possible TODOs
 - Support (or validate use with) HQPlayer Embedded.
-- Consider supporting older versions of Desktop Safari and Mobile Safari?
-- Consider signing executables?
-- Volume control (lol).
-- Support repeat and (maybe) random playback.
+- Consider supporting older versions of Desktop Safari and Mobile Safari
+- Consider signing executables for major and minor releases.
 - Filter (search) controls to the library view.
-- Pagination system for extremely-large user libraries?
 - Flat track listing view, with filter controls.
 - Zoomed-in "now playing" view.
 - Saved playlists.
-- Add 'metadata layer' to track number of plays and likes.
-- ~~Allow for running HQPWV on a different machine than HQPlayer.~~ done
+- Support random playback.
+- Pagination system for extremely-large user libraries?
+- ~~Add 'metadata layer' to track number of plays and likes.~~ added
 - ~~Add UI for controling HQPlayer upsampling filters.~~ added
+- ~~Allow for running HQPWV on a different machine than HQPlayer.~~ added
+- ~~Volume control~~ added
+- ~~Add repeat setting.~~ added

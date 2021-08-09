@@ -91,7 +91,7 @@ export default class LibraryView extends Subview {
     this.$itemCount.text(`(${this.albums.length}/${Model.library.array.length})`);
 
     const duration = new Date().getTime() - startTime;
-    cl(`init - lib populate time ${duration}ms`);
+    cl(`init - lib populate ${duration}ms`);
 	}
 
   makeListItem(index, album) {

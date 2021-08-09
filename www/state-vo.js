@@ -14,7 +14,6 @@ export default class StateVo {
     } else {
       this._data = responseObject['State'];
     }
-    cl('statevo', this._data)
   }
 
   /** Direct access to the 'unwrapped' data object. */

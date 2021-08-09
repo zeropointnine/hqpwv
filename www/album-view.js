@@ -101,12 +101,12 @@ export default class AlbumView extends Subview {
 		const seconds = parseInt(item['@_length']);
 		const duration = seconds ? ` <span class="albumItemDuration">(${Util.durationText(seconds)})</span>` : '';
 		const song = item['@_song'];
-    const hash = item['@_hash'];
 		let s = '';
     s += `<div class="albumItem" data-index="${index}">`;
 		s += `<div class="albumItemLeft">${index+1}</div>`;
 		s += `<div class="albumItemMain">${song}${duration}</div>`;
     if (MetaUtil.isEnabled) {
+      const hash = item['@_hash'];
       const isFavorite = MetaUtil.isFavoriteFor(hash);
       const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
       const numViews = MetaUtil.getNumViewsFor(hash);

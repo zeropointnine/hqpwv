@@ -11,13 +11,13 @@ import MetaUtil from './meta-util.js';
 const INTERVAL_FAST = 500;
 const INTERVAL_PLAYING = 1000;
 const INTERVAL_NOT_PLAYING = 10000;
-const NEW_TRACK_TIMEOUT_DURATION = 5 * 1000;
+const VIEW_DETECT_DURATION_MS = 5 * 1000;
 
 /**
  * Makes <Status /> calls periodically, based on app state and activity.
  * Idea is to make calls more frequently while playing, otherwise less so.
  *
- * Also, logic to infer when playback has started or track has changed.
+ * Also, new-track logic plus view-detect logic.
  */
 class Statuser {
 
@@ -25,9 +25,13 @@ class Statuser {
    * The id of the last setTimeout that was called.
    */
   timeoutId;
+
   ignoreNextNewTrackDetected = false;
-  newTrackTimeoutId;
-  
+
+  viewDetectUri;
+  viewDetectPastZeroStartTime;
+  viewDetectHasTriggered;
+
   constructor() {
     $(document).on('service-response-handled', this.onServiceResponseHandled);
   }
@@ -48,91 +52,67 @@ class Statuser {
     if (Busyer.isBusy) {
       duration = INTERVAL_FAST;
     } else {
-      duration = Model.status.isPlaying ? INTERVAL_PLAYING : INTERVAL_NOT_PLAYING;
+      // Had to simplify this :/
+      duration = !Model.status.isStopped ? INTERVAL_PLAYING : INTERVAL_NOT_PLAYING;
     }
     this.timeoutId = setTimeout(() => this.doNext(), duration);
   }
 
   onServiceResponseHandled = (e, type, data) => {
-
     if (type == 'Status') {
-    this.detectNewTrack(data);
+      this.doStatusDiff();
     } else if (type == 'Play' || type == 'SelectTrack') {
       this.doNext();
     }
   };
 
   /**
-   * Detects if a track has either
-   * 1) changed while in a playing state or
-   * 2) started playing from a stopped state
+   * Detects when track has changed, plus.
    */
-  detectNewTrack(data) {
+  doStatusDiff() {
 
-    const sendEventMaybe = (name) => {
+    const lastUri = Model.lastStatus.metadata['@_uri'];
+    const currentUri = Model.status.metadata['@_uri'];
+
+    if (currentUri != lastUri && !!currentUri && !Model.lastStatus.isEmpty) {
       if (this.ignoreNextNewTrackDetected) {
         // cl('statuser ignoring detect');
         this.ignoreNextNewTrackDetected = false;
       } else {
-        cl(`statuser sending ${name}`);
-        $(document).trigger(name);
+        // cl('statuser new-track');
+        $(document).trigger('new-track');
 
-        clearTimeout(this.newTrackTimeoutId);
-        this.newTrackTimeoutId = setTimeout(this.onNewTrackTimeout, NEW_TRACK_TIMEOUT_DURATION);
-      }
-    };
-
-    const isPlayToPlay = (Model.lastStatus.isPlaying && Model.status.isPlaying);
-    if (isPlayToPlay) {
-      const lastTrack = Model.lastStatus.trackNum;
-      const currentTrack = Model.status.trackNum;
-      if (lastTrack == -1 || currentTrack == -1) {
-        cl('warning bad data for track');
-        return;
-      }
-      const didTrackChange = (currentTrack != lastTrack);
-      if (didTrackChange) {
-        // cl('statuser detected track change');
-        sendEventMaybe('play-to-play');
-      }
-    } else {
-      const isStopToPlay = (Model.lastStatus.isStoppedExplicit && !Model.status.isStopped);
-      if (isStopToPlay) {
-        // cl('statuser detected stop-to-play');
-        sendEventMaybe('stop-to-play');
+        // Reset view-detect variables
+        this.viewDetectUri = currentUri;
+        this.viewDetectPastZeroStartTime = 0;
+        this.viewDetectHasTriggered = false;
       }
     }
 
-    // todo take duration between samples into account?!
-    // todo also, verify play @_position?
+    // View detect logic
+    if (currentUri == this.viewDetectUri && !this.viewDetectHasTriggered) {
+      if (this.viewDetectPastZeroStartTime == 0) {
+        if (Model.status.isPlaying && Model.status.position > 0.99) {
+          this.viewDetectPastZeroStartTime = new Date().getTime();
+        }
+      } else {
+        const delta = new Date().getTime() - this.viewDetectPastZeroStartTime;
+        if (delta > VIEW_DETECT_DURATION_MS) {
+          this.viewDetectHasTriggered = true;
+          // cl('statuser - view detected')
+          const hash = Model.library.getHashForUri(currentUri);
+          if (!hash) {
+            return;
+          }
+          if (MetaUtil.isEnabled) {
+            // cl('statuser - incrementing numviews');
+            MetaUtil.incrementNumViewsFor(hash);
+            $(document).trigger('track-numviews-updated', [hash, MetaUtil.getNumViewsFor(hash)]);
+          }
+        }
+      }
+    }
   }
-
-  onNewTrackTimeout = () => {
-    // Hopefully <Status> is up to date.
-    if (Model.status.isStopped) {
-      return;
-    }
-    if (Model.status.trackNum == -1) {
-      return;
-    }
-    const trackIndex = Model.status.trackNum - 1;
-    const playlistTrack = Model.playlistData[trackIndex];
-    if (!playlistTrack) {
-      cl('warning no such track (race condition?)');
-      return;
-    }
-    const uri = playlistTrack['@_uri'];
-    const hash = Model.library.uriToHashMap[uri];
-    if (!hash) {
-      cl('warning lookup failed');
-      return;
-    }
-
-    MetaUtil.incrementNumViewsFor(hash);
-    $(document).trigger('track-numviews-updated', [hash, MetaUtil.getNumViewsFor(hash)]);
-
-    // ...
-  };
 }
 
 export default new Statuser();

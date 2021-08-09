@@ -63,9 +63,17 @@ class PresetUtil {
    *
    * @preset should exist and have values.
    */
-  applyPresetAndRestartTrackIfNecessary(preset, trackValue) {
+  applyPresetAndResume(preset, oneIndexedValue) {
 
-    // todo block starting here maybe
+    const wasPaused = Model.status.isPaused;
+
+    if (!this.isPresetSameAsStatus(preset)) {
+      $(document.body).css('pointer-events', 'none'); // block!!
+      $('#mainArea').css('opacity', '0.5');
+
+      const s = `Applying preset: <em>${this.toString(preset)}</em>`;
+      $(document).trigger('show-toast', s);
+    }
 
     this.applyPreset(preset, (didSetSomething) => {
       if (didSetSomething) {
@@ -74,16 +82,18 @@ class PresetUtil {
         // which should be ignored.
         Statuser.ignoreNextNewTrackDetected = true;
 
-        const s = `Applied preset: <em>${this.toString(preset)}</em>`;
-        $(document).trigger('show-toast', s);
-
-        if (trackValue) {
-          Service.queueCommandFront(Commands.selectTrack(trackValue)); // done
+        if (oneIndexedValue) {
+          const a = [Commands.selectTrack(oneIndexedValue)];
+          if (wasPaused) {
+            a.push(Commands.pause());
+          }
+          Service.queueCommandsFront(a); // done
         }
-
-      } else {
-        // no need to manually 'restart' track
       }
+      setTimeout(() => {
+        $(document.body).css('pointer-events', '');
+        $('#mainArea').css('opacity', '1');
+      }, 333);
     });
   }
 
@@ -97,6 +107,7 @@ class PresetUtil {
   applyPreset(preset, callback) {
 
     if (!this.doesPresetHaveValues(preset)) {
+      cl('warning preset missing values');
       callback(false);
       return;
     }

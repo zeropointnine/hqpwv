@@ -109,7 +109,7 @@ export default class App {
         this.showFatalError(data.error);
       }
       const duration = new Date().getTime() - startTime;
-      cl(`init - async calls time ${duration}ms`);
+      cl(`init - async calls ${duration}ms`);
       this.libraryView.update();
     };
 
@@ -238,7 +238,7 @@ export default class App {
     }
     
     // empty playlist
-    (Model.playlistData.length > 0)
+    (Model.playlist.array.length > 0)
         ? this.$pageHolder.removeClass('isPlaylistEmpty')
         : this.$pageHolder.addClass('isPlaylistEmpty');
     
@@ -359,7 +359,7 @@ export default class App {
 
     // Ignore keypresses if a modal popup is up (eg context menu, etc)
     // except for the following cases:
-    if (this.$pageHolder.css('pointer-events') == 'none') {
+    if ($(document.body).css('pointer-events') == 'none') {
       let isWhitelisted = false;
       switch (e.key) {
         case 'Escape':

@@ -13,8 +13,8 @@ const TROUBLESHOOTING_URL = 'https://github.com/zeropointnine/hqpwv/blob/master/
 const UDP_ADDRESS = "239.192.0.199";
 const PORT = 4321;
 const XML_HEADER = `<?xml version="1.0" encoding="UTF-8"?>`;
-const POSSIBLY_MULTICHUNK_STARTS = ['<LibraryGet', '<PlaylistGet'];
-const POSSIBLY_MULTICHUNK_ENDS = ['</LibraryGet>', '</PlaylistGet>'];
+const POSSIBLY_MULTICHUNK_STARTS = ['<LibraryGet', '<PlaylistGet', '<GetFilters'];
+const POSSIBLY_MULTICHUNK_ENDS = ['</LibraryGet>', '</PlaylistGet>', '</GetFilters>'];
 const XML_PARSER_OPTIONS = { ignoreAttributes : false };
 
 let initCallback;

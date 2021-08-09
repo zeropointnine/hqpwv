@@ -59,8 +59,8 @@ Commands.setRepeat = (value) => {
   return `<SetRepeat value="${value}" />`;
 };
 
-Commands.selectTrack = (index) => {
-	return `<SelectTrack index="${index}" />`;
+Commands.selectTrack = (oneIndexedValue) => {
+	return `<SelectTrack index="${oneIndexedValue}" />`;
 };
 
 Commands.play = () => {
