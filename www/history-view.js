@@ -15,7 +15,7 @@ const UNKNOWN_HTML_TEXT = `<em class="colorTextLess">Unknown track</em>`;
  * Shows history of played tracks.
  * Based off of PlaylistView.
  */
-export default class HistoryView extends Subview {
+export default class HistoryView  extends Subview {
 
   listItems$;
   contextMenu;
@@ -23,33 +23,24 @@ export default class HistoryView extends Subview {
   /** Array of list item data objects: { track, album, time } */
   items;
 
-  constructor() {
-  	super($("#historyView"));
-
+  constructor($el) {
+  	super($el);
   	this.$list = this.$el.find("#historyList");
-
     this.contextMenu = new HistoryContextMenu();
-
-  	this.$el.find("#historyCloseButton").on("click tap", () => this.hide());
+  	this.$el.find("#historyCloseButton").on("click tap", () => $(document).trigger('history-close-button'));
 	}
 
-  show() {
-  	super.show();
-    ViewUtil.doStockFadeIn(this.$el);
+  onShow() {
     this.update();
-
     $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
   }
 
-  hide() {
-    super.hide();
+  onHide() {
     this.contextMenu.hide();
-
     $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
   }
 
   update() {
-
     // Make list item data array:
     // Meta history item has a hash and a timestamp.
     // We get the matching library track and its containing album,

@@ -15,7 +15,6 @@ import PresetRuleApplier from './preset-rule-applier.js';
 import LibraryView from './library-view.js';
 import AlbumView from './album-view.js';
 import PlaylistView from './playlist-view.js';
-import HistoryView from './history-view.js';
 import PlaybarView from './playbar-view.js';
 import TopBar from './top-bar.js';
 import SettingsView from './settings-view.js';
@@ -35,10 +34,9 @@ export default class App {
 	libraryView = new LibraryView();
 	albumView = new AlbumView();
 	playlistView = new PlaylistView();
-  historyView = new HistoryView();
 	settingsView = new SettingsView();
   hqpSettingsView = new HqpSettingsView();
-  subviews = [this.libraryView, this.albumView, this.playlistView, this.historyView, this.settingsView, this.hqpSettingsView];
+  subviews = [this.libraryView, this.albumView, this.playlistView, this.settingsView, this.hqpSettingsView];
 
   $pageHolder = $('#page');
   $settingsButton = $('#settingsButton');
@@ -66,9 +64,6 @@ export default class App {
 		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistView);
 		Util.addAppListener(this, 'playlist-close-button', this.hidePlaylist);
 		Util.addAppListener(this, 'playlist-context-album', this.playlistToAlbum);
-    Util.addAppListener(this, 'history-button', () => { this.showHistoryView() } );
-    Util.addAppListener(this, 'history-close-button', this.hideHistoryView);
-    Util.addAppListener(this, 'history-context-album', this.historyToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
     Util.addAppListener(this, 'hqp-settings-view-close', this.hideHqpSettingsView);
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
@@ -154,14 +149,6 @@ export default class App {
     setTimeout(() => this.showAlbumView(album), 200);
   }
 
-  showHistoryView() {
-    this.showSubview(this.historyView);
-  }
-
-  historyToAlbum(album) {
-    this.showAlbumView(album); // todo may change this later
-  }
-
   showAlbumView(album) {
 		this.albumView.update(album);
     this.showSubview(this.albumView);
@@ -177,10 +164,6 @@ export default class App {
 
   hidePlaylist() {
     this.hideSubview(this.playlistView);
-  }
-
-  hideHistoryView() {
-    this.hideSubview(this.historyView);
   }
 
   hideAlbumView() {
@@ -216,9 +199,6 @@ export default class App {
         break;
       case this.playlistView:
         this.hidePlaylist();
-        break;
-      case this.historyView:
-        this.hideHistoryView();
         break;
       case this.settingsView:
         this.hideSettingsView();
@@ -290,7 +270,7 @@ export default class App {
     // note how class name is that of the subview's id!
     const cls = subview.$el.attr('id');
     // trying to prevent triggering unnecessary dom changes twice here, basically
-    const all = ['libraryView', 'albumView', 'playlistView', 'historyView', 'settingsView', 'hqpSettingsView'];
+    const all = ['libraryView', 'albumView', 'playlistView', 'settingsView', 'hqpSettingsView'];
     for (let item of all) {
       if (item !== cls) {
         this.$pageHolder.removeClass(item);
@@ -316,7 +296,7 @@ export default class App {
    * (Cursor-scrolling convenience)
    */
   postHideFocus($elementWhichIsHiding) {
-    const $els = [this.albumView.$el, this.playlistView.$el, this.historyView.$el, this.settingsView.$el];
+    const $els = [this.albumView.$el, this.playlistView.$el, this.settingsView.$el];
     let $target;
     for (let $element of $els) {
       if ($element == $elementWhichIsHiding) {
