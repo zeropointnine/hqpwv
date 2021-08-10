@@ -23,40 +23,52 @@ const go = (request, response) => {
   // ---
   // 'get' methods
 
-  if (request.query['getTracks'] !== undefined) {
-    response.send(meta.getTracks());
+  if (request.query['getData'] !== undefined) {
+    response.send(meta.getData());
     return;
   }
 
-  if (request.query['getTracksDownload'] !== undefined) {
+  if (request.query['getDataDownload'] !== undefined) {
     response.setHeader('Content-Type', 'text/json');
     response.setHeader('Content-disposition', 'attachment;filename=hqpwv-metadata.json');
-    response.send(meta.getTracks());
+    const o = meta.getShallowCopyEmptyHistory();
+    response.send(o);
     return;
   }
+
   // ---
   // 'put' methods
 
   const hash = request.query['hash'];
   const value = request.query['value'];
 
-  if (request.query['updateTrackViews'] !== undefined) {
-    if (!hash || !value) {
-      response.status(400).json( {error: 'missing_required_sub_param'} );
-      return;
-    }
-    meta.updateTrackViews(hash, value);
-    response.status(200).send('');
-    return;
-  }
-
   if (request.query['updateTrackFavorite'] !== undefined) {
     if (!hash || !value) {
       response.status(400).json( {error: 'missing_required_sub_param'} );
       return;
     }
-    meta.updateTrackFavorite(hash, value);
-    response.status(200).send('');
+    const result = meta.updateTrackFavorite(hash, value);
+    response.send( { result: result } );
+    return;
+  }
+
+  if (request.query['incrementTrackViews'] !== undefined) {
+    if (!hash) {
+      response.status(400).json( {error: 'missing_required_sub_param'} );
+      return;
+    }
+    const result = meta.incrementTrackViews(hash);
+    response.send( { result: result } );
+    return;
+  }
+
+  if (request.query['updateTrackViews'] !== undefined) {
+    if (!hash || !value) {
+      response.status(400).json( {error: 'missing_required_sub_param'} );
+      return;
+    }
+    const result = meta.updateTrackViews(hash, value);
+    response.send( { result: result } );
     return;
   }
 

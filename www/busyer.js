@@ -30,7 +30,7 @@ class Busyer {
       return;
     }
     this.startTime = new Date().getTime();
-    cl(`busy-start`);
+    // cl(`busy-start`);
     this._isBusy = true;
     $(document).trigger('busy-start');
   }
@@ -41,7 +41,7 @@ class Busyer {
       return;
     }
     const dur = Util.makeCasualSecondsString(new Date().getTime() - this.startTime);
-    cl(`busy-stop (${dur})`);
+    // cl(`busy-stop (${dur})`);
     this._isBusy = false;
     $(document).trigger('busy-stop');
   }

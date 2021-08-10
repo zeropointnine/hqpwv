@@ -10,8 +10,6 @@ export default class Subview {
   $el;
   // List container (if any)
   $list;
-  // List items that are children of $list (if any)
-  listItems$;
   // Used for scroll effect
   lastScrollPos = 0;
 

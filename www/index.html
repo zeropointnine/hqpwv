@@ -108,8 +108,19 @@
 						<div class="playlistButtons" style="margin-top:18px;margin-bottom:12px;display:flex;">
 							<div id="playlistClearButton" class="textButton">Clear</div>
 							<div id="playlistRepeatButton" class="textButton">Repeat none</div>
+							<div id="playlistHistoryButton" class="textButton">History</div>
 						</div>
 						<div id="playlistList"></div>
+					</div>
+				</div>
+
+				<div id="historyView" class="subview" tabindex="0">
+					<div id="historyViewContent">
+						<div id="historyViewHeader" style="display:flex;">
+							<div class="viewTitle">History</div>
+							<div id="historyCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
+						</div>
+						<div id="historyList"></div>
 					</div>
 				</div>
 
@@ -306,6 +317,12 @@
 					<div id="playlistContextDown" class="contextItem">Move down</div>
 					<div id="playlistContextRemove" class="contextItem">Remove</div>
 					<div id="playlistContextAlbum" class="contextItem">Go to album</div>
+				</div>
+
+				<div id="historyContextMenu" class="contextMenu">
+					<div id="historyContextQueue" class="contextItem">Queue track</div>
+					<div id="historyContextPlayNow" class="contextItem">Play track now</div>
+					<div id="historyContextAlbum" class="contextItem">Go to album</div>
 				</div>
 
 				<!-- !important-->

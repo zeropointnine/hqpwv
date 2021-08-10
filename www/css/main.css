@@ -1067,13 +1067,118 @@ li:before {
   transition: top 333ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 
+#historyView {
+  transition: opacity 333ms linear;
+}
+
 #playlistHeader {
   margin-bottom: 8px;
 }
 
+#historyHeader {
+  margin-bottom: 8px;
+}
+
+.playHisNonItem {
+  padding-top: 16px;
+  color: #999;
+}
+
+.playHisItem {
+  display: flex;
+  align-items: center;
+  background-color: #1c1c1c;
+  padding: 10px 12px 10px 12px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.playHisItem:hover {
+  background-color: #282828;
+}
+.playHisItem.selected {
+  background-color: #282828;
+}
+.playHisItem.selected:hover {
+  background-color: #383838;
+}
+@media (max-width: 480px) {
+  .playHisItem {
+    padding: 8px 8px 8px 8px;
+  }
+}
+
+.playHisItem.groupFirst {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  margin-top: 18px;
+  margin-bottom: 0px;
+  border-top: 1px solid #282828;
+  border-left: 1px solid #282828;
+  border-right: 1px solid #282828;
+}
+@media (max-width: 480px) {
+  .playHisItem.groupFirst {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+}
+
+.playHisItem.groupMiddle {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border-left: 1px solid #282828;
+  border-right: 1px solid #282828;
+}
+
+.playHisItem.groupLast {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-top: 0px;
+  margin-bottom: 18px;
+  border-left: 1px solid #282828;
+  border-right: 1px solid #282828;
+  border-bottom: 1px solid #282828;
+}
+@media (max-width: 480px) {
+  .playHisItem.groupLast {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+}
+
+.playHisItem.single {
+  margin-top: 18px;
+  margin-bottom: 18px;
+  border: 1px solid #282828;
+}
+
+.playHisItemLeft {
+  margin-right: 16px;
+}
+@media (max-width: 480px) {
+  .playHisItemLeft {
+    margin-right: 12px;
+  }
+}
+
+.playHisItemMain {
+  flex: 1;
+}
+
+.playHisItemRight {
+  margin-left: 16px;
+  height: 36px;
+}
+@media (max-width: 480px) {
+  .playHisItemRight {
+    margin-left: 12px;
+  }
+}
+
 #playlistRepeatButton {
+  margin-left: 12px;
   position: relative;
-  margin-left: auto;
   padding-left: 42px;
   background-color: transparent;
   text-transform: none;
@@ -1105,33 +1210,12 @@ li:before {
   background-image: url("./../img/icons/repeat_one_on_white_24dp.svg");
 }
 
-#playlistNonItem {
-  padding-top: 16px;
-  color: #999;
+#playlistHistoryButton {
+  margin-left: auto;
 }
 
-.playlistItem {
-  display: flex;
-  align-items: center;
-  background-color: #1c1c1c;
-  padding: 10px 12px 10px 12px;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  cursor: pointer;
-}
-.playlistItem:hover {
-  background-color: #282828;
-}
-.playlistItem.selected {
-  background-color: #282828;
-}
-.playlistItem.selected:hover {
-  background-color: #383838;
-}
-@media (max-width: 480px) {
-  .playlistItem {
-    padding: 8px 8px 8px 8px;
-  }
+#playlistContextAlbum {
+  border-top: 1px solid #282828;
 }
 
 .playlistItemMeta {
@@ -1147,74 +1231,23 @@ li:before {
   margin-right: 4px;
 }
 
-.playlistItem.groupFirst {
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  margin-top: 18px;
-  margin-bottom: 0px;
-  border-top: 1px solid #282828;
-  border-left: 1px solid #282828;
-  border-right: 1px solid #282828;
+.historyItem {
+  cursor: default;
 }
-@media (max-width: 480px) {
-  .playlistItem.groupFirst {
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-  }
+.historyItem:hover {
+  background-color: #1c1c1c;
 }
 
-.playlistItem.groupMiddle {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  border-left: 1px solid #282828;
-  border-right: 1px solid #282828;
+#historyList {
+  margin-top: 24px;
 }
 
-.playlistItem.groupLast {
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
-  margin-top: 0px;
-  margin-bottom: 18px;
-  border-left: 1px solid #282828;
-  border-right: 1px solid #282828;
-  border-bottom: 1px solid #282828;
-}
-@media (max-width: 480px) {
-  .playlistItem.groupLast {
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-  }
+.historyItemAgo {
+  color: #999;
+  font-size: 14px;
 }
 
-.playlistItem.single {
-  margin-top: 18px;
-  margin-bottom: 18px;
-  border: 1px solid #282828;
-}
-
-.playlistItemLeft {
-  margin-right: 16px;
-}
-@media (max-width: 480px) {
-  .playlistItemLeft {
-    margin-right: 12px;
-  }
-}
-
-.playlistItemMain {
-  flex: 1;
-}
-
-.playlistItemRight {
-  margin-left: 16px;
-}
-@media (max-width: 480px) {
-  .playlistItemRight {
-    margin-left: 12px;
-  }
-}
-
-#playlistContextAlbum {
+#historyContextAlbum {
   border-top: 1px solid #282828;
 }
 

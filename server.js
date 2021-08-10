@@ -88,7 +88,7 @@ const onError = (e) => {
     console.log(`\nERROR: Port ${port} is in use.`);
     console.log(`\nTry using a different port:`);
     console.log(`     ${APP_FILENAME} -port [PORTNUMBER]\n`);
-    exitOnKeypress();
+    showPromptAndExit();
   } else {
     console.log(`\nserver caught error: ${e.code}`);
   }
@@ -126,12 +126,24 @@ getPortFromArguments = () => {
   return port;
 };
 
-const exitOnKeypress = () => {
+const showPromptAndExit = () => {
   console.log('\nPress any key to exit');
   process.stdin.setRawMode(true);
   process.stdin.resume();
   process.stdin.on('data', process.exit.bind(process, 1))
 };
+
+// Save meta json before exiting
+process.on( "SIGINT", function() {
+  if (meta.getIsDirty()) {
+    meta.saveToFile(() => {
+      console.log('Done');
+      process.exit();
+    });
+  } else {
+    process.exit();
+  }
+});
 
 // ---
 

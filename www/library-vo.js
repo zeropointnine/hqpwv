@@ -4,7 +4,12 @@
 export default class LibraryVo {
 
   _array;
-  _lookup;
+
+  // Cache objects:
+  /** Key is uri, value is track hash. */
+  _uriToHash;
+  /** Key is track hash. Value is [track, album] */
+  _historyLookup = null;
 
   constructor(responseObject=null) {
     let array;
@@ -34,12 +39,12 @@ export default class LibraryVo {
 
   set array(a) {
     this._array = a;
-    this.initLookup();
+    this.initUriToHash();
   }
 
   // @Nullable
   getHashForUri(uri) {
-    const hash = this._lookup[uri];
+    const hash = this._uriToHash[uri];
     if (!hash) {
       cl('info no hash for', uri);
     }
@@ -79,8 +84,15 @@ export default class LibraryVo {
     return libraryItem;
   }
 
-  initLookup() {
-    this._lookup = {};
+  getTrackAndAlbumByHash(hash) {
+    if (!this._historyLookup) {
+      this.initHistoryLookup(); // lazy init
+    }
+    return this._historyLookup[hash];
+  }
+
+  initUriToHash() {
+    this._uriToHash = {};
     for (const album of this.array) {
       let tracks = album['LibraryFile'];
       if (!Array.isArray(tracks)) {
@@ -89,8 +101,22 @@ export default class LibraryVo {
       for (const track of tracks) {
         const uri = 'file://' + album['@_path'] + '/' + track['@_name']
         const hash = track['@_hash'];
-        this._lookup[uri] = hash;
+        this._uriToHash[uri] = hash;
       }
     }
   }
+
+  initHistoryLookup() {
+    this._historyLookup = {};
+    for (const album of this.array) {
+      let tracks = album['LibraryFile'];
+      if (!Array.isArray(tracks)) {
+        tracks = [tracks];
+      }
+      for (const track of tracks) {
+        const hash = track['@_hash'];
+        this._historyLookup[hash] = [track, album];
+      }
+    }
+  };
 }

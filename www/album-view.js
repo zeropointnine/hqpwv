@@ -48,7 +48,7 @@ export default class AlbumView extends Subview {
   		null);
 
     $(document).on('model-status-updated', this.updateHighlightedTrack);
-    $(document).on('track-numviews-updated', this.onTrackNumViewsUpdated);
+    $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
 
     this.currentPlayingSongAlbumIndex = -1;
   }
@@ -57,7 +57,7 @@ export default class AlbumView extends Subview {
     super.hide();
     this.contextMenu.hide();
     $(document).off('model-status-updated', this.updateHighlightedTrack);
-    $(document).off('track-numviews-updated', this.onTrackNumViewsUpdated);
+    $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
   }
 
   update(album) {
@@ -198,7 +198,7 @@ export default class AlbumView extends Subview {
     MetaUtil.setFavoriteFor(hash, newValue);
   }
 
-  onTrackNumViewsUpdated = (e, hash, numViews) => {
+  onMetaTrackIncremented = (e, hash, numViews) => {
     for (let i = 0; i < this.tracks.length; i++) {
       const track = this.tracks[i];
       const $item = this.listItems$[i];

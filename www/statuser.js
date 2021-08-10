@@ -106,8 +106,7 @@ class Statuser {
           }
           if (MetaUtil.isEnabled) {
             // cl('statuser - incrementing numviews');
-            MetaUtil.incrementNumViewsFor(hash);
-            $(document).trigger('track-numviews-updated', [hash, MetaUtil.getNumViewsFor(hash)]);
+            MetaUtil.incrementTrackViewsFor(hash);
           }
         }
       }

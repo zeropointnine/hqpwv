@@ -1,16 +1,110 @@
 #playlistView {
   transition: top 333ms cubic-bezier(0,.5,.3,1.0);
 }
+#historyView {
+  transition: opacity 333ms linear;
+}
 
 #playlistHeader {
 	margin-bottom: 8px;
 }
+#historyHeader {
+  margin-bottom: 8px;
+}
+
+.playHisNonItem {
+  padding-top:$space-unit;
+  color:$color-text-less;
+}
+
+.playHisItem {
+	display:flex;
+	align-items:center;
+	background-color:$color-listitem-less;
+	padding: 10px 12px 10px 12px;
+  margin-top: 4px;
+	margin-bottom: 4px;
+	cursor:pointer;
+	&:hover {
+		background-color:$color-listitem;
+	}
+	&.selected {
+		background-color: $color-listitem;
+		&:hover {
+			background-color:$color-listitem-selected;
+		}
+	}
+  @include mobile {
+    padding: 8px 8px 8px 8px;
+  }
+}
+
+$margin1: 0px;
+$margin2: 18px;
+
+.playHisItem.groupFirst {
+  border-top-left-radius: $space-unit;
+  border-top-right-radius: $space-unit;
+  margin-top:$margin2;
+  margin-bottom:$margin1;
+  border-top:1px solid $color-listitem;
+  border-left:1px solid $color-listitem;
+  border-right:1px solid $color-listitem;
+  @include mobile {
+    border-top-left-radius: $space-unit-mobile;
+    border-top-right-radius: $space-unit-mobile;
+  }
+}
+.playHisItem.groupMiddle {
+  margin-top:$margin1;
+  margin-bottom:$margin1;
+  border-left:1px solid $color-listitem;
+  border-right:1px solid $color-listitem;
+}
+.playHisItem.groupLast {
+  border-bottom-left-radius: $space-unit;
+  border-bottom-right-radius: $space-unit;
+  margin-top:$margin1;
+  margin-bottom:$margin2;
+  border-left:1px solid $color-listitem;
+  border-right:1px solid $color-listitem;
+  border-bottom:1px solid $color-listitem;
+  @include mobile {
+    border-bottom-left-radius: $space-unit-mobile;
+    border-bottom-right-radius: $space-unit-mobile;
+  }
+}
+.playHisItem.single {
+  //border-radius: 16px;
+  margin-top:$margin2;
+  margin-bottom:$margin2;
+  border: 1px solid $color-listitem;
+}
+
+.playHisItemLeft {
+	margin-right:$space-unit;
+  @include mobile {
+    margin-right:$space-unit-mobile;
+  }
+}
+.playHisItemMain {
+	flex:1;
+}
+.playHisItemRight {
+  margin-left:$space-unit;
+  height:$icon-button-side;
+  @include mobile {
+    margin-left:$space-unit-mobile;
+  }
+}
+
+// ---
 
 #playlistClearButton { }
 
 #playlistRepeatButton {
+  margin-left:12px;
   position:relative;
-  margin-left:auto;
   padding-left:42px;
   background-color:transparent;
   text-transform: none;
@@ -38,32 +132,19 @@
   }
 }
 
-#playlistNonItem {
-  padding-top:$space-unit;
-  color:$color-text-less;
+#playlistHistoryButton {
+  margin-left:auto;
+//  background-color:transparent;
+//  color:$color-text-less;
+//  &:hover {
+//    background-color:$color-button-bg;
+//  }
 }
 
-.playlistItem {
-	display:flex;
-	align-items:center;
-	background-color:$color-listitem-less;
-	padding: 10px 12px 10px 12px;
-  margin-top: 4px;
-	margin-bottom: 4px;
-	cursor:pointer;
-	&:hover {
-		background-color:$color-listitem;
-	}
-	&.selected {
-		background-color: $color-listitem;
-		&:hover {
-			background-color:$color-listitem-selected;
-		}
-	}
-  @include mobile {
-    padding: 8px 8px 8px 8px;
-  }
+#playlistContextAlbum {
+  border-top:1px solid $color-listitem;
 }
+
 .playlistItemMeta {
   height:$icon-button-side; // w/o this, is too tall, not sure why
   margin-left:12px;
@@ -76,65 +157,24 @@
   margin-right:4px;
 }
 
+// ---
 
-$margin1: 0px;
-$margin2: 18px;
-
-.playlistItem.groupFirst {
-  border-top-left-radius: $space-unit;
-  border-top-right-radius: $space-unit;
-  margin-top:$margin2;
-  margin-bottom:$margin1;
-  border-top:1px solid $color-listitem;
-  border-left:1px solid $color-listitem;
-  border-right:1px solid $color-listitem;
-  @include mobile {
-    border-top-left-radius: $space-unit-mobile;
-    border-top-right-radius: $space-unit-mobile;
-  }
-}
-.playlistItem.groupMiddle {
-  margin-top:$margin1;
-  margin-bottom:$margin1;
-  border-left:1px solid $color-listitem;
-  border-right:1px solid $color-listitem;
-}
-.playlistItem.groupLast {
-  border-bottom-left-radius: $space-unit;
-  border-bottom-right-radius: $space-unit;
-  margin-top:$margin1;
-  margin-bottom:$margin2;
-  border-left:1px solid $color-listitem;
-  border-right:1px solid $color-listitem;
-  border-bottom:1px solid $color-listitem;
-  @include mobile {
-    border-bottom-left-radius: $space-unit-mobile;
-    border-bottom-right-radius: $space-unit-mobile;
-  }
-}
-.playlistItem.single {
-  //border-radius: 16px;
-  margin-top:$margin2;
-  margin-bottom:$margin2;
-  border: 1px solid $color-listitem;
-}
-
-.playlistItemLeft {
-	margin-right:$space-unit;
-  @include mobile {
-    margin-right:$space-unit-mobile;
-  }
-}
-.playlistItemMain {
-	flex:1;
-}
-.playlistItemRight {
-  margin-left:$space-unit;
-  @include mobile {
-    margin-left:$space-unit-mobile;
+.historyItem {
+  cursor:default;
+  &:hover {
+    background-color: $color-listitem-less;
   }
 }
 
-#playlistContextAlbum {
+#historyList {
+  margin-top:24px;
+}
+
+.historyItemAgo {
+  color:$color-text-less;
+  font-size: $font-size-smaller;
+}
+
+#historyContextAlbum {
   border-top:1px solid $color-listitem;
 }

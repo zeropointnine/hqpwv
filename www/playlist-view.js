@@ -16,6 +16,7 @@ export default class PlaylistView extends Subview {
 
   listItems$;
   $repeatButton;
+  $historyButton;
   contextMenu;
   playlist;
 
@@ -24,15 +25,20 @@ export default class PlaylistView extends Subview {
 
   	this.$list = this.$el.find("#playlistList");
     this.$repeatButton = this.$el.find('#playlistRepeatButton');
+    this.$historyButton = this.$el.find('#playlistHistoryButton');
 
     this.contextMenu = new PlaylistContextMenu();
 
   	this.$el.find("#playlistCloseButton").on("click tap", () => $(document).trigger('playlist-close-button'));
 		this.$el.find("#playlistClearButton").on("click tap", this.onClearButton);
+
+    this.$historyButton.addClass('isDisabled');
+    this.$historyButton.on("click tap", () => $(document).trigger('history-button'));
+
     this.$repeatButton.on('click tap', this.onRepeatButton);
 
     Util.addAppListener(this, 'model-playlist-updated', this.update);
-    Util.addAppListener(this, 'model-library-updated', this.update);
+    Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
 	}
 
   show() {
@@ -44,7 +50,7 @@ export default class PlaylistView extends Subview {
 
     $(document).on('model-status-updated', this.updateSelectedItem);
     $(document).on('model-state-updated', this.updateRepeatButton);
-    $(document).on('track-numviews-updated', this.onTrackNumViewsUpdated);
+    $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
 
     Service.queueCommandFront(Commands.state());
   }
@@ -58,7 +64,7 @@ export default class PlaylistView extends Subview {
 
     $(document).off('model-status-updated', this.updateSelectedItem);
     $(document).off('model-state-updated', this.updateRepeatButton);
-    $(document).off('track-numviews-updated', this.onTrackNumViewsUpdated);
+    $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
   }
 
   update() {
@@ -70,11 +76,11 @@ export default class PlaylistView extends Subview {
 		this.$list.empty();
 
     if (this.playlist.array.length == 0) {
-      const $nonItem = $(`<div id="playlistNonItem">Playlist is empty</span>`);
+      const $nonItem = $(`<div class="playHisNonItem">Playlist is empty</span>`);
       this.$list.append($nonItem);
       return;
     }
-    for (let i = 0; i < this.playlist.array.length; i++) {
+    for (let i = 0; i < this.playlist.array.length; i++) { // todo do not reference model.playlist.array here
       const item = this.playlist.array[i];
       const itemPrevious = (i > 0) ? Model.playlist.array[i - 1] : null;
       const itemNext = (i < Model.playlist.array.length - 1) ? Model.playlist.array[i + 1] : null;
@@ -140,9 +146,9 @@ export default class PlaylistView extends Subview {
     }
 
 		let s = '';
-		s += `<div class="playlistItem ${groupingClass}" data-index="${index}">`;
-		s += `  <div class="playlistItemLeft">${index+1}</div>`;
-		s += `  <div class="playlistItemMain">${this.makeLabel(item)}</div>`;
+		s += `<div class="playHisItem ${groupingClass}" data-index="${index}">`;
+		s += `  <div class="playHisItemLeft">${index+1}</div>`;
+		s += `  <div class="playHisItemMain">${this.makeLabel(item)}</div>`;
     if (MetaUtil.isEnabled && Model.library.array.length > 0) {
       const hash = Model.library.getHashForPlaylistItem(item);
       if (hash) {
@@ -155,7 +161,7 @@ export default class PlaylistView extends Subview {
         s += `</div>`;
       }
     }
-		s += `  <div class="playlistItemRight"><div class="contextButton iconButton moreButton" data-index="${index}"></div></div>`;
+		s += `  <div class="playHisItemRight"><div class="contextButton iconButton moreButton" data-index="${index}"></div></div>`;
 		s += `</div>`;
 		return $(s);
 	}
@@ -251,7 +257,7 @@ export default class PlaylistView extends Subview {
     MetaUtil.setFavoriteFor(hash, newValue);
   }
 
-  onTrackNumViewsUpdated = (e, hash, count) => {
+  onMetaTrackIncremented = (e, hash, count) => {
     for (let i = 0; i < this.playlist.array.length; i++) {
       const item = this.playlist.array[i];
       const $item = this.listItems$[i];
@@ -261,5 +267,10 @@ export default class PlaylistView extends Subview {
         break;
       }
     }
+  };
+
+  onModelLibraryUpdated() {
+    this.$historyButton.removeClass('isDisabled');
+    this.update();
   }
 }

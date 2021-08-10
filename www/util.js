@@ -110,6 +110,30 @@ Util.hasMatch = (arrayOfObjects, objectKey, value) => {
   return false;
 };
 
+Util.makeHowLongAgoString = (ms) => {
+  let min = (ms / (1000 * 60));
+  if (min < 50) {
+    return Math.round(min) + 'm';
+  }
+  let hr  = (ms / (1000 * 60 * 60));
+  if (hr < 22) {
+    return Math.round(hr) + 'h';
+  }
+  let day = (ms / (1000 * 60 * 60 * 24));
+  if (day < 6.5) {
+    return Math.round(day) + 'd';
+  }
+  let wk  = (ms / (1000 * 60 * 60 * 24 * 7));
+  if (wk < 3.5) {
+    return Math.round(wk) + 'w';
+  }
+  let mo  = (ms / (1000 * 60 * 60 * 24 * 30));
+  if (mo < 12.5) {
+    return Math.round(m) + 'mo'
+  }
+  return '12+ mo';
+};
+
 // From https://medium.com/@nitinpatel_20236/
 Util.shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
