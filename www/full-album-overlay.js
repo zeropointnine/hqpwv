@@ -2,9 +2,11 @@ import Util from './util.js';
 import ViewUtil from './view-util.js';
 
 /**
+ * Full-sized album image view.
  *
+ * Slight-of-hand mechanics for transitioning album view image into a full-sized state.
  */
-class AlbumOverlay {
+class FullAlbumOverlay {
 
   /** Overlay is above almost all other elements on the page */
   $overlayScreen = $('#fullOverlayScreen');
@@ -34,8 +36,7 @@ class AlbumOverlay {
     this.$overlayImage.attr('src', this.$sourceImage.attr('src'));
 
     // Overlay height must be set programmatically
-    const h = $('#page').height() - $('#playbarView').height();
-    this.$overlayScreen.css('height', h);
+    this.updateOverlayScreenHeight();
 
     const startRect = this.getConvertedStartRect(this.$sourceImage);
     ViewUtil.setCssSync(this.$overlayImage,
@@ -72,7 +73,7 @@ class AlbumOverlay {
     let newW = srcRect.width;
     let newH = srcRect.height;
 
-    // Source <img> is object-fit contain, so need to adjust for that.
+    // Source <img> is object-fit: contain, so need to shrink inside.
     const natchW = $sourceImage[0].naturalWidth;
     const natchH = $sourceImage[0].naturalHeight;
     const r = ViewUtil.fitInRect(natchW, natchH, newW, newH);
@@ -97,10 +98,15 @@ class AlbumOverlay {
     $(document).on('debounced-window-resize', this.onWindowResize);
   }
 
-  onWindowResize = () => {
+  updateOverlayScreenHeight() {
     // Overlay height must be set programmatically
-    const h = $('#page').height() - $('#playbarView').height();
+    // todo is this still necessary, or can it be refactored out smh
+    const h = $('#page').height() - $('#playbarView').outerHeight();
     this.$overlayScreen.css('height', h);
+  }
+
+  onWindowResize = () => {
+    this.updateOverlayScreenHeight();
 
     const r = this.getEndRect(this.$sourceImage);
     ViewUtil.setCssSync(this.$overlayImage,
@@ -108,4 +114,4 @@ class AlbumOverlay {
   };
 }
 
-export default new AlbumOverlay();
+export default new FullAlbumOverlay();

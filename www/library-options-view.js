@@ -1,4 +1,5 @@
 import Values from './values.js';
+import Util from './util.js';
 import ViewUtil from './view-util.js';
 import Model from './model.js';
 import Service from './service.js';
@@ -22,13 +23,14 @@ export default class LibraryOptionsView {
 
   pointerUtil;
 
-
   constructor($el) {
     this.$el = $el;
     this.$sortButton.on('click tap', e => this.toggleDropdown(this.sortDropdown));
     this.$bitrateButton.on('click tap', e => this.toggleDropdown(this.bitrateDropdown));
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
     this.pointerUtil = new ModalPointerUtil(this.$el, () => this.hideDropdowns());
+
+    Util.addAppListener(this, 'library-view-populated', this.onLibraryViewPopulated);
   }
 
   toggleDropdown(dropdown) {
@@ -134,5 +136,11 @@ export default class LibraryOptionsView {
     $(document).trigger('library-settings-changed');
   }
 
-
+  onLibraryViewPopulated(numItems) {
+    if (numItems == 0 && Model.library.array.length > 0) {
+      this.$bitrateButton.addClass('badge');
+    } else {
+      this.$bitrateButton.removeClass('badge');
+    }
+  }
 }

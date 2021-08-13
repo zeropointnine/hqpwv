@@ -1,6 +1,8 @@
 import Util from './util.js';
 import ViewUtil from './view-util.js';
 
+const UNHIDE_DURATION = 400; // shd match css
+
 /**
  *
  */
@@ -9,7 +11,7 @@ export default class TopBar {
   $el = $("#topBar");
   $appLogo = this.$el.find('#appLogo');
   $appTitle = this.$el.find('#appTitle');
-  marginOffset = 0;
+  offset = 0;
   hasHidden = false;
 
   constructor() {
@@ -24,40 +26,51 @@ export default class TopBar {
   	return this.$el;
   }
 
-  // todo not fully baked
   unhide() {
-    this.marginOffset = 0;
-    this.$el.css('margin-top', '');
-  }
-
-  // todo not fully baked
-  hide() {
-    const maxOffset = this.$el.outerHeight();
-    this.marginOffset = maxOffset;
-    this.$el.css('margin-top', (maxOffset * -1) + 'px');
+    // Must interpolate offset rather than setting css animated attribute.
+    const dummyObject = { value: this.offset };
+    const onUpdate = (value) => {
+      this.setOffset(value)
+    };
+    const specs = { duration:UNHIDE_DURATION, easing: 'swing', step: onUpdate };
+    $(dummyObject).animate( { value: 0.0 }, specs);
   }
 
   onSubviewScroll(delta) {
 		// Scrolling of a subview results in the topbar moving up and down between 0 to -outerHeight.
 		// As the topbar moves vertically, the remaining vertical space grows and contract accordingly.
 		// Potentially expensive.
-    const maxOffset = this.$el.outerHeight();
+
     const mult = (delta > 0) ? 0.33 : 0.66;
-  	this.marginOffset += delta * mult;
-  	this.marginOffset = Math.min(this.marginOffset, maxOffset);
-  	this.marginOffset = Math.max(this.marginOffset, 0);
-    const value = Math.floor(this.marginOffset * -1);
-    this.$el.css('margin-top', value + 'px');
+    const value = this.offset + (delta * mult);
+    this.setOffset(value);
+  }
+
+  /**
+   * Changes the y-offset (using margin-top) of the top bar upward, going off screen.
+   * This causes the #mainArea to expand to fill in the remaining space.
+   */
+  setOffset(off) {
+    this.offset = off;
+    this.offset = Math.min(this.offset, this.maxOffset);
+    this.offset = Math.max(this.offset, 0);
+
+    const marginTop = Math.floor(this.offset * -1);
+    this.$el.css('margin-top', marginTop + 'px');
 
     if (!this.hasHidden) {
-      // offset applogo a little too (bc of descender of capital-Q heh)
-      const value = Math.floor(this.marginOffset * -1 * 0.27);
-      this.$appLogo.css('top', value + 'px');
+      // additionally, offset applogo a little too (bc of descender of capital-Q heh)
+      const top = Math.floor(this.offset * -0.33);
+      this.$appLogo.css('top', top + 'px');
 
-      if (this.marginOffset == maxOffset && !this.hasHidden) {
+      if (this.offset == this.maxOffset && !this.hasHidden) {
         this.doSwap();
       }
     }
+  }
+
+  get maxOffset() {
+    return this.$el.outerHeight();
   }
 
   doSwap() {

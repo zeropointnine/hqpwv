@@ -19,7 +19,7 @@ import PlaybarView from './playbar-view.js';
 import TopBar from './top-bar.js';
 import SettingsView from './settings-view.js';
 import HqpSettingsView from './hqp-settings-view.js';
-import AlbumOverlay from './album-overlay.js';
+import FullAlbumOverlay from './full-album-overlay.js';
 import DialogView from './dialog-view.js';
 import SnackView from './snack-view.js';
 import ToastView from './toast-view.js';
@@ -70,6 +70,7 @@ export default class App {
     Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
     Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
     Util.addAppListener(this, 'show-toast', this.showToast);
+    Util.addAppListener(this, 'restore-pointer-events', this.onRestorePointerEvents);
 
     this.$settingsButton.on("click", () => this.showSettingsView());
     this.$hqpSettingsButton.on("click", () => this.showHqpSettingsView());
@@ -85,7 +86,7 @@ export default class App {
     ViewUtil.setVisible(this.playbarView.$el, true);
 
     PresetRuleApplier.noop();
-    AlbumOverlay.noop();
+    FullAlbumOverlay.noop();
 
     this.init();
 	}
@@ -149,10 +150,9 @@ export default class App {
     setTimeout(() => this.showAlbumView(album), 200);
   }
 
-  showAlbumView(album) {
-		this.albumView.update(album);
-    this.showSubview(this.albumView);
-	}
+  showAlbumView(album, $libraryItem) {
+    this.showSubview(this.albumView, album, $libraryItem);
+  }
 
 	showSettingsView() {
 		this.showSubview(this.settingsView);
@@ -180,12 +180,16 @@ export default class App {
 
   hideOnEscape() {
     // first account for overlays, etc
-    if (ViewUtil.isDisplayed(AlbumOverlay.$overlayScreen)) {
-      AlbumOverlay.animateOut();
+    if (ViewUtil.isDisplayed(FullAlbumOverlay.$overlayScreen)) {
+      FullAlbumOverlay.animateOut();
       return;
     }
     if (this.playbarView.volumePanel.isShowing) {
       this.playbarView.hideVolumePanel();
+      return;
+    }
+
+    if ($(document.body).css('pointer-events') == 'none') {
       return;
     }
     this.hideTopSubview();
@@ -220,14 +224,26 @@ export default class App {
   // ---
   // subview management
 
-  showSubview(subview) {
+  showSubview(subview, ...extra) {
+    // Disable user input
+    // Subview *must* send 'restore-pointer-events' at end of its show()
+    $(document.body).css('pointer-events', 'none');
+
+    this.topBar.unhide();
+
     this.subviewZ++; // ha.
     subview.$el.css('z-index', this.subviewZ);
-    subview.show();
+    subview.show(...extra);
     this.updatePageHolderSubviewClass(subview);
   }
 
   hideSubview(subview) {
+    // Disable user input
+    // Subview *must* send 'restore-pointer-events' at end of its hide()
+    $(document.body).css('pointer-events', 'none');
+
+    this.topBar.unhide();
+
     this.updatePageHolderSubviewClassOnHide();
     subview.hide();
     this.postHideFocus(subview.$el);
@@ -446,6 +462,10 @@ export default class App {
         SnackView.hide();
       }
     }
+  }
+
+  onRestorePointerEvents() {
+    $(document.body).css('pointer-events', '')
   }
 
   doWindowResize() {

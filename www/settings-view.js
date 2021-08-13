@@ -43,6 +43,13 @@ export default class SettingsView extends Subview {
     this.$el[0].scrollTop = 0;
 
     Service.queueCommandFront(Commands.getInfo());
+
+    $(document).trigger('restore-pointer-events');
+  }
+
+  hide() {
+    super.hide();
+    $(document).trigger('restore-pointer-events');
   }
 
   updateMetaCheckbox() {

@@ -22,10 +22,16 @@ export default class PlaylistView extends Subview {
 
   show() {
   	super.show();
+
+    this.$el.addClass('animIn');
+
   	ViewUtil.animateCss(this.$el,
   		() => this.$el.css("top", this.$el.height() + "px"),
   		() => this.$el.css('top', '0px'),
-  		null);
+      () => {
+        this.$el.removeClass('animIn');
+        $(document).trigger('restore-pointer-events');
+      });
 
     ViewUtil.setVisible(this.historyView.$el, false);
     ViewUtil.setVisible(this.mainView.$el, true);
@@ -37,7 +43,10 @@ export default class PlaylistView extends Subview {
     ViewUtil.animateCss(this.$el,
         null,
         () => this.$el.css("top", this.$el.outerHeight() + "px"),
-        () => ViewUtil.setVisible(this.$el, false));
+        () => {
+          ViewUtil.setVisible(this.$el, false)
+          $(document).trigger('restore-pointer-events');
+        });
     this.mainView.onHide();
     this.historyView.onHide(); // for now
   }

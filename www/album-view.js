@@ -14,8 +14,11 @@ import AlbumContextMenu from './album-context-menu.js';
  */
 export default class AlbumView extends Subview {
 
+  $pictureHolder;
   $picture;
   $list;
+  $overlayImage;
+  $libraryItemImage;
   listItems$;
   contextMenu;
 
@@ -27,40 +30,154 @@ export default class AlbumView extends Subview {
 
   constructor() {
     super($("#albumView"));
+    this.$pictureHolder = $(".albumViewPictureOuter");
     this.$picture = $("#albumViewPicture");
-
-  	this.$list = this.$el.find("#albumList");
+    this.$list = this.$el.find("#albumList");
+    this.$overlayImage = $('#albumOverlayImage');
 
     this.contextMenu = new AlbumContextMenu($("#albumContextMenu"));
 
-		$("#albumPlayNowButton").on("click tap", this.onPlayNowButton);
-		$("#albumQueueButton").on("click tap", this.onQueueButton);
-		$("#albumCloseButton").on("click tap", () => $(document).trigger('album-view-close-button', this.album, true));
+    $("#albumPlayNowButton").on("click tap", this.onPlayNowButton);
+    $("#albumQueueButton").on("click tap", this.onQueueButton);
+    $("#albumCloseButton").on("click tap", () => $(document).trigger('album-view-close-button', this.album, true));
     this.$picture.on('click tap', () => $(document).trigger('album-picture-click', this.$picture));
   }
 
-  show() {
-  	super.show();
+  show(album, $libraryItem=null) {
+    this.$libraryItemImage = $libraryItem ? $libraryItem.find('img') : null;
+    this.currentPlayingSongAlbumIndex = -1;
+
+    this.populate(album);
     this.$el[0].scrollTop = 0;
-  	ViewUtil.animateCss(this.$el,
-  		() => { this.$el.css("top", this.$el.height() / 3 + "px"); this.$el.css('opacity', 0); },
-  		() => { this.$el.css('top', '0px'); this.$el.css('opacity', 1); },
-  		null);
+
+    super.show();
 
     $(document).on('model-status-updated', this.updateHighlightedTrack);
     $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
 
-    this.currentPlayingSongAlbumIndex = -1;
+    if (this.$libraryItemImage) {
+      this.animateInOverlay(this.onShowComplete);
+      this.animateInThis(); // must be invoked 2nd :/
+
+      // xxx
+      window.test = this.$libraryItemImage;
+
+    } else {
+      this.animateInThis(true);
+    }
   }
 
+  animateInThis(isStandalone=false) {
+    // slide up album view
+    if (isStandalone) {
+      ViewUtil.setVisible(this.$picture, '');
+    } else {
+      ViewUtil.setVisible(this.$picture, false);
+      // Fade in the picture holder (looks better)
+      ViewUtil.animateCss(this.$pictureHolder,
+          () => this.$pictureHolder.css('opacity', 0),
+          () => this.$pictureHolder.css('opacity', 1));
+    }
+
+    this.$el.addClass('animIn');
+
+    ViewUtil.animateCss(this.$el,
+        () => {
+          this.$el.css("top", this.$el.height() / 1 + "px");
+          this.$el.css('opacity', 0);
+        },
+        () => {
+          this.$el.css('top', '0px');
+          this.$el.css('opacity', 1);
+        },
+        () => {
+          this.$el.removeClass('animIn');
+          if (isStandalone) {
+            this.onShowComplete();
+          }
+        });
+  }
+
+  animateInOverlay() {
+    // get overlay image's start and end rects
+    const rectStart = this.getLibraryItemImageRect();
+    ViewUtil.setCssSync(this.$el, () => this.$el.css('top', '0')); // bc view must be in its end-state to get rectEnd
+    const rectEnd = this.getAlbumViewImageRect();
+
+    // animate overlay image
+    ViewUtil.setVisible(this.$libraryItemImage, false);
+    ViewUtil.setDisplayed(this.$overlayImage, true);
+    this.$overlayImage.removeClass('animOut');
+    this.$overlayImage.attr('src', this.$libraryItemImage.attr('src'));
+    ViewUtil.animateCss(this.$overlayImage,
+        () => {
+          ViewUtil.setXYWH(this.$overlayImage, ...rectStart);
+        },
+        () => {
+          ViewUtil.setXYWH(this.$overlayImage, ...rectEnd);
+        },
+        () => {
+          ViewUtil.setVisible(this.$libraryItemImage, '');
+          ViewUtil.setVisible(this.$picture, '');
+          this.onShowComplete();
+        });
+  }
+
+  onShowComplete = () => {
+    ViewUtil.setDisplayed(this.$overlayImage, false);
+    $(document).trigger('restore-pointer-events');
+  };
+
   hide() {
-    super.hide();
     this.contextMenu.hide();
     $(document).off('model-status-updated', this.updateHighlightedTrack);
     $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
+
+    // do normal fadeout of album view
+    super.hide();
+
+    if (this.$libraryItemImage) {
+      this.animateOutOverlay();
+    } else {
+      $(document).trigger('restore-pointer-events');
+    }
   }
 
-  update(album) {
+  animateOutOverlay() {
+    // get overlay image's start and end rects
+    const rectStart = this.getAlbumViewImageRect();
+    const rectEnd = this.getLibraryItemImageRect();
+
+    const rectEndY = rectEnd[1];
+    const rectEndH = rectEnd[3];
+    const inBounds = (rectEndY >= 0 - rectEndH && rectEndY <= this.$el.height() + rectEndH);
+    if (!inBounds) {
+      // target is out of bounds; note too that y/h can be NaN in this case
+      cl('oob')
+      $(document).trigger('restore-pointer-events');
+      return;
+    }
+
+    // animate overlay image
+    ViewUtil.setVisible(this.$picture, false);
+    ViewUtil.setVisible(this.$libraryItemImage, false);
+    ViewUtil.setDisplayed(this.$overlayImage, true);
+    this.$overlayImage.addClass('animOut');
+
+    ViewUtil.animateCss(this.$overlayImage,
+        () => { ViewUtil.setXYWH(this.$overlayImage, ...rectStart); },
+        () => { ViewUtil.setXYWH(this.$overlayImage, ...rectEnd); },
+        this.animateOutOverlayContinued);
+  }
+
+  animateOutOverlayContinued = () => {
+    ViewUtil.setDisplayed(this.$overlayImage, false);
+    ViewUtil.setVisible(this.$picture, '');
+    ViewUtil.setVisible(this.$libraryItemImage, true);
+    $(document).trigger('restore-pointer-events');
+  };
+  
+  populate(album) {
   	this.album = album;
   	this.tracks = Model.getTracksOf(this.album);
 
@@ -149,7 +266,7 @@ export default class AlbumView extends Subview {
         this.currentPlayingSongAlbumIndex = i;
         if (this.currentPlayingSongAlbumIndex == last + 1) {
           // The playing song has just advanced by 1
-          // this.nextTrackScrollEffect($listItem)
+          this.nextTrackScrollEffect($listItem)
         }
       } else {
         $listItem.removeClass('selected');
@@ -320,5 +437,66 @@ export default class AlbumView extends Subview {
     const itemBottom = $listItem[0].offsetTop + $listItem.outerHeight();
     const delta = itemBottom - listBottom;
     return delta;
+  }
+  
+  getLibraryItemImageRect() {
+    const r1 = this.$libraryItemImage[0].getBoundingClientRect();
+    const r2 = this.$el[0].getBoundingClientRect();
+
+    // Translation-adjusted bounding box of library list item's album image.
+    let imgX = r1.x - r2.x;
+    let imgY = r1.y - r2.y;
+    let imgW = r1.width;
+    let imgH = r1.height;
+
+    // Adjust for object-fit: cover
+    const naturalW = this.$libraryItemImage[0].naturalWidth;
+    const naturalH = this.$libraryItemImage[0].naturalHeight;
+
+    let overlayX, overlayY, overlayW, overlayH;
+    if (naturalW / naturalH > imgW / imgH) {
+      overlayW = imgW * (naturalW / naturalH);
+      overlayH = imgH;
+      overlayY = imgY;
+      overlayX = imgX - (overlayW - imgW) / 2;
+    } else {
+      overlayH = imgH * (naturalH / naturalW);
+      overlayW = imgW;
+      overlayX = imgX;
+      overlayY = imgY - (overlayH - imgH) / 2;
+    }
+    return [overlayX, overlayY, overlayW, overlayH];
+  }
+
+  getAlbumViewImageRect() {
+
+    const r1 = this.$picture[0].getBoundingClientRect(); // rem, for anim-in, album view must be in its end-state!
+    const r2 = this.$el[0].getBoundingClientRect();
+
+    // Translation-adjusted bounding box of album view's album image.
+    let boxX = r1.x - r2.x;
+    let boxY = r1.y - r2.y;
+    let boxW = r1.width;
+    let boxH = r1.height;
+
+    // Adjust for object-fit: _contain_ this time
+    const naturalW = this.$libraryItemImage[0].naturalWidth;
+    const naturalH = this.$libraryItemImage[0].naturalHeight;
+    const naturalAr = naturalW / naturalH;
+
+    let overlayX, overlayY, overlayW, overlayH;
+    if (naturalAr > boxW / boxH) {
+      // cl('image content has wider aspect ratio')
+      overlayW = boxW;
+      overlayH = boxW * (1/ naturalAr);
+    } else {
+      // cl('image content has narrower aspect ratio')
+      overlayH = boxH;
+      overlayW = boxH * naturalAr;
+    }
+    overlayX = boxX + (boxW - overlayW) / 2;
+    overlayY = boxY + (boxH - overlayH) / 2;
+
+    return [overlayX, overlayY, overlayW, overlayH];
   }
 }

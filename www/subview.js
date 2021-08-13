@@ -33,7 +33,7 @@ export default class Subview {
   /**
    * Subclass should super.show()
    */
-  show() {
+  show(...extra) {
     ViewUtil.setVisible(this.$el, true);
     ViewUtil.setFocus(this.$el);
   }

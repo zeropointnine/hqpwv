@@ -39,6 +39,20 @@
   &:before {
     background-image: url('./../img/icons/filter_alt_white_24dp.svg');
   }
+  &.badge {
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      left: 22px;
+      top: 4px;
+      width: 5px;
+      height: 5px;
+      background-color: $color-text;
+      border-radius: 5px;
+      border:2px solid $color-bg;
+    }
+  }
 }
 #librarySortButton {
   margin-left: 4px;
@@ -55,7 +69,6 @@
   margin-right:4px;
 }
 
-
 .isDisabled #libraryOptionsView {
   pointer-events: none;
 }
@@ -68,9 +81,8 @@
   transition: opacity 1s linear 1s;
 }
 
-#libraryList {
-	display:flex;
-	flex-wrap: wrap;
+// Wrapper of the main library content
+#libraryContent {
   margin-top:$space-unit;
 	margin-left:auto;
 	margin-right:auto;
@@ -79,6 +91,30 @@
     margin-top:$space-unit-mobile;
   }
 }
+
+// Precedes libraryGroup
+.libraryGroupLabel {
+  margin-left: 6px;
+  margin-right: 6px;
+  padding-left:4px;
+  padding-right:12px;
+  height:$icon-button-side;
+  border-top: 1px solid $color-listitem;
+  margin-bottom: 8px;
+  display:flex;
+  .inner {
+    line-height:36px;
+  }
+}
+
+// Wraps library items.
+// The list may have one or more groups.
+.libraryGroup {
+  display:flex;
+  flex-wrap: wrap;
+  margin-bottom:8px;
+}
+
 .libraryItem {
   position:relative;
 	width: 240px;
@@ -154,4 +190,10 @@
 }
 .libraryItem:hover .libraryItemBits {
   opacity:1;
+}
+
+.folderIcon {
+  &:before {
+    background-image: url('./../img/icons/folder_white_24dp.svg');
+  }
 }

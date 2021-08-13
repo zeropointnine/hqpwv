@@ -36,6 +36,9 @@ $icon-button-side: 36px;
 
 $z-subview-max: 9999;
 
+$app-standard-ease: cubic-bezier(0,.5,.3,1.0);
+$app-standard-duration: 400ms;
+
 @mixin mobile {
   @media (max-width: $mobile-max-width)  { @content; }
 }
@@ -76,6 +79,17 @@ $z-subview-max: 9999;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+}
+
+// Plain icon to be used in whatever way
+.icon {
+  display: inline-block;
+  width:$icon-button-side;
+  height:$icon-button-side;
+  position: relative;
+  &:before {
+    @include iconBefore;
+  }
 }
 
 // ---

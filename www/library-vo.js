@@ -6,6 +6,8 @@ export default class LibraryVo {
   _array;
 
   // Cache objects:
+  /** Key is hash, value is library item (album) */
+  _hashToItem;
   /** Key is uri, value is track hash. */
   _uriToHash;
   /** Key is track hash. Value is [track, album] */
@@ -40,6 +42,18 @@ export default class LibraryVo {
   set array(a) {
     this._array = a;
     this.initUriToHash();
+  }
+
+  // @Nullable
+  getItemByHash(hash) {
+    if (!this._hashToItem) {  // lazy init
+      this._hashToItem = {};
+      for (const item of this._array) {
+        const key = item['@_hash'];
+        this._hashToItem[key] = item;
+      }
+    }
+    return this._hashToItem[hash];
   }
 
   // @Nullable

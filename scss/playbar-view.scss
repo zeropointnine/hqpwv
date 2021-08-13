@@ -5,7 +5,7 @@
 	height: auto;
 	padding: 12px 0 12px 0;
   background-color: $color-bg;
-  z-index:10000;
+  z-index:10001;
 }
 
 // ---
@@ -385,7 +385,7 @@ $thumb-width: 20px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    transition: top 0.33s cubic-bezier(0, .5, .3, 1.0);
+    transition: top $app-standard-duration cubic-bezier(0, .5, .3, 1.0);
     @include mobile {
       font-size: $font-size-smaller-mobile;
     }
@@ -410,7 +410,7 @@ $thumb-width: 20px;
     border-top:1px solid #444;
     line-height:22px;
     padding: 4px 16px 0 16px;
-    transition: top 0.33s cubic-bezier(0,.5,.3,1.0);
+    transition: top $app-standard-duration $app-standard-ease;
 
     #snackIcon {
       position:absolute;

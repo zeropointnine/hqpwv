@@ -3,8 +3,21 @@
  */
 export default class ViewUtil {}
 
+/**
+ * Not useful but too late to refactor out.
+ * Rem, setting visibility to 'visible' explicitly has 'side effects'.
+ * Should be set to empty for normal, visible behavior!
+ *
+ * @param b - can be boolean; null or empty-string will set it to empty-string
+ */
 ViewUtil.setVisible = ($el, b) => {
-	$el.css("visibility", (b ? "visible" : "hidden"));
+  let value;
+  if (b === null || b === '') {
+    value = '';
+  } else {
+    value = b ? 'visible' : 'hidden';
+  }
+	$el.css("visibility", value);
 };
 
 ViewUtil.isVisible = ($el) => {

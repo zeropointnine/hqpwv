@@ -37,19 +37,18 @@ export default class HqpSettingsView extends Subview {
 
   show() {
     super.show();
-
     ViewUtil.doStockFadeIn(this.$el);
     this.$el[0].scrollTop = 0;
-
     this.filtersView.onShow();
     this.rulesView.onShow();
+    $(document).trigger('restore-pointer-events');
   }
 
   hide() {
     super.hide();
     this.filtersView.onHide();
     this.rulesView.onHide();
-  }
+    $(document).trigger('restore-pointer-events');  }
 
   expandRules(shouldExpand) {
     ViewUtil.setDisplayed(this.rulesView.$el, shouldExpand);

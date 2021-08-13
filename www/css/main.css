@@ -39,6 +39,25 @@
   src: local(""), url("../fonts/noto-serif-sc-v8-latin-regular.woff2") format("woff2"), url("../fonts/noto-serif-sc-v8-latin-regular.woff") format("woff");
   /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+.icon {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  position: relative;
+}
+.icon:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -355,11 +374,10 @@ li:before {
 }
 
 #mainArea {
-  visibility: hidden;
-  /* until init */
   position: relative;
   background-color: #101010;
   flex: 1;
+  overflow: clip;
 }
 
 #topBar {
@@ -370,7 +388,10 @@ li:before {
   display: flex;
   align-items: center;
   background-color: #101010;
-  transition: margin-top 0.1s ease-out;
+  transition: margin-top 100ms ease-out;
+}
+#topBar.isAnimating {
+  transition: margin-top 400ms ease-out;
 }
 @media (max-width: 480px) {
   #topBar {
@@ -502,7 +523,7 @@ li:before {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.85);
-  transition: opacity 0.33s ease-in;
+  transition: opacity 400ms ease-in;
 }
 
 #fullOverlayImage {
@@ -510,7 +531,7 @@ li:before {
   z-index: 9999;
   position: absolute;
   cursor: pointer;
-  transition: left 0.33s ease-out, top 0.33s ease-out, width 0.33s ease-out, height 0.33s ease-out;
+  transition: left 400ms cubic-bezier(0, 0.5, 0.3, 1), top 400ms cubic-bezier(0, 0.5, 0.3, 1), width 400ms cubic-bezier(0, 0.5, 0.3, 1), height 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 
 #dialogOuter {
@@ -581,7 +602,7 @@ li:before {
   height: auto;
   padding: 12px 0 12px 0;
   background-color: #101010;
-  z-index: 10000;
+  z-index: 10001;
 }
 
 #playingText {
@@ -1010,7 +1031,7 @@ li:before {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  transition: top 0.33s cubic-bezier(0, 0.5, 0.3, 1);
+  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 @media (max-width: 480px) {
   #toast #toastInner {
@@ -1035,7 +1056,7 @@ li:before {
   border-top: 1px solid #444;
   line-height: 22px;
   padding: 4px 16px 0 16px;
-  transition: top 0.33s cubic-bezier(0, 0.5, 0.3, 1);
+  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 #snack #snackInner #snackIcon {
   position: absolute;
@@ -1067,7 +1088,10 @@ li:before {
   margin: 0;
   padding: 0;
   overflow: clip;
-  transition: top 333ms cubic-bezier(0, 0.5, 0.3, 1);
+  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
+}
+#playlistView.animIn {
+  border-top: 1px solid #282828;
 }
 
 #playlistMainView {
@@ -1075,7 +1099,7 @@ li:before {
   width: 100%;
   height: 100%;
   left: 0;
-  transition: left 200ms cubic-bezier(0, 0.5, 0.3, 1);
+  transition: left 400ms ease-in-out;
 }
 
 #historyView {
@@ -1083,7 +1107,7 @@ li:before {
   width: 100%;
   height: 100%;
   left: 0;
-  transition: left 200ms cubic-bezier(0, 0.5, 0.3, 1);
+  transition: left 400ms ease-in-out;
 }
 
 #playlistHeader {
@@ -1312,6 +1336,18 @@ li:before {
 #libraryBitrateButton:before {
   background-image: url("./../img/icons/filter_alt_white_24dp.svg");
 }
+#libraryBitrateButton.badge:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  left: 22px;
+  top: 4px;
+  width: 5px;
+  height: 5px;
+  background-color: #ccc;
+  border-radius: 5px;
+  border: 2px solid #101010;
+}
 
 #librarySortButton {
   margin-left: 4px;
@@ -1342,17 +1378,35 @@ li:before {
   transition: opacity 1s linear 1s;
 }
 
-#libraryList {
-  display: flex;
-  flex-wrap: wrap;
+#libraryContent {
   margin-top: 16px;
   margin-left: auto;
   margin-right: auto;
 }
 @media (max-width: 480px) {
-  #libraryList {
+  #libraryContent {
     margin-top: 12px;
   }
+}
+
+.libraryGroupLabel {
+  margin-left: 6px;
+  margin-right: 6px;
+  padding-left: 4px;
+  padding-right: 12px;
+  height: 36px;
+  border-top: 1px solid #282828;
+  margin-bottom: 8px;
+  display: flex;
+}
+.libraryGroupLabel .inner {
+  line-height: 36px;
+}
+
+.libraryGroup {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
 .libraryItem {
@@ -1443,9 +1497,16 @@ li:before {
   opacity: 1;
 }
 
+.folderIcon:before {
+  background-image: url("./../img/icons/folder_white_24dp.svg");
+}
+
 #albumView {
   padding-bottom: 0;
-  transition: top 333ms cubic-bezier(0, 0.5, 0.3, 1), opacity 333ms cubic-bezier(0, 0.5, 0.3, 1);
+  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1), opacity 400ms ease-out;
+}
+#albumView.animIn {
+  border-top: 1px solid #282828;
 }
 
 #albumCloseButton {
@@ -1464,11 +1525,16 @@ li:before {
   margin-bottom: 24px;
 }
 
-#albumViewPicture {
+.albumViewPictureOuter {
   width: 50%;
   max-height: 75vh;
-  object-fit: contain;
   background: #1c1c1c;
+  transition: opacity 400ms ease-in;
+}
+.albumViewPictureOuter #albumViewPicture {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   cursor: pointer;
 }
 
@@ -1505,7 +1571,7 @@ li:before {
     flex-direction: column;
   }
 
-  #albumViewPicture {
+  .albumViewPictureOuter {
     width: 70%;
     margin-left: 15%;
     margin-right: 15%;
@@ -1666,6 +1732,16 @@ li:before {
 .albumItemContext {
   height: 36px;
   margin-left: 6px;
+}
+
+#albumOverlayImage {
+  display: none;
+  position: absolute;
+  z-index: 10000;
+  transition: left 400ms cubic-bezier(0, 0.5, 0.3, 1), top 400ms cubic-bezier(0, 0.5, 0.3, 1), width 400ms ease-out, height 400ms ease-out;
+}
+#albumOverlayImage.animOut {
+  transition: left 400ms cubic-bezier(0, 0.5, 0.3, 1), top 400ms cubic-bezier(0, 0.5, 0.3, 1), width 400ms ease-out, height 400ms ease-out;
 }
 
 #settingsView {
