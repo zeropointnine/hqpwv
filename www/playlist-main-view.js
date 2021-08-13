@@ -21,6 +21,8 @@ export default class PlaylistView extends Subview {
   historyView;
   contextMenu;
   playlist;
+  selectedUri = null;
+  selectedIndex = -1;
 
   constructor($el) {
   	super($el);
@@ -93,19 +95,35 @@ export default class PlaylistView extends Subview {
 	};
 
   selectItemByUri(uri=null) {
+    if (uri == this.selectedUri) {
+      return;
+    }
+    this.selectedUri = uri;
+    const lastSelectedIndex = this.selectedIndex;
+    this.selectedIndex = Model.playlist.getIndexByUri(this.selectedUri);
+
+    this.removeSelectedClassFromListItems();
+
+    if (!this.selectedUri) {
+      return;
+    }
+    if (this.selectedIndex == -1) {
+      cl('warning no match for uri');
+      return;
+    }
+
+    const $item = $(this.$list.children()[this.selectedIndex]);
+    $item.addClass("selected");
+
+    if (this.selectedIndex > lastSelectedIndex) {
+      Util.autoScrollListItem($item, this.$el, 4);
+    }
+  }
+
+  removeSelectedClassFromListItems() {
     this.$list.children().each((i, item) => {
       $(item).removeClass("selected");
     });
-    if (!uri) {
-      return;
-    }
-    const i = Model.playlist.getIndexByUri(uri);
-    if (i == -1) {
-      cl('warning no match for uri')
-      return;
-    }
-    const $item = $(this.$list.children()[i]);
-    $item.addClass("selected");
   }
 
   updateRepeatButton = () => {

@@ -31,7 +31,10 @@ export default class PlaylistVo {
   }
 
   /** Gets item index by uri. */
-  getIndexByUri(uri) {
+  getIndexByUri(uri=null) {
+    if (!uri) {
+      return -1;
+    }
     for (let i = 0; i < this._array.length; i++) {
       const item = this._array[i];
       if (item['@_uri'] == uri) {

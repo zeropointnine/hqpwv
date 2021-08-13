@@ -153,7 +153,6 @@ export default class AlbumView extends Subview {
     const inBounds = (rectEndY >= 0 - rectEndH && rectEndY <= this.$el.height() + rectEndH);
     if (!inBounds) {
       // target is out of bounds; note too that y/h can be NaN in this case
-      cl('oob')
       $(document).trigger('restore-pointer-events');
       return;
     }
@@ -264,9 +263,9 @@ export default class AlbumView extends Subview {
         $listItem.addClass('selected');
         const last = this.currentPlayingSongAlbumIndex;
         this.currentPlayingSongAlbumIndex = i;
-        if (this.currentPlayingSongAlbumIndex == last + 1) {
-          // The playing song has just advanced by 1
-          this.nextTrackScrollEffect($listItem)
+        if (this.currentPlayingSongAlbumIndex > last) {
+          // The playing song has advanced forward (by 1, presumably)
+          Util.autoScrollListItem($listItem, this.$el);
         }
       } else {
         $listItem.removeClass('selected');
@@ -287,7 +286,7 @@ export default class AlbumView extends Subview {
 	onItemClick(event) {
 		const index = $(event.currentTarget).attr("data-index");
 		const item = this.tracks[index];
-    cl(item['@_hash'])
+    // ...
 	}
 
 	onItemContextButtonClick(event) {
@@ -403,42 +402,6 @@ export default class AlbumView extends Subview {
     return lastGoodSuffix.toUpperCase();
   }
 
-  /**
-   * Force next-track to be fully visible, aligned to bottom edge,
-   * but only if it's currently partially or wholly cropped below $el,
-   * and only if the jump is not too large.
-   * todo it's off by like (tracknum * 2) px, ugh
-   * todo revisit only if we remove scrolleffect on subviews, then simplify
-   */
-  nextTrackScrollEffect($listItem) {
-    const maxDistance = $listItem.outerHeight() * 2;
-    const delta = this.getBottomEdgeDistance($listItem);
-    if (delta < 0 || delta > maxDistance) {
-      return;
-    }
-    let count = 30; // failsafe lol
-    const f = () => {
-      // Must be recalculated on every frame due to
-      // dynamic sizing of $el due to topbar scroll effect (!)
-      const delta = this.getBottomEdgeDistance($listItem);
-      if (Math.abs(delta) < 1.0 || count-- <= 0) {
-        clearInterval(id);
-        return;
-      }
-      const target = this.$el.scrollTop() + 2; // (delta * 0.35);
-      this.$el.scrollTop(target)
-    };
-    const id = setInterval(f, 16);
-  }
-
-  /** Returns the distance a list item's bottom edge is from the bottom edge of the container. */ 
-  getBottomEdgeDistance($listItem) {
-    const listBottom = this.$el.scrollTop() + this.$el.outerHeight();
-    const itemBottom = $listItem[0].offsetTop + $listItem.outerHeight();
-    const delta = itemBottom - listBottom;
-    return delta;
-  }
-  
   getLibraryItemImageRect() {
     const r1 = this.$libraryItemImage[0].getBoundingClientRect();
     const r2 = this.$el[0].getBoundingClientRect();

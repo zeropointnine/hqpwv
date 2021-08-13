@@ -6,9 +6,9 @@ import Service from './service.js'
 export default class Util {}
 
 /** 
- * Shortcut for hooking up custom events off of document.
+ * Hooks up custom events off of document.
+ * Doesn't support removing listener. :/
  * todo/nb: doesnt work correctly when target is not same object as where this fn is invoked from [?]
- * todo/nb: no way to remove listnr :/
  */
 Util.addAppListener = (context, eventName, callback) => {
 	$(document).on(eventName, (e, ...rest) => callback.call(context, ...rest));
@@ -154,4 +154,47 @@ Util.getFileSuffix = (filename) => {
   }
   const s = filename.substr(i + 1);
   return s;
+};
+
+/**
+ * Forces track list item to be fully visible, aligned to bottom edge
+ * in the album view and playlist view.
+ *
+ * But only if it's currently partially or wholly cropped at the bottom,
+ * and only if the jump is not too large.
+ *
+ * Idea is that when the track advances forward, the newly selected item
+ * should be made visible as needed, as a convenience.
+ * Should only be called when last-selected-item is above `$listItem`.
+ */
+Util.autoScrollListItem = ($listItem, $holder, step=2) => {
+  // Distance of list item's bottom edge from bottom edge of container.
+  const getBottomEdgeDistance = () => {
+    const listBottom = $holder.scrollTop() + $holder.outerHeight();
+    const itemBottom = $listItem[0].offsetTop + $listItem.outerHeight();
+    return (itemBottom - listBottom);
+  };
+
+  const maxDistance = $listItem.outerHeight() * 2;
+  const delta = getBottomEdgeDistance($listItem);
+  if (delta < 0 || delta > maxDistance) {
+    return;
+  }
+
+  $(document.body).css('pointer-events', 'none');
+  let count = 100; // failsafe lol
+  const f = () => {
+    // Must be recalculated on every frame
+    // (rather than doing a simple css property assignment)
+    // bc of dynamic sizing of container due to topbar scroll effect (!)
+    const delta = getBottomEdgeDistance($listItem);
+    if (delta < 1.01 || count-- <= 0) {
+      clearInterval(id);
+      $(document).trigger('restore-pointer-events');
+      return;
+    }
+    const target = $holder.scrollTop() + step; // (delta * 0.35);
+    $holder.scrollTop(target)
+  };
+  const id = setInterval(f, 16);
 };
