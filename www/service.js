@@ -94,8 +94,26 @@ class Service {
 			this.currentItem = null;
 			return;
 		}
+
 		this.itemTimestamp = new Date().getTime();
 		this.currentItem = this.queue.shift();
+
+    /*
+    // somehow this optimization causes problem when new track activates apply-preset sequence.
+    // busy state does not get activated, and track status does not update for 10 seconds :/
+    // this may mean problem already exists and is timing-dependent ugh
+    if (this.currentItem.xml.includes('<Status') && !this.currentItem.callback) {
+      if (this.queue.length) {
+        const nextItem = this.queue[0];
+        if (nextItem.xml.includes('<Status')) {
+          cl('fyi skipping unnecessary status call');
+          this.doNextItem();
+          return;
+        }
+      }
+    }
+    */
+
 		this.makeRequest();
 	}
 

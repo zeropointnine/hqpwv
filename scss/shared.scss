@@ -46,3 +46,10 @@
   font-weight: bold;
   line-height: $icon-button-side;
 }
+
+@keyframes thumbPulse {
+  0% { opacity:1; }
+  50% { opacity:0.5; }
+  100% { opacity:1; }
+}
+

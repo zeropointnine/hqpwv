@@ -49,6 +49,7 @@
   content: " ";
   display: block;
   position: absolute;
+  opacity: 0.7;
   left: 0;
   top: 0;
   width: 100%;
@@ -151,6 +152,17 @@ li:before {
   line-height: 36px;
 }
 
+@keyframes thumbPulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 .iconButton {
   display: inline-block;
   width: 36px;
@@ -163,6 +175,7 @@ li:before {
   content: " ";
   display: block;
   position: absolute;
+  opacity: 0.7;
   left: 0;
   top: 0;
   width: 100%;
@@ -976,17 +989,6 @@ li:before {
     top: 46px;
   }
 }
-@keyframes thumbPulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
-}
 #bottomScrim {
   position: absolute;
   width: 100%;
@@ -1231,6 +1233,7 @@ li:before {
   content: " ";
   display: block;
   position: absolute;
+  opacity: 0.7;
   left: 0;
   top: 0;
   width: 100%;
@@ -1240,7 +1243,6 @@ li:before {
   background-size: 24px 24px;
   left: 4px;
   width: 36px;
-  opacity: 0.7;
   background-image: url("./../img/icons/repeat_white_24dp.svg");
 }
 #playlistRepeatButton:hover {
@@ -1263,6 +1265,32 @@ li:before {
 
 #playlistContextAlbum {
   border-top: 1px solid #282828;
+}
+
+.playlistItem {
+  position: relative;
+}
+.playlistItem:before {
+  width: 0;
+  background: #ff2200;
+  content: " ";
+  position: absolute;
+  left: 0;
+  top: auto;
+  bottom: auto;
+  height: 24px;
+  opacity: 1;
+}
+.playlistItem.selected:before {
+  width: 4px;
+}
+
+.isPaused .playlistItem.selected:before {
+  opacity: 0.7;
+}
+
+.isBusy .playlistItem.selected:before {
+  animation: thumbPulse 1.33s infinite;
 }
 
 .playlistItemMeta {

@@ -14,7 +14,7 @@ import Busyer from './busyer.js';
 import PresetRuleApplier from './preset-rule-applier.js';
 import LibraryView from './library-view.js';
 import AlbumView from './album-view.js';
-import PlaylistView from './playlist-view.js';
+import PlaylistCompoundView from './playlist-compound-view.js';
 import PlaybarView from './playbar-view.js';
 import TopBar from './top-bar.js';
 import SettingsView from './settings-view.js';
@@ -33,7 +33,7 @@ export default class App {
 	playbarView = new PlaybarView();
 	libraryView = new LibraryView();
 	albumView = new AlbumView();
-	playlistView = new PlaylistView();
+	playlistView = new PlaylistCompoundView();
 	settingsView = new SettingsView();
   hqpSettingsView = new HqpSettingsView();
   subviews = [this.libraryView, this.albumView, this.playlistView, this.settingsView, this.hqpSettingsView];
@@ -61,7 +61,7 @@ export default class App {
     Util.addAppListener(this, 'library-settings-changed', this.onLibrarySettingsChanged);
 		Util.addAppListener(this, 'library-item-click', this.showAlbumView);
 		Util.addAppListener(this, 'album-view-close-button', this.hideAlbumView);
-		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistView);
+		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistCompoundView);
 		Util.addAppListener(this, 'playlist-close-button', this.hidePlaylist);
 		Util.addAppListener(this, 'playlist-context-album', this.playlistToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
@@ -131,15 +131,15 @@ export default class App {
   // ---
   // subview concrete show/hide logic
   
-  togglePlaylistView() {
+  togglePlaylistCompoundView() {
     if (this.getTopSubview() == this.playlistView) {
       this.hidePlaylist();
     } else {
-      this.showPlaylistView();
+      this.showPlaylistCompoundView();
     }
   }
 
-  showPlaylistView() {
+  showPlaylistCompoundView() {
     this.showSubview(this.playlistView);
     Service.queueCommandFront(Commands.playlistGet());
   }
