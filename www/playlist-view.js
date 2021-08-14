@@ -2,6 +2,7 @@ import Subview from './subview.js';
 import Util from './util.js';
 import ViewUtil from './view-util.js';
 import Model from './model.js';
+import ModelUtil from './model-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import ModalPointerUtil from './modal-pointer-util.js';
@@ -15,12 +16,12 @@ import HistoryView from './history-view.js';
  */
 export default class PlaylistView extends Subview {
 
-  listItems$;
   $repeatButton;
   $historyButton;
   historyView;
   contextMenu;
   playlist;
+  trackItems$;
   selectedUri = null;
   selectedIndex = -1;
 
@@ -70,7 +71,7 @@ export default class PlaylistView extends Subview {
 
     // Populate list items
     this.playlist = Model.playlist;
-    this.listItems$ = [];
+    this.trackItems$ = [];
 		this.$list.empty();
 
     if (this.playlist.array.length == 0) {
@@ -80,16 +81,27 @@ export default class PlaylistView extends Subview {
     }
 
     for (let i = 0; i < this.playlist.array.length; i++) { // todo do not reference model.playlist.array here
+
       const item = this.playlist.array[i];
       const itemPrevious = (i > 0) ? Model.playlist.array[i - 1] : null;
       const itemNext = (i < Model.playlist.array.length - 1) ? Model.playlist.array[i + 1] : null;
-      const $item = this.makeListItem(i, item, itemPrevious, itemNext);
+      const album = Model.library.getLibraryItemByTrackUri(item['@_uri']);
+
+      const $albumLine = this.makeAlbumLineDiv(album, item, itemPrevious);
+      if ($albumLine) {
+        this.$list.append($albumLine);
+        $albumLine.find('.playlistAlbumButton').on('click tap', this.onAlbumButton);
+      }
+
+      const $item = this.makeListItem(i, item, itemPrevious, itemNext, album);
       $item.on("click tap", e => this.onItemClick(e));
       $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
       $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
-      this.listItems$.push($item);
+
+      this.trackItems$.push($item);
       this.$list.append($item);
     }
+
     this.updateSelectedItem();
 	}
 
@@ -108,28 +120,23 @@ export default class PlaylistView extends Subview {
     this.selectedUri = uri;
     const lastSelectedIndex = this.selectedIndex;
     this.selectedIndex = Model.playlist.getIndexByUri(this.selectedUri);
-
-    this.removeSelectedClassFromListItems();
-
-    if (!this.selectedUri) {
-      return;
-    }
     if (this.selectedIndex == -1) {
       cl('warning no match for uri');
-      return;
     }
-    const $item = $(this.$list.children()[this.selectedIndex]);
-    $item.addClass("selected");
+
+    for (let i = 0; i < this.trackItems$.length; i++) {
+      const $item = this.trackItems$[i];
+      if (i == this.selectedIndex) {
+        $item.addClass("selected");
+      } else {
+        $item.removeClass("selected");
+      }
+    }
 
     if (this.selectedIndex > lastSelectedIndex) {
+      const $item = this.trackItems$[this.selectedIndex];
       Util.autoScrollListItem($item, this.$el, 4);
     }
-  }
-
-  removeSelectedClassFromListItems() {
-    this.$list.children().each((i, item) => {
-      $(item).removeClass("selected");
-    });
   }
 
   updateRepeatButton = () => {
@@ -145,25 +152,63 @@ export default class PlaylistView extends Subview {
     }
   };
 
-	makeListItem(index, item, itemPrevious, itemNext) {
-
-    let groupingClass = '';
+  makeAlbumLineDiv(album, item, itemPrevious) {
+    if (!album) {
+      return null;
+    }
     const isSameAsPrevious = this.areFromSameAlbum(item, itemPrevious);
-    const isSameAsNext = this.areFromSameAlbum(item, itemNext);
-    if (!isSameAsPrevious && isSameAsNext) {
-      groupingClass = 'groupFirst';
-    } else if (isSameAsPrevious && !isSameAsNext) {
-      groupingClass = 'groupLast';
-    } else if (isSameAsPrevious && isSameAsNext) {
-      groupingClass = 'groupMiddle';
-    } else { // isSameAsPrevious && isSameAsNext
-      groupingClass = 'single';
+    if (isSameAsPrevious) {
+      return null;
+    }
+    const imgPath = ModelUtil.getAlbumImageUrl(album);
+    const albumText = album['@_album'];
+    const artistText = album['@_artist'];
+    if (!albumText && !artistText) {
+      return null;
     }
 
-		let s = '';
-		s += `<div class="playHisItem playlistItem ${groupingClass}" data-index="${index}">`;
-    s += `  <div class="playHisItemLeft">${index+1}</div>`;
-		s += `  <div class="playHisItemMain">${this.makeLabel(item)}</div>`;
+    let text = '';
+    if (albumText) {
+      text += albumText;
+    }
+    if (artistText) {
+      text += text ? ('<br>' + artistText) : artistText;
+    }
+    if (!text) {
+      return null;
+    }
+
+    let s = '';
+    s += `<div class="playHisItem playlistItem groupFirst playlistAlbumLine">`;
+    s += `<div class="playlistAlbumButton" data-hash="${album['@_hash']}"><img src="${imgPath}"><div class="text">${text}</div></div>`;
+    s += `</div>`;
+    return $(s);
+  }
+
+	makeListItem(index, item, itemPrevious, itemNext, hasAlbum) {
+
+    const isSameAsPrevious = (!itemPrevious && hasAlbum) || this.areFromSameAlbum(item, itemPrevious);
+    const isSameAsNext = this.areFromSameAlbum(item, itemNext);
+
+    let groupingClass = '';
+    if (hasAlbum) {
+      groupingClass = !isSameAsNext ? 'groupLast' : 'groupMiddle';
+    } else {
+      if (!isSameAsPrevious && isSameAsNext) {
+        groupingClass = 'groupFirst';
+      } else if (isSameAsPrevious && !isSameAsNext) {
+        groupingClass = 'groupLast';
+      } else if (isSameAsPrevious && isSameAsNext) {
+        groupingClass = 'groupMiddle';
+      } else { // isSameAsPrevious && isSameAsNext
+        groupingClass = 'single';
+      }
+    }
+
+    let s = '';
+    s += `<div class="playHisItem playlistItem ${groupingClass}" data-index="${index}">`;
+    s += `  <div class="left">${index+1}</div>`;
+    s += `  <div class="main">${this.makeLabel(item, hasAlbum)}</div>`;
     if (MetaUtil.isEnabled && Model.library.array.length > 0) {
       const hash = Model.library.getHashForPlaylistItem(item);
       if (hash) {
@@ -176,9 +221,9 @@ export default class PlaylistView extends Subview {
         s += `</div>`;
       }
     }
-		s += `  <div class="playHisItemRight"><div class="contextButton iconButton moreButton" data-index="${index}"></div></div>`;
-		s += `</div>`;
-		return $(s);
+    s += `  <div class="right"><div class="contextButton iconButton moreButton" data-index="${index}"></div></div>`;
+    s += `</div>`;
+    return $(s);
 	}
 
   areFromSameAlbum(track1, track2) {
@@ -195,17 +240,33 @@ export default class PlaylistView extends Subview {
     return (base1 === base2);
   }
 
-	makeLabel(item) {
-		const song = item['@_song'];
+	makeLabel(item, hasAlbum) {
+    const song = item['@_song'];
+    const seconds = parseFloat(item['@_length']);
+
+    if (hasAlbum) {
+      let result = '';
+      if (song) {
+        result += `${song}`;
+      }
+      if (!result) {
+        result = 'Track';
+      }
+      if (seconds) {
+        result += ` <span class="duration">(${Util.durationText(seconds)})</span>`;
+      }
+      return result;
+    }
+
+    // More detailed
 		const album = item['@_album'];
 		const artist = item['@_artist'] || item['@_album_artist'];
-    const seconds = parseFloat(item['@_length']);
 		let result = '';
 		if (song) {
 			result += `<strong>${song}</strong>`;
 		}
     if (seconds) {
-      result += ` <span class="colorTextLess">(${Util.durationText(seconds)})</span>`;
+      result += ` <span class="duration">(${Util.durationText(seconds)})</span>`;
     }
 		if (artist) {
 			result += result ? ('<br>' + artist) : artist;
@@ -275,7 +336,7 @@ export default class PlaylistView extends Subview {
   onMetaTrackIncremented = (e, hash, count) => {
     for (let i = 0; i < this.playlist.array.length; i++) {
       const item = this.playlist.array[i];
-      const $item = this.listItems$[i];
+      const $item = this.trackItems$[i];
       const itemHash = Model.library.getHashForPlaylistItem(item);
       if (itemHash == hash) {
         $item.find('.playlistItemViews').text(count);
@@ -287,5 +348,15 @@ export default class PlaylistView extends Subview {
   onModelLibraryUpdated() {
     this.$historyButton.removeClass('isDisabled');
     this.populate();
+  }
+
+  onAlbumButton = (e) => {
+    const $el = $(e.currentTarget);
+    const hash = $el.attr('data-hash');
+    const album = Model.library.getItemByHash(hash);
+    if (!album) {
+      return;
+    }
+    $(document).trigger('playlist-context-album', album);
   }
 }

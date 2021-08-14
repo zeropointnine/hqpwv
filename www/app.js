@@ -63,7 +63,7 @@ export default class App {
 		Util.addAppListener(this, 'album-view-close-button', this.hideAlbumView);
 		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistCompoundView);
 		Util.addAppListener(this, 'playlist-close-button', this.hidePlaylist);
-		Util.addAppListener(this, 'playlist-context-album', this.playlistToAlbum);
+		Util.addAppListener(this, 'playlist-context-album history-context-album', this.playlistToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
     Util.addAppListener(this, 'hqp-settings-view-close', this.hideHqpSettingsView);
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);

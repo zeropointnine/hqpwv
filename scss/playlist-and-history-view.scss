@@ -11,6 +11,8 @@ $leftRightEase: ease-in-out;
   }
 }
 
+// ---
+
 #playlistMainView {
   position:absolute;
   width:100%;
@@ -34,7 +36,7 @@ $leftRightEase: ease-in-out;
   margin-bottom: 8px;
 }
 
-// Playlist + history shared list item classes
+// Shared list item classes for playlist + history
 
 .playHisNonItem {
   padding-top:$space-unit;
@@ -53,30 +55,45 @@ $leftRightEase: ease-in-out;
 		background-color:$color-listitem;
 	}
 	&.selected {
-		background-color: $color-listitem-selected;
+		//background-color: $color-listitem-selected;
 		&:hover {
-			background-color:$color-listitem-selected;
+			//background-color:$color-listitem-selected;
 		}
 	}
   @include mobile {
     padding: 8px 8px 8px 8px;
   }
+
+  .left {
+    margin-right:16px;
+    @include mobile {
+      margin-right:10px;
+    }
+  }
+  .main {
+    flex:1;
+  }
+  .right {
+    height:$icon-button-side;
+  }
 }
 
 $margin1: 0px;
-$margin2: 18px;
+$margin2: 16px;
+$border-radius: 0px;
+$border-radius-mobile:0px;
 
 .playHisItem.groupFirst {
-  border-top-left-radius: $space-unit;
-  border-top-right-radius: $space-unit;
+  border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;
   margin-top:$margin2;
   margin-bottom:$margin1;
   border-top:1px solid $color-listitem;
   border-left:1px solid $color-listitem;
   border-right:1px solid $color-listitem;
   @include mobile {
-    border-top-left-radius: $space-unit-mobile;
-    border-top-right-radius: $space-unit-mobile;
+    border-top-left-radius: $border-radius-mobile;
+    border-top-right-radius: $border-radius-mobile;
   }
 }
 .playHisItem.groupMiddle {
@@ -86,16 +103,16 @@ $margin2: 18px;
   border-right:1px solid $color-listitem;
 }
 .playHisItem.groupLast {
-  border-bottom-left-radius: $space-unit;
-  border-bottom-right-radius: $space-unit;
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
   margin-top:$margin1;
   margin-bottom:$margin2;
   border-left:1px solid $color-listitem;
   border-right:1px solid $color-listitem;
   border-bottom:1px solid $color-listitem;
   @include mobile {
-    border-bottom-left-radius: $space-unit-mobile;
-    border-bottom-right-radius: $space-unit-mobile;
+    border-bottom-left-radius: $border-radius-mobile;
+    border-bottom-right-radius: $border-radius-mobile;
   }
 }
 .playHisItem.single {
@@ -103,24 +120,6 @@ $margin2: 18px;
   margin-top:$margin2;
   margin-bottom:$margin2;
   border: 1px solid $color-listitem;
-}
-
-.playHisItemLeft {
-	margin-right:$space-unit;
-  @include mobile {
-    margin-right:$space-unit-mobile;
-  }
-}
-
-.playHisItemMain {
-	flex:1;
-}
-.playHisItemRight {
-  margin-left:$space-unit;
-  height:$icon-button-side;
-  @include mobile {
-    margin-left:$space-unit-mobile;
-  }
 }
 
 // ---
@@ -168,23 +167,18 @@ $margin2: 18px;
   }
 }
 
-#playlistContextAlbum {
-  border-top:1px solid $color-listitem;
-}
-
 .playlistItem {
   position:relative;
 
+  // selected indicator
   &:before {
     width: 0;
 
-    background: $color-accent;
+    background: $color-text-less;
     content: ' ';
     position: absolute;
     left: 0;
-    top: auto;
-    bottom: auto;
-    height: 24px;
+    height: 100%;
     opacity:1;
   }
 
@@ -193,9 +187,25 @@ $margin2: 18px;
       width: 4px;
     }
   }
+
+  .left {
+    width:48px;
+    text-align: center;
+    color: $color-text-least;
+  }
+  .main {
+  }
+  .right {
+    margin-left:6px;
+  }
+
+  .duration {
+    font-size: $font-size-smaller;
+    color:$color-text-least;
+  }
 }
 
-.isPaused  .playlistItem {
+.isPaused .playlistItem {
   &.selected {
     &:before {
       opacity: 0.7;
@@ -228,7 +238,35 @@ $margin2: 18px;
 .playlistItemViews {
   font-size: $font-size-smaller;
   color:$color-text-least;
-  margin-right:4px;
+  margin-right:6px;
+}
+
+.playlistAlbumLine {
+  padding-left:12px;
+  padding-top:12px;
+  cursor:default;
+
+  &:hover {
+    background-color:$color-listitem-less;
+  }
+
+  .playlistAlbumButton {
+    display:flex;
+    align-items:center;
+    cursor:pointer;
+    &:hover {
+      background-color: $color-listitem;
+    }
+
+    img {
+      width:48px;
+      height:48px;
+    }
+    .text {
+      margin-left:16px;
+      padding-right:12px;
+    }
+  }
 }
 
 // ---
@@ -237,6 +275,16 @@ $margin2: 18px;
   cursor:default;
   &:hover {
     background-color: $color-listitem-less;
+  }
+  .left {
+    min-width:18px;
+    text-align: right;
+    color: $color-text-least;
+  }
+  .main {
+  }
+  .right {
+    margin-left:16px;
   }
 }
 

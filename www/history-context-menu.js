@@ -23,11 +23,11 @@ export default class HistoryContextMenu extends ContextMenu {
     this.$albumItem = this.$el.find("#historyContextAlbum");
 
     this.$queueItem.on("click tap", e => {
-      // xxx
+      // todo
     });
 
     this.$playNowItem.on("click tap", e => {
-      // xxx
+      // todo
     });
 
     this.$albumItem.on("click tap", e => {

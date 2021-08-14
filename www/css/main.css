@@ -1137,22 +1137,30 @@ li:before {
 .playHisItem:hover {
   background-color: #282828;
 }
-.playHisItem.selected {
-  background-color: #383838;
-}
-.playHisItem.selected:hover {
-  background-color: #383838;
-}
 @media (max-width: 480px) {
   .playHisItem {
     padding: 8px 8px 8px 8px;
   }
 }
+.playHisItem .left {
+  margin-right: 16px;
+}
+@media (max-width: 480px) {
+  .playHisItem .left {
+    margin-right: 10px;
+  }
+}
+.playHisItem .main {
+  flex: 1;
+}
+.playHisItem .right {
+  height: 36px;
+}
 
 .playHisItem.groupFirst {
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  margin-top: 18px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-top: 16px;
   margin-bottom: 0px;
   border-top: 1px solid #282828;
   border-left: 1px solid #282828;
@@ -1160,8 +1168,8 @@ li:before {
 }
 @media (max-width: 480px) {
   .playHisItem.groupFirst {
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
   }
 }
 
@@ -1173,48 +1181,25 @@ li:before {
 }
 
 .playHisItem.groupLast {
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
   margin-top: 0px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   border-left: 1px solid #282828;
   border-right: 1px solid #282828;
   border-bottom: 1px solid #282828;
 }
 @media (max-width: 480px) {
   .playHisItem.groupLast {
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
   }
 }
 
 .playHisItem.single {
-  margin-top: 18px;
-  margin-bottom: 18px;
+  margin-top: 16px;
+  margin-bottom: 16px;
   border: 1px solid #282828;
-}
-
-.playHisItemLeft {
-  margin-right: 16px;
-}
-@media (max-width: 480px) {
-  .playHisItemLeft {
-    margin-right: 12px;
-  }
-}
-
-.playHisItemMain {
-  flex: 1;
-}
-
-.playHisItemRight {
-  margin-left: 16px;
-  height: 36px;
-}
-@media (max-width: 480px) {
-  .playHisItemRight {
-    margin-left: 12px;
-  }
 }
 
 #playlistCloseButton {
@@ -1263,26 +1248,32 @@ li:before {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-#playlistContextAlbum {
-  border-top: 1px solid #282828;
-}
-
 .playlistItem {
   position: relative;
 }
 .playlistItem:before {
   width: 0;
-  background: #ff2200;
+  background: #999;
   content: " ";
   position: absolute;
   left: 0;
-  top: auto;
-  bottom: auto;
-  height: 24px;
+  height: 100%;
   opacity: 1;
 }
 .playlistItem.selected:before {
   width: 4px;
+}
+.playlistItem .left {
+  width: 48px;
+  text-align: center;
+  color: #666;
+}
+.playlistItem .right {
+  margin-left: 6px;
+}
+.playlistItem .duration {
+  font-size: 14px;
+  color: #666;
 }
 
 .isPaused .playlistItem.selected:before {
@@ -1303,7 +1294,32 @@ li:before {
 .playlistItemViews {
   font-size: 14px;
   color: #666;
-  margin-right: 4px;
+  margin-right: 6px;
+}
+
+.playlistAlbumLine {
+  padding-left: 12px;
+  padding-top: 12px;
+  cursor: default;
+}
+.playlistAlbumLine:hover {
+  background-color: #1c1c1c;
+}
+.playlistAlbumLine .playlistAlbumButton {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.playlistAlbumLine .playlistAlbumButton:hover {
+  background-color: #282828;
+}
+.playlistAlbumLine .playlistAlbumButton img {
+  width: 48px;
+  height: 48px;
+}
+.playlistAlbumLine .playlistAlbumButton .text {
+  margin-left: 16px;
+  padding-right: 12px;
 }
 
 .historyItem {
@@ -1311,6 +1327,14 @@ li:before {
 }
 .historyItem:hover {
   background-color: #1c1c1c;
+}
+.historyItem .left {
+  min-width: 18px;
+  text-align: right;
+  color: #666;
+}
+.historyItem .right {
+  margin-left: 16px;
 }
 
 #historyList {

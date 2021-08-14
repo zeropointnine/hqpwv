@@ -12,7 +12,6 @@ export default class PlaylistContextMenu extends ContextMenu {
   $upItem;
   $downItem;
   $removeItem;
-  $albumItem;
 
   index = -1;
   matchingLibraryItem = null;
@@ -23,7 +22,6 @@ export default class PlaylistContextMenu extends ContextMenu {
     this.$upItem = this.$el.find("#playlistContextUp");
     this.$downItem = this.$el.find("#playlistContextDown");
     this.$removeItem = this.$el.find("#playlistContextRemove");
-    this.$albumItem = this.$el.find("#playlistContextAlbum");
 
     this.$upItem.on("click tap", e => {
       Service.queueCommandsFront([
@@ -39,10 +37,6 @@ export default class PlaylistContextMenu extends ContextMenu {
       Service.queueCommandsFront([
           Commands.playlistRemove(this.index + 1), Commands.playlistGet()]);
     });
-
-    this.$albumItem.on("click tap", e => {
-      $(document).trigger('playlist-context-album', this.matchingLibraryItem);
-    });
   }
 
   show($holder, $button, index) {
@@ -54,6 +48,5 @@ export default class PlaylistContextMenu extends ContextMenu {
 
     ViewUtil.setDisplayed(this.$upItem, index > 0);
     ViewUtil.setDisplayed(this.$downItem, index < Model.playlist.array.length - 1);
-    ViewUtil.setDisplayed(this.$albumItem, !!this.matchingLibraryItem);
   }
 }

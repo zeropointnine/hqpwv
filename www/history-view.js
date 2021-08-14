@@ -110,10 +110,10 @@ export default class HistoryView  extends Subview {
 
 		let s = '';
 		s += `<div class="playHisItem historyItem ${groupingClass}">`;
-		s += `  <div class="playHisItemLeft">${index+1}</div>`;
-		s += `  <div class="playHisItemMain">${this.makeLabel(item)}</div>`;
+		s += `  <div class="left">${index+1}</div>`;
+		s += `  <div class="main">${this.makeLabel(item)}</div>`;
     s += `  <div class="historyItemAgo">${agoString}</div>`;
-		s += `  <div class="playHisItemRight"><div class="contextButton iconButton moreButton ${contextDisabledClass}" data-index="${index}"></div></div>`;
+		s += `  <div class="right"><div class="contextButton iconButton moreButton ${contextDisabledClass}" data-index="${index}"></div></div>`;
 		s += `</div>`;
 		return $(s);
 	}

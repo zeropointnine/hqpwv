@@ -1,3 +1,5 @@
+import Util from './util.js';
+
 /**
  * Value object wrapper around hqp <Library /> object.
  */
@@ -12,6 +14,8 @@ export default class LibraryVo {
   _uriToHash;
   /** Key is track hash. Value is [track, album] */
   _historyLookup = null;
+  /** Key is album path, value is album */
+  _pathToItem;
 
   constructor(responseObject=null) {
     let array;
@@ -56,6 +60,10 @@ export default class LibraryVo {
     return this._hashToItem[hash];
   }
 
+  getItemByTrackHash(hash) {
+
+  }
+
   // @Nullable
   getHashForUri(uri) {
     const hash = this._uriToHash[uri];
@@ -79,14 +87,7 @@ export default class LibraryVo {
     return this.getHashForUri(uri);
   }
 
-  /**
-   * Find library item that contains the given track
-   * (Rem, a playlist item added via hqp does not have to exist in the library)
-   *
-   * uri example: "file:///Volumes/MUSICBIG/nZk/01_AZ.flac"
-   * path example: "/Volumes/MUSICBIG/nZk" (MacOS)
-   */
-  getLibraryItemByTrackUri(uri) {
+  getLibraryItemByTrackUri_ORIGINAL(uri) {
     let libraryItem;
     for (const item of this._array) {
       const itemPath = item['@_path'];
@@ -96,6 +97,26 @@ export default class LibraryVo {
       }
     }
     return libraryItem;
+  }
+  
+  /**
+   * Find library item that contains the given track
+   * (Rem, a playlist item added via hqp does not have to exist in the library)
+   *
+   * uri example: "file:///Volumes/MUSICBIG/nZk/01_AZ.flac"
+   * path example: "/Volumes/MUSICBIG/nZk" (MacOS)
+   */
+  getLibraryItemByTrackUri(uri) {
+    if (!this._pathToItem) { // lazy init
+      this._pathToItem = {};
+      for (const item of this._array) {
+        const path = item['@_path'];
+        this._pathToItem[path] = item;
+      }
+    }
+    let path = uri.replace('file://', '');
+    path = Util.stripFilenameFromHqpUri(path);
+    return this._pathToItem[path];
   }
 
   getTrackAndAlbumByHash(hash) {
