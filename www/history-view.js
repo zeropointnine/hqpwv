@@ -31,19 +31,21 @@ export default class HistoryView  extends Subview {
 	}
 
   onShow() {
-    this.update();
+    this.populate();
+    $(document).on('model-library-updated', this.onModelLibraryUpdated);
     $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
   }
 
   onHide() {
     this.contextMenu.hide();
+    $(document).off('model-library-updated', this.onModelLibraryUpdated);
     $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
   }
 
-  update() {
+  populate() {
     // Make list item data array:
     // Meta history item has a hash and a timestamp.
-    // We get the matching library track and its containing album,
+    // We get the matching library track and its containing album when exists,
     // and the history timestamp into an object.
     this.items = [];
     for (let i = MetaUtil.history.length -1; i >= 0; i--) {
@@ -51,9 +53,6 @@ export default class HistoryView  extends Subview {
       const hash = historyItem['hash'];
       const time = historyItem['time'] || 0;
       const trackAndAlbum = Model.library.getTrackAndAlbumByHash(hash);
-      if (!trackAndAlbum) {
-        cl('warning no data for', hash);
-      }
       const track = trackAndAlbum ? trackAndAlbum[0] : null;
       const album = trackAndAlbum ? trackAndAlbum[1] : null;
       let item = { track: track, album: album, time: time };
@@ -75,7 +74,6 @@ export default class HistoryView  extends Subview {
       const itemPrevious = (i > 0) ? this.items[i - 1] : null;
       const itemNext = (i < this.items.length - 1) ? this.items[i + 1] : null;
       const $item = this.makeListItem(i, item, itemPrevious, itemNext);
-      $item.on("click tap", e => this.onItemClick(e));
       $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
       this.listItems$.push($item);
       this.$list.append($item);
@@ -160,21 +158,18 @@ export default class HistoryView  extends Subview {
 		return result;
 	}
 
-	onItemClick(event) {
-		const index = parseInt($(event.currentTarget).attr("data-index"));
-		Service.queueCommandFrontAndGetStatus(
-        Commands.selectTrack(index + 1)); // rem, 1-indexed
-	}
-
 	onItemContextButtonClick(event) {
-    event.stopPropagation(); // prevent listitem from responding to same event
+    event.stopPropagation();
     const button = event.currentTarget;
     const index = parseInt($(button).attr("data-index"));
     const item = this.items[index];
     this.contextMenu.show(this.$el, $(button), item);
 	}
 
-  onMetaTrackIncremented = (e) => {
-    this.update();
+  onModelLibraryUpdated = () => {
+    this.populate();
+  };
+  onMetaTrackIncremented = () => {
+    this.populate();
   };
 }

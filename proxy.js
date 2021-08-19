@@ -19,12 +19,17 @@ const XML_PARSER_OPTIONS = { ignoreAttributes : false };
 
 let initCallback;
 let timeoutId;
-let hqpIp;
 
 /** UDP socket used for 'discovery' command. */
 let discoSocket;
 /** TCP socket which has a persistent connection to hqp. */
 let socket;
+
+/** The ip address of the HQPlayer socket server. */
+let hqpIp;
+
+let validHqpIps = [];
+let validHqpHostnames = [];
 
 let isFirstChunk = true;
 let clientRequestXml; // The request data fro the client
@@ -59,27 +64,16 @@ const onDiscoSocketListening = () => {
   console.log(`- udp socket listening on ${discoSocket.address().address}:${discoSocket.address().port}`);
   discoSocket.setMulticastLoopback(true);
   console.log(`- waiting for response from HQPlayer...`);
-  timeoutId = setTimeout(onDiscoveryTimeout, 5000);
+  timeoutId = setTimeout(onDiscoveryTimeout, 1500);
   sendUdpCommand(`<discover>hqplayer</discover>`);
-};
-
-const onDiscoveryTimeout = () => {
-  console.log(`\nERROR: No response from HQPlayer`);
-  console.log(`\nTIPS:`);
-  console.log(`1. Verify HQPlayer Desktop is currently running`);
-  console.log(`2. Verify HQPlayer's Settings dialog is not open.`);
-  console.log(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
-  console.log(`4. For more troubleshooting info, see ${TROUBLESHOOTING_URL}.`);
-  exitOnKeypress();
 };
 
 const onDiscoSocketMessage = (msg, rinfo) => {
   console.log(`- udp socket received message from ${rinfo.address}:${rinfo.port}`);
   if (!msg.toString().includes('<discover')) {
-    console.log(`  unrecognized, ignoring`);
+    console.log(`  unrecognized message, ignoring`);
     return;
   }
-  clearTimeout(timeoutId);
   let json;
   try {
     json = fastXmlParser.parse(msg.toString(), XML_PARSER_OPTIONS);
@@ -87,20 +81,76 @@ const onDiscoSocketMessage = (msg, rinfo) => {
     console.log(`\nERROR: Couldn't parse udp data as xml`);
     console.log(msg.toString());
     console.log(error + '\n');
-    exitOnKeypress();
+    return;
   }
+
   const o = json['discover'];
-  if (o) {
-    hqpHostname = o['@_name'];
-    if (o['@_result'] != 'OK') {
-      console.log(`\nWARNING: Did not get expected result=OK`);
-    }
+  if (!o) {
+    return; // shdnthpn
   }
-  if (!hqpHostname) {
-    console.log(`\nWARNING: Received no value for hostname`);
-    console.log(msg.toString());
+  if (o['@_result'] != 'OK') {
+    console.log(`\nWARNING: Did not get expected result=OK`);
+    return;
   }
-  hqpIp = rinfo.address;
+
+  console.log('  ' + o['@_name']);
+
+  validHqpIps.push(rinfo.address);
+  validHqpHostnames.push(o['@_name']);
+};
+
+const onDiscoveryTimeout = () => {
+  if (validHqpIps.length == 0) {
+    printNoResponse();
+    return;
+  }
+  if (validHqpIps.length > 1) {
+    doSelectInstance();
+    return;
+  }
+
+  console.log('');
+  hqpIp = validHqpIps[0];
+  initSocket();
+};
+
+const printNoResponse = () => {
+  console.log(`\nERROR: No response from HQPlayer`);
+  console.log(`\nTIPS:`);
+  console.log(`1. Make sure HQPlayer is currently running`);
+  console.log(`2. Make sure HQPlayer's Settings dialog is not open.`);
+  console.log(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
+  console.log(`4. For more troubleshooting info, see ${TROUBLESHOOTING_URL}.\n`);
+  exitOnKeypress();
+};
+
+const doSelectInstance = () => {
+  console.log('\nSelect which instance of HQPlayer to connect to:');
+  const limit = Math.min(validHqpHostnames.length, 9);
+  for (let i = 0; i < limit; i++) {
+    console.log(`  [${i+1}] ${validHqpIps[i]} (${validHqpHostnames[i]})`);
+  }
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+  process.stdin.on('data', onSelectInstanceKeypress)
+};
+
+const onSelectInstanceKeypress = (buffer) => {
+  const key = buffer.toString();
+  const charCode = key.charCodeAt(0);
+  if (charCode == 3) { // control-c
+    process.exit();
+  }
+  const index = charCode - 49;
+  if (index < 0 || index >= validHqpIps.length || index > 9) {
+    return;
+  }
+
+  console.log('');
+  process.stdin.off('data', onSelectInstanceKeypress);
+  process.stdin.setRawMode(false);
+
+  hqpIp = validHqpIps[index];
   initSocket();
 };
 
@@ -142,7 +192,7 @@ const initSocket = () => {
  * and also when settings is open (ECONNREFUSED).
  */
 const onSocketError = (error) => {
-  console.log('socket error:', error.message); 
+  console.log('socket error:', error.message);
   if (responseCallback) {
     doCallback({error: "socket_error"});
   }
@@ -162,7 +212,7 @@ const onSocketEnd = () => {
   initSocket();
 }
 
-// ---
+// -------------------------------------------------------------------
 
 const sendCommandToHqp = (xml, callback) => {
   // console.log(`client request: ${xml.substr(0,80)}`);
@@ -177,12 +227,12 @@ const sendCommandToHqp = (xml, callback) => {
     clearValues();
     return;
   }
- 
+
   clientRequestXml = xml;
   responseCallback = callback;
   try {
     clientRequestAsJson = fastXmlParser.parse(clientRequestXml, XML_PARSER_OPTIONS);
-  } catch (error) {  
+  } catch (error) {
     doCallback({ error: "request_xml_invalid" });
     // Note too that if hqp receives an unrecognized command, it will close the socket.
     return;
@@ -205,10 +255,10 @@ const onData = (data) => {
 
   const dataAsString = data.toString();
 
-  if (isFirstChunk) {    
+  if (isFirstChunk) {
     // console.log('is first chunk');
     isFirstChunk = false;
-    
+
     if (!dataAsString.startsWith("<?xml")) {
       doCallback({ error: "hqp_bad_response" });
       return;
@@ -221,7 +271,7 @@ const onData = (data) => {
 
       // doCallback({ error: "hqp_unknown_command" });
       // console.log(dataAsString.substr(0,80))
-      // return; 
+      // return;
     }
 
     for (const item of POSSIBLY_MULTICHUNK_STARTS) {
@@ -270,7 +320,7 @@ const finishNormalIfPossible = (dataAsString, isFirstChunk) => {
           isComplete = true;
           break;
         }
-      }      
+      }
     } else {
       console.log('warning: non-possibly-multichunk response did not parse, finishing anyway');
       isComplete = true;
@@ -308,33 +358,9 @@ const postProcessJson = (json) => {
 };
 
 /**
- * Filters out albums that have no track items (viz, playlist files)
+ * Do any filtering, etc.
  */
 const postProcessLibrary = (json) => {
-  if (!json['LibraryGet']['LibraryDirectory']) {
-    // shouldn't happen
-    return json;
-  }
-
-  let numDropped = 0;
-  let albums1 = json['LibraryGet']['LibraryDirectory'];
-  if (!Array.isArray(albums1)) {
-    albums1 = [albums1];
-  }
-  const albums2 = [];
-  for (let item of albums1) {
-    if (item['LibraryFile']) {
-      albums2.push(item);
-    } else {
-      // console.log('dropped', item);
-      numDropped++;
-    }
-  }
-  // replace with new filtered version
-  json['LibraryGet']['LibraryDirectory'] = albums2;
-  if (numDropped > 0) {
-    console.log('- library - dropped ' + numDropped + ' empty entries');
-  }
   return json;
 };
 
@@ -343,7 +369,7 @@ const doCallback = (json) => {
     console.log('- sending error response to client:', json.error);
   }
   responseCallback(json);
-  clearValues();    
+  clearValues();
 };
 
 // ---
@@ -353,7 +379,7 @@ const clearValues = () => {
   clientRequestXml = null;
   clientRequestAsJson = null;
   responseCallback = null;
-  normalBuffer = Buffer.alloc(0);  
+  normalBuffer = Buffer.alloc(0);
   isPossiblyMultiChunk = false;
 }
 
@@ -362,7 +388,7 @@ const reset = () => {
   if (socket) {
     socket.destroy();
     socket = null;
-  }  
+  }
 };
 
 const exitOnKeypress = () => {

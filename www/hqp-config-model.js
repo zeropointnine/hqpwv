@@ -1,6 +1,6 @@
 import Util from './util.js';
 import Model from './model.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
 import PresetUtil from './preset-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
@@ -68,7 +68,7 @@ class HqpConfigModel {
       return;
     }
     Service.queueCommandFront(Commands.getModes(), (data) => {
-      const a = ModelUtil.getArrayFrom(data, 'GetModes', 'ModesItem'); // note 'ModesItem' (plural)
+      const a = DataUtil.getArrayFrom(data, 'GetModes', 'ModesItem'); // note 'ModesItem' (plural)
       // Special case: Not supporting '[source']
       for (let i = 0; i < a.length; i++) {
         if (a[i]['@_name'] === '[source]') {
@@ -90,17 +90,17 @@ class HqpConfigModel {
   getFiltersShapersRates(callback) {
 
     const onGetFilters = (data) => {
-      const a = ModelUtil.getArrayFrom(data, 'GetFilters', 'FiltersItem');
+      const a = DataUtil.getArrayFrom(data, 'GetFilters', 'FiltersItem');
       const modeName = Model.status.data['@_active_mode'];
       this.filtersData[modeName] = a;
     };
     const onGetShapers = (data) => {
-      const a = ModelUtil.getArrayFrom(data, 'GetShapers', 'ShapersItem');
+      const a = DataUtil.getArrayFrom(data, 'GetShapers', 'ShapersItem');
       const modeName = Model.status.data['@_active_mode'];
       this.shapersData[modeName] = a;
     };
     const onGetRatesAndFinish = (data) => {
-      const a = ModelUtil.getArrayFrom(data, 'GetRates', 'RatesItem');
+      const a = DataUtil.getArrayFrom(data, 'GetRates', 'RatesItem');
       // Special case: Remove entry with '0'
       for (let i = 0; i < a.length; i++) {
         if (a[i]['@_rate'] === '0') {

@@ -4,6 +4,8 @@ import HqpConfigModel from './hqp-config-model.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import Statuser from './statuser.js';
+import ToastView from './toast-view.js';
+import ViewUtil from './view-util.js';
 
 /**
  *
@@ -68,14 +70,18 @@ class PresetUtil {
     const wasPaused = Model.status.isPaused;
 
     if (!this.isPresetSameAsStatus(preset)) {
-      $(document.body).css('pointer-events', 'none'); // block!!
-      $('#mainArea').css('opacity', '0.5');
-
-      const s = `Applying preset: <em>${this.toString(preset)}</em>`;
-      $(document).trigger('show-toast', s);
+      $(document).trigger('disable-user-input');
+      ToastView.show(`Applying preset: <em>${this.toString(preset)}</em>`, 0);
     }
 
     this.applyPreset(preset, (didSetSomething) => {
+
+      $(document).trigger('enable-user-input');
+
+      if (ViewUtil.isVisible(ToastView.$el)) {
+        ToastView.hide();
+      }
+
       if (didSetSomething) {
         // Having set a config value, hqp will be in a stopped state,
         // which means <selectTrack> will trigger a 'new-track-detected'
@@ -90,10 +96,6 @@ class PresetUtil {
           Service.queueCommandsFront(a); // done
         }
       }
-      setTimeout(() => {
-        $(document.body).css('pointer-events', '');
-        $('#mainArea').css('opacity', '1');
-      }, 333);
     });
   }
 

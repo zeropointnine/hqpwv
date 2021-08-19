@@ -1,76 +1,75 @@
 import Util from './util.js';
+import AlbumUtil from './album-util.js';
 
 /**
  * Value object wrapper around hqp <Library /> object.
  */
 export default class LibraryVo {
 
-  _array;
+  // Array of album items
+  _albums;
+  // Array of library playlist items
+  _hqPlaylistItems;
 
   // Cache objects:
   /** Key is hash, value is library item (album) */
-  _hashToItem;
+  _albumHashToAlbum;
   /** Key is uri, value is track hash. */
-  _uriToHash;
+  _trackUriToTrackHash;
   /** Key is track hash. Value is [track, album] */
   _historyLookup = null;
   /** Key is album path, value is album */
   _pathToItem;
 
   constructor(responseObject=null) {
-    let array;
+    // Get main array from response object
+    let responseArray;
     if (!responseObject) {
-      array = [];
-    } else if (!responseObject['LibraryGet']) {
+      responseArray = [];
+    } else if (responseObject['LibraryGet'] == undefined) {
       cl('warning missing expected property');
-      array = [];
+      responseArray = [];
+    } else if (responseObject['LibraryGet'] == '') {
+      cl('info library is empty');
+      responseArray = [];
     } else {
-      array = responseObject['LibraryGet']['LibraryDirectory'];
-      if (!array) {
+      responseArray = responseObject['LibraryGet']['LibraryDirectory'];
+      if (!responseArray) {
         cl('warning missing expected property');
-        array = []
+        responseArray = []
       } else {
-        if (!Array.isArray(array)) {
-          array = [array];
+        if (!Array.isArray(responseArray)) {
+          responseArray = [responseArray];
         }
       }
     }
-    this.array = array;
+    this.init(responseArray);
   }
 
-  /** Direct access to array. */
-  get array() {
-    return this._array;
+  /** Direct access to albums array. */  // todo rename
+  get albums() {
+    return this._albums;
   }
 
-  set array(a) {
-    this._array = a;
-    this.initUriToHash();
+  get hqpPlaylistItems() {
+    return this._hqPlaylistItems
   }
 
   // @Nullable
-  getItemByHash(hash) {
-    if (!this._hashToItem) {  // lazy init
-      this._hashToItem = {};
-      for (const item of this._array) {
+  getAlbumByAlbumHash(hash) {
+    if (!this._albumHashToAlbum) {  // lazy init
+      this._albumHashToAlbum = {};
+      for (const item of this._albums) {
         const key = item['@_hash'];
-        this._hashToItem[key] = item;
+        this._albumHashToAlbum[key] = item;
       }
     }
-    return this._hashToItem[hash];
-  }
-
-  getItemByTrackHash(hash) {
-
+    return this._albumHashToAlbum[hash];
   }
 
   // @Nullable
-  getHashForUri(uri) {
-    const hash = this._uriToHash[uri];
-    if (!hash) {
-      cl('info no hash for', uri);
-    }
-    return hash;
+  getTrackHashForTrackUri(uri) {
+    return this._trackUriToTrackHash[uri];
   }
 
   // @Nullable
@@ -84,21 +83,9 @@ export default class LibraryVo {
       return null;
     }
     const uri = item['@_uri'];
-    return this.getHashForUri(uri);
+    return this.getTrackHashForTrackUri(uri);
   }
 
-  getLibraryItemByTrackUri_ORIGINAL(uri) {
-    let libraryItem;
-    for (const item of this._array) {
-      const itemPath = item['@_path'];
-      if (uri.includes(itemPath)) {
-        libraryItem = item;
-        break;
-      }
-    }
-    return libraryItem;
-  }
-  
   /**
    * Find library item that contains the given track
    * (Rem, a playlist item added via hqp does not have to exist in the library)
@@ -106,16 +93,16 @@ export default class LibraryVo {
    * uri example: "file:///Volumes/MUSICBIG/nZk/01_AZ.flac"
    * path example: "/Volumes/MUSICBIG/nZk" (MacOS)
    */
-  getLibraryItemByTrackUri(uri) {
+  getAlbumByTrackUri(uri) {
     if (!this._pathToItem) { // lazy init
       this._pathToItem = {};
-      for (const item of this._array) {
+      for (const item of this._albums) {
         const path = item['@_path'];
         this._pathToItem[path] = item;
       }
     }
     let path = uri.replace('file://', '');
-    path = Util.stripFilenameFromHqpUri(path);
+    path = Util.stripFilenameFromPath(path);
     return this._pathToItem[path];
   }
 
@@ -126,28 +113,98 @@ export default class LibraryVo {
     return this._historyLookup[hash];
   }
 
-  initUriToHash() {
-    this._uriToHash = {};
-    for (const album of this.array) {
-      let tracks = album['LibraryFile'];
-      if (!Array.isArray(tracks)) {
-        tracks = [tracks];
+  makeTrackUriUsing(albumTrack, album) {
+    if (!album || !albumTrack) {
+      return null;
+    }
+    const albumPath = album['@_path'];
+    const trackName = albumTrack['@_name'];
+    if (!albumPath || !trackName) {
+      cl('warning missing expected properties');
+      return null;
+    }
+    const uri = 'file://' + albumPath + '/' + trackName;
+    return uri;
+  }
+
+  getTrackByUri(uri) {
+    const hash = this.getTrackHashForTrackUri(uri);
+    if (!hash) {
+      return null;
+    }
+    const a = this.getTrackAndAlbumByHash(hash);
+    if (!a) {
+      return null;
+    }
+    return a[0];
+  }
+
+  // ---
+
+  /**
+   * Separates the library items into albums and playlists,
+   * and inits dependent stuff.
+   */
+  init(responseArray) {
+    this._albums = [];
+    this._hqPlaylistItems = [];
+    for (let i = responseArray.length - 1; i >= 0; i--) {
+      const item = responseArray[i];
+      if (this.isAlbum(item)) {
+        this._albums.push(item);
+      } else if (this.isPlaylist(item)) {
+        this._hqPlaylistItems.push(item);
+      } else {
+        cl('info item is not album or playlist, ignoring ', item['@_path']);
       }
+    }
+    this._hqPlaylistItems.sort((a, b) => {
+      const s1 = a['@_album'].toLowerCase();
+      const s2 = b['@_album'].toLowerCase();
+      if (s1 > s2) {
+        return 1;
+      } else if (s2 > s1) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+
+    this.initTrackUriToTrackHash();
+  }
+
+  isAlbum(item) {
+    return !!(item['LibraryFile']);
+  }
+
+  isPlaylist(item) {
+    if (!!(item['LibraryFile'])) {
+      return false;
+    }
+    const path = item['@_path'];
+    if (!path) {
+      cl('warning bad data', item);
+      return false;
+    }
+    return path.includes('.m3u');
+  }
+
+  initTrackUriToTrackHash() {
+    this._trackUriToTrackHash = {};
+    for (const album of this.albums) {
+      const tracks = AlbumUtil.getTracksOf(album);
       for (const track of tracks) {
         const uri = 'file://' + album['@_path'] + '/' + track['@_name']
         const hash = track['@_hash'];
-        this._uriToHash[uri] = hash;
+        this._trackUriToTrackHash[uri] = hash;
       }
     }
   }
 
   initHistoryLookup() {
     this._historyLookup = {};
-    for (const album of this.array) {
-      let tracks = album['LibraryFile'];
-      if (!Array.isArray(tracks)) {
-        tracks = [tracks];
-      }
+    for (const album of this.albums) {
+      const tracks = AlbumUtil.getTracksOf(album);
       for (const track of tracks) {
         const hash = track['@_hash'];
         this._historyLookup[hash] = [track, album];

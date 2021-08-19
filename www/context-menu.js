@@ -22,10 +22,8 @@ export default class ContextMenu {
     this.$el = $el;
     this.$items = this.$el.find('.contextItem');
     this.$items.on('click tap', e => this.onItemClick(e));
-
     this.ModalPointerUtil = new ModalPointerUtil(this.$el, () => this.hide());
-
-    if (!this.$el.length || !this.$el.length || !this.$items.length) {
+    if (!this.$el.length || !this.$items.length) {
       cl('WARNING: ContextMenu - incorrect dom structure or properties');
     }
   }

@@ -1,6 +1,6 @@
 import Values from'./values.js';
 import Util from'./util.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
 import Commands from './commands.js';
 import Model from './model.js';
 import Service from './service.js';

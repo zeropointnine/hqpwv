@@ -7,44 +7,53 @@ class Values {
 
   PROJECT_URL = 'https://github.com/zeropointnine/hqpwv';
   TROUBLESHOOTING_HREF = 'https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md';
+
   ENDPOINTS_BASE_URL = window.location.origin + '/endpoints/'; // default
   COMMAND_ENDPOINT = this.ENDPOINTS_BASE_URL + "command";
   NATIVE_ENDPOINT = this.ENDPOINTS_BASE_URL + 'native';
   META_ENDPOINT = this.ENDPOINTS_BASE_URL + 'meta';
-  META_DOWNLOAD_LINK = this.ENDPOINTS_BASE_URL + 'meta?getTracksDownload';
+  META_DOWNLOAD_LINK = this.ENDPOINTS_BASE_URL + 'meta?getDownload';
+  PLAYLIST_ENDPOINT = this.ENDPOINTS_BASE_URL + 'playlist';
 
+  _hqpwvIp;
   _hqpwvVersion = '';
+  _hqplayerIp;
   _imagesEndpoint;
   _startTime = new Date().getTime();
 
   constructor() {
-    // Set hqplayer image server endpoint to that of webserver
-    // as a default-slash-fallback.
-    this.setImagesEndpointUsing(window.location.hostname);
+    // Dev convenience
+    if (!window.hqpwv) {
+      window.hqpwv = {};
+    }
+    window.hqpwv.Values = this;
   }
 
-  get imagesEndpoint() {
-    return this._imagesEndpoint;
-  }
-
-  setImagesEndpointUsing(ipAddress) {
-    ipAddress = ipAddress ? ipAddress : window.location.hostname;
-    this._imagesEndpoint = 'http://' + ipAddress + ':8088' + '/cover/';
+  setValues(nativeGetInfoData) {
+    this._hqpwvVersion = nativeGetInfoData['hqpwv_version'];
+    this._hqpwvIp = nativeGetInfoData['server_ip_address'];
+    this._hqplayerIp = nativeGetInfoData['hqplayer_ip_address'];
+    this._imagesEndpoint = 'http://' + this._hqplayerIp + ':8088' + '/cover/';
   }
 
   get hqpwvVersion() {
     return this._hqpwvVersion;
   }
 
-  set hqpwvVersion(s) {
-    if (! s) {
-      s = '';
-    } else {
-      if (!s.startsWith('v')) {
-        s = 'v' + s;
-      }
-    }
-    this._hqpwvVersion = s;
+  get hqpwvIp() {
+    return this._hqpwvIp;
+  }
+
+  get hqplayerIp() {
+    return this._hqplayerIp;
+  }
+
+  get areOnDifferentMachines() {
+    return (this._hqpwvIp != this._hqplayerIp);
+  }
+
+  get imagesEndpoint() {
+    return this._imagesEndpoint;
   }
 
   get uptimeString() {

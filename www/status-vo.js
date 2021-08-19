@@ -49,6 +49,12 @@ export default class StatusVo {
     return this._data['@_state'] == '0';
   }
 
+  /** One-indexed track index; zero for none. */
+  get track_do_not_use() {
+    throw new Error('Unreliable, do not use');
+    // return parseInt(this._data['@_track']) || 0;
+  }
+
   /** Returns playing track's progress in seconds, or -1. */
   get seconds() {
     const min = parseInt(this._data['@_min']);

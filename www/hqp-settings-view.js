@@ -41,14 +41,14 @@ export default class HqpSettingsView extends Subview {
     this.$el[0].scrollTop = 0;
     this.filtersView.onShow();
     this.rulesView.onShow();
-    $(document).trigger('restore-pointer-events');
+    $(document).trigger('enable-user-input');
   }
 
   hide() {
     super.hide();
     this.filtersView.onHide();
     this.rulesView.onHide();
-    $(document).trigger('restore-pointer-events');  }
+    $(document).trigger('enable-user-input');  }
 
   expandRules(shouldExpand) {
     ViewUtil.setDisplayed(this.rulesView.$el, shouldExpand);

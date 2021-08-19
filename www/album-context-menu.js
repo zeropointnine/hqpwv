@@ -1,13 +1,15 @@
 import ContextMenu from './context-menu.js';
 import ViewUtil from './view-util.js';
+import AlbumUtil from './album-util.js';
 import Commands from './commands.js';
 import Model from './model.js';
 import Service from './service.js';
+import AppUtil from './app-util.js';
 
 /**
  *
  */
-export default class AlbumContextMenu extends ContextMenu{
+export default class AlbumContextMenu extends ContextMenu {
 
   album;
   index = -1;
@@ -28,7 +30,7 @@ export default class AlbumContextMenu extends ContextMenu{
     this.index = index;
 
     // Update items' vis
-    const lastTrackEndIndex = Model.getTracksOf(this.album).length - 1;
+    const lastTrackEndIndex = AlbumUtil.getTracksOf(this.album).length - 1;
     const isLastItem = (this.index == lastTrackEndIndex);
     ViewUtil.setDisplayed(this.$itemQueueMultiple, !isLastItem);
     ViewUtil.setDisplayed(this.$itemPlayNowMultiple, !isLastItem);
@@ -39,12 +41,15 @@ export default class AlbumContextMenu extends ContextMenu{
     const $item = $(event.currentTarget);
 
     const id = $item.attr('id');
-    const lastTrackEndIndex = Model.getTracksOf(this.album).length - 1;
+    const lastTrackEndIndex = AlbumUtil.getTracksOf(this.album).length - 1;
     let isPlayNow;
     const startIndex = this.index;
     let endIndex;
     switch (id) {
       case 'albumContextItemQueue':
+        Service.queueCommand(s);
+        return;
+
         endIndex = startIndex;
         isPlayNow = false;
         break;
@@ -63,7 +68,7 @@ export default class AlbumContextMenu extends ContextMenu{
       default:
         return;
     }
-    const commands = Commands.addTrackUsingAlbumAndIndices(this.album, startIndex, endIndex, isPlayNow);
-    Service.queueCommandsFront(commands);
+    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album, startIndex, endIndex, isPlayNow);
+    AppUtil.doPlaylistAdds(commands, isPlayNow, isPlayNow);
   }
 }

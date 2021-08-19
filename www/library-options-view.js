@@ -137,7 +137,7 @@ export default class LibraryOptionsView {
   }
 
   onLibraryViewPopulated(numItems) {
-    if (numItems == 0 && Model.library.array.length > 0) {
+    if (numItems == 0 && Model.library.albums.length > 0) {
       this.$bitrateButton.addClass('badge');
     } else {
       this.$bitrateButton.removeClass('badge');

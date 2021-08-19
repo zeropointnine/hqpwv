@@ -15,6 +15,19 @@
   &:before {
     @include iconBefore;
   }
+
+  &:after { // test
+    content: ' ';
+    display: block;
+    position: absolute;
+    opacity:0;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color:$color-listitem-less;
+    transition: opacity $app-standard-duration ease-out;
+  }
   &:hover {
     background-color: $color-button-over;
   }
@@ -81,5 +94,12 @@
 }
 .textButton.isDisabled {
   pointer-events:none;
-  color: #888;
+  color: $color-text-least;
+}
+
+.buttonBlink {
+  &:after {
+    transition: background-color 0s linear;
+    opacity:1.0;
+  }
 }

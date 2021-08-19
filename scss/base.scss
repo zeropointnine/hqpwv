@@ -104,6 +104,9 @@ $app-standard-duration: 400ms;
 	font-size: $font-size-normal;
 	color: $color-text;
 
+  // does nothing for chrome, safari
+  scrollbar-color: $color-listitem-selected $color-bg;
+
   // Mobile Chrome: Prevent light blue pressed state on tappable things
   -webkit-tap-highlight-color: transparent;
 
@@ -136,3 +139,14 @@ li:before {
   content: "\200B";
   position: absolute;
 }
+
+// reset input text box
+input,
+input[type="button"],
+input[type="reset"],
+input[type="submit"],
+html input[disabled],
+input::-moz-focus-inner {
+  all: unset;
+}
+

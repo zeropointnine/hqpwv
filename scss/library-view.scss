@@ -104,6 +104,9 @@
   display:flex;
   .inner {
     line-height:36px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
 

@@ -13,7 +13,12 @@
 #playingText {
   display:inline-block;
   margin-left:12px;
-  margin-bottom:12px;
+
+  // this impacts overall playbar height; careful
+  margin-top:1px;
+  height:24px;
+  margin-bottom:11px;
+
   max-width: calc(100% - 124px);
 
   white-space: nowrap;
@@ -24,7 +29,12 @@
   &:hover {
     opacity:0.8;
   }
+
   @include mobile {
+    margin-top:1px;
+    height:20px;
+    margin-bottom:11px;
+
     max-width: calc(100% - 108px);
   }
 }
@@ -272,9 +282,9 @@ $thumb-width: 20px;
 
 #showPlaylistButton {
   position:absolute;
-  height: 72px;
   top:12px;
   right:12px;
+  height: calc(100% - 24px);
   &:before {
     background-image: url('./../img/icons/queue_music_white_24dp.svg');
     background-position: center 6px;
@@ -286,14 +296,14 @@ $thumb-width: 20px;
 
 #playlistNumberAt {
   position:absolute;
-  top:31px;
+  top:33px;
   width:100%;
   text-align:center;
   font-size:11px;
 }
 #playlistNumberStroke {
   position:absolute;
-  top:49px;
+  top:51px;
   left:11px;
   height:1px;
   width:14px;
@@ -301,7 +311,7 @@ $thumb-width: 20px;
 }
 #playlistNumberTotal {
   position:absolute;
-  top:51px;
+  top:53px;
   width:100%;
   text-align:center;
   font-size:11px;
@@ -309,20 +319,7 @@ $thumb-width: 20px;
 
 @include mobile {
   #showPlaylistButton {
-    height: 64px;
-    right:12px;
-    &:before {
-      background-position: center 4px;
-    }
-  }
-  #playlistNumberAt {
-    top:28px;
-  }
-  #playlistNumberStroke {
-    top:45px;
-  }
-  #playlistNumberTotal {
-    top:46px;
+    // is ok
   }
 }
 

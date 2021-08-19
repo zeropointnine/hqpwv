@@ -44,12 +44,12 @@ export default class SettingsView extends Subview {
 
     Service.queueCommandFront(Commands.getInfo());
 
-    $(document).trigger('restore-pointer-events');
+    $(document).trigger('enable-user-input');
   }
 
   hide() {
     super.hide();
-    $(document).trigger('restore-pointer-events');
+    $(document).trigger('enable-user-input');
   }
 
   updateMetaCheckbox() {
@@ -63,8 +63,5 @@ export default class SettingsView extends Subview {
   onMetaCheckbox = () => {
     Settings.isMetaEnabled = !Settings.isMetaEnabled;
     this.updateMetaCheckbox();
-    if (Settings.isMetaEnabled && !MetaUtil.isReady) {
-      MetaUtil.init();
-    }
   }
 }

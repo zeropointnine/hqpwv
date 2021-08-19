@@ -8,15 +8,17 @@ import Settings from './settings.js';
 class LibraryUtil {
 
   /**
-   * Creates and returns filtered, shallow copy of albums array
-   * using Settings data.
+   * Creates and returns filtered, shallow copy of albums array.
+   * Uses Settings info.
    */
   makeFilteredAlbumsArray(albums) {
-
     const result = [];
 
     if (Settings.libraryBitratesArray.includes('all')) {
       for (const album of albums) {
+        if (!album['LibraryFile']) {
+          continue;
+        }
         result.push(album);
       }
       return result;
@@ -45,6 +47,10 @@ class LibraryUtil {
     }
 
     for (const album of albums) {
+      if (!album['LibraryFile']) {
+        continue;
+      }
+
       let rate = parseInt(album['@_rate']);
       let alwaysAdd = false;
       if (!rate) {
@@ -62,6 +68,7 @@ class LibraryUtil {
         }
       }
     }
+
     return result;
   }
 

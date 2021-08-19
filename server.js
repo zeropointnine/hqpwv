@@ -5,12 +5,15 @@
 
 const path = require('path');
 const express = require('express');
+const bodyParser = require("body-parser");
 const app = express();
 const ip = require('ip');
 const packageJson = require('./package.json');
 const proxy = require('./proxy');
 const meta = require('./meta');
 const metaHandler = require('./server-meta-handler');
+const playlistHandler = require('./server-playlist-handler');
+const playlists = require('./playlists');
 const APP_FILENAME = `hqpwv`;
 const WEBPAGE_DIR = path.join( __dirname, './www' );
 const DEFAULT_PORT = 8000;
@@ -20,16 +23,19 @@ let server;
 let isBusy = false;
 let hqpIp;
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static(WEBPAGE_DIR));
 
 /**
- * Endpoint for 'commands' that get proxied to HQPlayer.
+ * 'commands'
+ * These get proxied to/from HQPlayer.
  * Note the enforcement of a one-at-a-time policy
- * (due to nature of socket server)
+ * (due to nature of socket server).
  */
 app.get('/endpoints/command', (request, response) => {
   if (isBusy) {
-    console.log("webserver - rejected 'command', is busy");
+    console.log("webserver - rejected command, is busy");
     response.send({ error: "server_is_busy" });
     return;
   }
@@ -40,16 +46,16 @@ app.get('/endpoints/command', (request, response) => {
     isBusy = false;
   });  
 });
-// todo if no call to `command` in X seconds, save meta if necessary
 
 /**
- * Endpoint for 'native' REST requests.
+ * 'native'
  */
 app.get('/endpoints/native', (request, response) => {
 
   if (request.query.info !== undefined) {
     response.send({
       hqplayer_ip_address: hqpIp,
+      server_ip_address: ip.address(),
       hqpwv_version: packageJson.version
     });
     return;
@@ -59,29 +65,48 @@ app.get('/endpoints/native', (request, response) => {
 });
 
 /**
- * Endpoint for 'meta' REST requests.
+ * 'meta'
  */
 app.get('/endpoints/meta', (request, response) => {
-  metaHandler.go(request, response);
+  metaHandler.doGet(request, response);
 });
+
+/**
+ * 'playlist'
+ */
+app.get('/endpoints/playlist', (request, response) => {
+  playlistHandler.doGet(request, response);
+});
+
+app.post('/endpoints/playlist', (request, response) => {
+  playlistHandler.doPost(request, response);
+});
+
+// ---
 
 const onProxyReady = (ip) => {
   hqpIp = ip;
   // Start server
   server = app.listen(port, onSuccess).on('error', onError);
 
-  initMeta();
+  // Init meta
+  let isSuccess = meta.init();
+  if (!isSuccess) {
+    console.log('- warning meta init failed, hqpwv metadata disabled')
+  } else {
+    console.log('- meta ready');
+  }
+
+  // Init custom playlists
+  isSuccess = playlists.init();
+  if (!isSuccess ) {
+    console.log('- warning custom playlists init failed, will be disabled')
+  } else {
+    console.log('- custom playlists ready');
+  }
 };
 
-const initMeta = () => {
-  meta.init((result) => {
-    if (!result) {
-      console.log('- warning meta init failed, hqpwv metadata disabled')
-    } else {
-      console.log('- meta ready');
-    }
-  });
-};
+// ---
 
 const onError = (e) => {
   if (e.code == 'EADDRINUSE') {
@@ -99,31 +124,56 @@ const onSuccess = () => {
   const ipAddress = ip.address();
   const urlText = ipAddress
       ? `http://${ipAddress}:${port}`
-      : `the IP address of this machine (port ${port})`;
-  console.log(`\n---------------------------------------------------`);
+      : `the IP address of this machine on port ${port}`; // yek
+  console.log(`\n----------------------------------------------------`);
   console.log(`READY.`);
-  console.log(`To use HQPWV, browse to ${urlText}`);
+  console.log(`Now browse to ${urlText}`);
   console.log(`from a device on your local network.`);
   console.log(`Please keep this process running.`);
-  console.log(`---------------------------------------------------\n`);
+  console.log(`----------------------------------------------------\n`);
 };
 
-getPortFromArguments = () => {
-  let port = DEFAULT_PORT;
-  if (process.argv.length == 3) {
-    const val = parseInt(process.argv[2]);
-    if (!isNaN(val) && val > 0) {
-      port = val;
-    }
-  } else if (process.argv.length >= 4) {
-    if (process.argv[2] == '--port' || process.argv[2] == '-port' || process.argv[2] == 'port') {
-      const val = parseInt(process.argv[3]);
-      if (!isNaN(val) && val > 0) {
-        port = val;
-      }
+/**
+ * Expects something like `port 8000`, `-port 8000`, `--port 8000`, or simply `8000`
+ */
+getArgPort = () => {
+  const value = getArgValue('port');
+  const intValue = parseInt(value);
+  return (!isNaN(intValue) && intValue > 0) ? intValue : DEFAULT_PORT;
+};
+
+/**
+ * Returns the argument that follows the specified argument.
+ * @param key should not have leading dashes
+ */
+getArgValue = (key) => {
+  for (let i = 2; i < process.argv.length - 1; i++) {
+    const arg = process.argv[i];
+    if (arg == key || arg == ('-' + key) || arg == ('--' + key)) {
+      const value = process.argv[i + 1];
+      return value;
     }
   }
-  return port;
+  return null;
+};
+
+isArgHelp = () => {
+  const arg1 = process.argv[2];
+  if (!arg1) {
+    return false;
+  }
+  return (arg1.startsWith('help') || arg1.startsWith('-help') || arg1.startsWith('--help'));
+};
+
+printHelp = () => {
+  console.log('Optional arguments:');
+  console.log('\n--port [portnumber]');
+  console.log('    Port to run the webserver on (default is ' + DEFAULT_PORT + ')');
+  console.log('\n--hqpip [ip_address]');
+  console.log('    IP address of the machine running HQPlayer.');
+  console.log('    Only necessary if running multiple instances');
+  console.log('    of HQPlayer on the network.');
+  console.log('');
 };
 
 const showPromptAndExit = () => {
@@ -136,18 +186,25 @@ const showPromptAndExit = () => {
 // Save meta json before exiting
 process.on( "SIGINT", function() {
   if (meta.getIsDirty()) {
-    meta.saveToFile(() => {
-      console.log('Done');
-      process.exit();
-    });
-  } else {
-    process.exit();
+    meta.saveFile();
   }
+  console.log('- done');
+  process.exit();
 });
 
 // ---
 
-console.log('\nHQPWV Server', packageJson.version);
-console.log('Project page: ' + packageJson.homepage + '\n');
-port = getPortFromArguments();
+console.log(`\n----------------------------------------------------`);
+console.log('HQPWV Server', packageJson.version);
+console.log('Project page: ' + packageJson.homepage);
+if (isArgHelp()) {
+  console.log(`----------------------------------------------------\n`);
+  printHelp();
+  return;
+} else {
+  console.log('Use --help for available options.');
+  console.log(`----------------------------------------------------\n`);
+}
+
+port = getArgPort();
 proxy.start(onProxyReady);

@@ -103,16 +103,35 @@
 				<div id="playlistView" class="subview" tabindex="0">
 
 					<div id="playlistMainView" class="subview">
+
 						<div id="playlistHeader" style="display:flex;">
 							<div class="viewTitle">Playlist</div>
+							<div id="playlistRepeatButton" class="textButton">Repeat none</div>
 							<div id="playlistCloseButton" class="iconButton closeButton"></div>
 						</div>
-						<div class="playlistButtons" style="margin-top:18px;margin-bottom:12px;display:flex;">
+
+						<div class="playlistButtons">
 							<div id="playlistClearButton" class="textButton">Clear</div>
-							<div id="playlistRepeatButton" class="textButton">Repeat none</div>
+							<div id="playlistLoadButton" class="textButton">Load</div>
+							<div id="playlistSaveButton" class="textButton">Save</div>
 							<div id="playlistHistoryButton" class="textButton">History</div>
 						</div>
+
+						<div id="playlistSaver">
+							<div class="spacer1" style="height:8px;"></div>
+							<div class="inner">
+								<div id="playlistSaveCloseButton" class="iconButton closeButton"></div>
+								<label for="playlistSaveInput">Save playlist:</label>
+								<div class="inputLine">
+									<input id="playlistSaveInput" name="playlistSaveInput" type="text" required minlength="1" maxlength="64">
+									<div id="playlistSaveOkayButton" class="textButton">OK</div>
+								</div>
+							</div>
+							<div class="spacer2" style="height:12px;"></div>
+						</div>
+
 						<div id="playlistList"></div>
+
 					</div>
 
 					<div id="historyView" class="subview">
@@ -121,6 +140,17 @@
 							<div id="historyCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
 						</div>
 						<div id="historyList"></div>
+					</div>
+
+					<div id="loadPlaylistView" class="subview">
+						<div id="loadHeader" style="display:flex;">
+							<div class="viewTitle">Load Playlist</div>
+							<div id="loadCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
+						</div>
+						<div class="loadListCustomSubheader">Custom Playlists</div>
+						<div id="loadCustomList"></div>
+						<div class="loadListHqpSubheader">HQPlayer Library Playlists</div>
+						<div id="loadHqpList"></div>
 					</div>
 
 				</div><!-- playlistView -->
@@ -293,14 +323,14 @@
 						<div id="settingsMetaCheckbox" class="checkbox ruleCheckbox" data-settings-value="meta"></div>
 						<div class="settingsMetaInner">
 							<span>HQPWV metadata</span><br>
-							<div class="fontSizeSmaller" style="margin-top:4px;">Updates and displays play count and liked tracks</div>
-							<div><a id="metaDownload" href="#"><span class="fontSizeSmaller colorTextLess">Download backup file</span></a></div>
+							<div class="fontSizeSmaller" style="margin-top:6px;">Updates and displays play count, liked tracks, history, and custom playlists.</div>
+							<a id="metaDownload" href="#">Download backup file</a>
 						</div>
 					</div>
 
 					<div id="settingsInfoView" style="margin-top:32px; ">
 						<div class="settingsSubheading" style="margin-bottom:4px;">Your HQPlayer version:</div>
-						<div id="hqpVersion" class="colorTextLess" style="margin-left:28px">&nbsp;<br>&nbsp;</div>
+						<div id="hqpVersion" class="colorTextLess fontSizeSmaller" style="margin-left:24px">&nbsp;<br>&nbsp;</div>
 					</div>
 				</div>
 
@@ -317,13 +347,16 @@
 					<div id="playlistContextUp" class="contextItem">Move up</div>
 					<div id="playlistContextDown" class="contextItem">Move down</div>
 					<div id="playlistContextRemove" class="contextItem">Remove</div>
-
 				</div>
 
 				<div id="historyContextMenu" class="contextMenu">
 					<div id="historyContextQueue" class="contextItem">Queue track</div>
 					<div id="historyContextPlayNow" class="contextItem">Play track now</div>
 					<div id="historyContextAlbum" class="contextItem">Go to album</div>
+				</div>
+
+				<div id="loadPlaylistContextMenu" class="contextMenu">
+					<div id="loadPlaylistContextDelete" class="contextItem">Delete</div>
 				</div>
 
 				<img id="albumOverlayImage">
@@ -394,12 +427,12 @@
 
 			</div> <!-- #playbarView -->
 
-			<div id="dialogOuter">
-				<div id="dialog">
-					<div id="dialogTitle">&nbsp;</div>
-					<div id="dialogMessage">&nbsp;</div>
-					<div id="dialogBottom">
-						<div id="dialogButton" class="textButton">&nbsp;</div>
+			<div id="generalDialogOuter">
+				<div id="generalDialog">
+					<div id="generalDialogTitle">&nbsp;</div>
+					<div id="generalDialogMessage">&nbsp;</div>
+					<div id="generalDialogBottom">
+						<div id="generalDialogButton" class="textButton">&nbsp;</div>
 					</div>
 				</div>
 			</div>

@@ -1,12 +1,13 @@
 import Util from './util.js';
 import Values from './values.js';
 import ViewUtil from './view-util.js';
+import AlbumUtil from './album-util.js';
 import LibraryUtil from './library-util.js';
 import LibraryGroupUtil from './library-group-util.js';
 import Settings from './settings.js';
 import Subview from './subview.js';
 import Breakpoint from './breakpoint.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
 import Model from './model.js';
 import Service from './service.js';
 import LibraryOptionsView from './library-options-view.js';
@@ -73,7 +74,7 @@ export default class LibraryView extends Subview {
     }
 
     // Make filtered albums array
-    const a = Model.library.array;
+    const a = Model.library.albums;
     this.albums = LibraryUtil.makeFilteredAlbumsArray(a);
     LibraryUtil.sortAlbums(this.albums, Settings.librarySortType);
 
@@ -94,7 +95,7 @@ export default class LibraryView extends Subview {
       }
     }
 
-    this.$itemCount.text(`(${this.albums.length}/${Model.library.array.length})`);
+    this.$itemCount.text(`(${this.albums.length}/${Model.library.albums.length})`);
     this.updateListWidth();
     $(document).trigger('library-view-populated', this.albums.length);
 
@@ -127,10 +128,10 @@ export default class LibraryView extends Subview {
 
   makeListItem(album) {
     const hash = album['@_hash'];
-    const imgPath = ModelUtil.getAlbumImageUrl(album);
+    const imgPath = DataUtil.getAlbumImageUrl(album);
     const artist = album['@_artist'];
     const albumText = album['@_album'];
-    const bits = Model.makeBitrateDisplayText(album);
+    const bits = AlbumUtil.getBitrateText(album);
 
     let s = `<div class="libraryItem" data-hash="${hash}">`; /* tabindex="0" */
     s +=      `<img class="libraryItemPicture" data-src=${imgPath} />`;
@@ -146,7 +147,7 @@ export default class LibraryView extends Subview {
 
   makeNoneItem() {
     let s;
-    if (Model.library.array && Model.library.array.length > 0) {
+    if (Model.library.albums && Model.library.albums.length > 0) {
       s = `<div id="libraryNoneItem">No items</div>`;
     } else {
       s = `<div id="libraryNoneItem">`;
@@ -182,7 +183,7 @@ export default class LibraryView extends Subview {
 	onItemClick = (event) => {
     const $item = $(event.currentTarget);
 		const hash = $item.attr("data-hash");
-    const album = Model.library.getItemByHash(hash);
+    const album = Model.library.getAlbumByAlbumHash(hash);
 		$(document).trigger('library-item-click', [album, $item]);
 	};
 

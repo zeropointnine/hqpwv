@@ -44,12 +44,23 @@ export default class PlaylistVo {
     return -1;
   }
 
-  /** Gets the currently playing track's playlist index using the current Status object. */
-  getCurrentIndex() {
+  /**
+   * Gets the currently playing track's playlist index (0-indexed!), or -1.
+   * Relies on playlist and status data.
+   */
+  get currentIndex() {
     const uri = Model.status.metadata['@_uri'];
     if (!uri) {
       return -1;
     }
     return this.getIndexByUri(uri);
+  }
+
+  get isOnFirstTrack() {
+    return (this.currentIndex == 0);
+  }
+
+  get isOnLastTrack() {
+    return (this.currentIndex == this.array.length - 1);
   }
 }

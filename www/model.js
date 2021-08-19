@@ -18,7 +18,7 @@ class Model {
   _infoData = {};
 
   constructor() {
-    // Dev convenience:
+    // Dev convenience
     if (!window.hqpwv) {
       window.hqpwv = {};
     }
@@ -79,31 +79,7 @@ class Model {
     this._infoData = data['GetInfo'] ? data['GetInfo'] : {};
     $(document).trigger('model-info-updated');
   }
-
-  // ---
-	// Convenience functions
-
-	/** 
-	 * Returns array of track objects from album object. 'Non-null'. 
-	 */
-	getTracksOf(albumObject) {
-		if (!albumObject['LibraryFile']) {
-			return [];
-		}
-		const value = albumObject['LibraryFile'];
-		return Array.isArray(value) ? value : [value];
-	}
-
-  /** Returns empty string on bad data. */
-  makeBitrateDisplayText(album) {
-    const rate = parseInt(album['@_rate']); // hertz
-    const bits = parseInt(album['@_bits']);
-    if (!(rate > 0) || !(bits > 0)) {
-      return '';
-    }
-    return `${Math.floor(rate/1000)}/${bits}`;
-  }
-}
+l}
 
 // Singleton
 export default new Model();

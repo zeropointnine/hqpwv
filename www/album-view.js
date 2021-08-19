@@ -1,13 +1,16 @@
-import Subview from'./subview.js';
-import Values from'./values.js';
-import Util from'./util.js';
-import ModelUtil from './model-util.js';
+import AlbumContextMenu from './album-context-menu.js';
+import AlbumUtil from './album-util.js'
+import App from'./app.js';
+import AppUtil from './app-util.js'
 import Commands from './commands.js';
+import DataUtil from './data-util.js';
+import MetaUtil from './meta-util.js'
 import Model from './model.js';
 import Service from './service.js';
+import Subview from'./subview.js';
+import Util from'./util.js';
+import Values from'./values.js';
 import ViewUtil from './view-util.js'
-import MetaUtil from './meta-util.js'
-import AlbumContextMenu from './album-context-menu.js';
 
 /**
  * Album view containing a header and a list of track list items.
@@ -44,6 +47,7 @@ export default class AlbumView extends Subview {
   }
 
   show(album, $libraryItem=null) {
+
     this.$libraryItemImage = $libraryItem ? $libraryItem.find('img') : null;
     this.currentPlayingSongAlbumIndex = -1;
 
@@ -54,6 +58,7 @@ export default class AlbumView extends Subview {
 
     $(document).on('model-status-updated', this.updateHighlightedTrack);
     $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
+    $(document).on('new-track', this.onNewTrack);
 
     if (this.$libraryItemImage) {
       this.animateInOverlay(this.onShowComplete);
@@ -125,13 +130,14 @@ export default class AlbumView extends Subview {
 
   onShowComplete = () => {
     ViewUtil.setDisplayed(this.$overlayImage, false);
-    $(document).trigger('restore-pointer-events');
+    $(document).trigger('enable-user-input');
   };
 
   hide() {
     this.contextMenu.hide();
     $(document).off('model-status-updated', this.updateHighlightedTrack);
     $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
+    $(document).off('new-track', this.onNewTrack);
 
     // do normal fadeout of album view
     super.hide();
@@ -139,7 +145,7 @@ export default class AlbumView extends Subview {
     if (this.$libraryItemImage) {
       this.animateOutOverlay();
     } else {
-      $(document).trigger('restore-pointer-events');
+      $(document).trigger('enable-user-input');
     }
   }
 
@@ -153,7 +159,7 @@ export default class AlbumView extends Subview {
     const inBounds = (rectEndY >= 0 - rectEndH && rectEndY <= this.$el.height() + rectEndH);
     if (!inBounds) {
       // target is out of bounds; note too that y/h can be NaN in this case
-      $(document).trigger('restore-pointer-events');
+      $(document).trigger('enable-user-input');
       return;
     }
 
@@ -173,12 +179,12 @@ export default class AlbumView extends Subview {
     ViewUtil.setDisplayed(this.$overlayImage, false);
     ViewUtil.setVisible(this.$picture, '');
     ViewUtil.setVisible(this.$libraryItemImage, true);
-    $(document).trigger('restore-pointer-events');
+    $(document).trigger('enable-user-input');
   };
   
   populate(album) {
   	this.album = album;
-  	this.tracks = Model.getTracksOf(this.album);
+  	this.tracks = AlbumUtil.getTracksOf(this.album);
 
   	this.listItems$ = [];
 		this.$list.empty();
@@ -204,12 +210,12 @@ export default class AlbumView extends Subview {
 	}
 
   updateInfoArea() {
-    const imgPath = ModelUtil.getAlbumImageUrl(this.album);
+    const imgPath = DataUtil.getAlbumImageUrl(this.album);
     this.$picture.attr('src', imgPath);
 
     $("#albumViewTitle").html(this.album['@_album']);
     $("#albumViewArtist").html(this.album['@_artist']);
-    $("#albumViewStats").html(this.makeStatsText());
+    $("#albumViewStats").html(AlbumUtil.makeAlbumStatsText(this.album));
     $("#albumViewPath").html(this.album['@_path']);
   }
 
@@ -248,7 +254,7 @@ export default class AlbumView extends Subview {
     }
     this.currentPlayingSong = song;
 
-    const isInAlbum = ModelUtil.doesAlbumContainPlayingSong(this.album);
+    const isInAlbum = DataUtil.doesAlbumContainPlayingSong(this.album);
 
     for (let i = 0; i < this.tracks.length; i++) {
 			const track = this.tracks[i];
@@ -256,17 +262,11 @@ export default class AlbumView extends Subview {
       if (!isInAlbum) {
         b = false;
       } else {
-        b = ModelUtil.doesAlbumSongEqualPlayingSong(this.album, track);
+        b = DataUtil.doesAlbumSongEqualPlayingSong(this.album, track);
       }
 			const $listItem = this.listItems$[i];
       if (b) {
         $listItem.addClass('selected');
-        const last = this.currentPlayingSongAlbumIndex;
-        this.currentPlayingSongAlbumIndex = i;
-        if (this.currentPlayingSongAlbumIndex > last) {
-          // The playing song has advanced forward (by 1, presumably)
-          Util.autoScrollListItem($listItem, this.$el);
-        }
       } else {
         $listItem.removeClass('selected');
       }
@@ -274,13 +274,13 @@ export default class AlbumView extends Subview {
 	};
 
 	onPlayNowButton = (event) => {
-    const commands = Commands.addTrackUsingAlbumAndIndices(this.album, 0, this.tracks.length - 1, true);
-    Service.queueCommandsFront(commands);
+    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);
+    AppUtil.doPlaylistAdds(commands, true, true);
 	};
 
 	onQueueButton = (event) => {
-    const commands = Commands.addTrackUsingAlbumAndIndices(this.album, 0, this.tracks.length - 1, false);
-    Service.queueCommandsFront(commands);
+    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);
+    AppUtil.doPlaylistAdds(commands);
 	};
 
 	onItemClick(event) {
@@ -323,84 +323,23 @@ export default class AlbumView extends Subview {
         break;
       }
     }
-  }
+  };
 
-  makeStatsText() {
-    const duration = this.makeAlbumDurationText();
-		const date = this.album['@_date'];
-		const genre = this.album['@_genre'];
-		const rate = this.album['@_rate'];
-		const bits = this.album['@_bits'];
-    const filetypeText = this.getFiletypeText();
-
-    let s = '';
-
-		if (date) {
-			s = s ? (s + ' | ' + date) : date;
-		}
-		if (genre) {
-			s = s ? (s + ' | ' + genre) : genre;
-		}
-		if (rate || bits || filetypeText) {
-			let s2 = '';
-			if (rate) {
-				s2 = rate;
-			}
-			if (bits) {
-				s2 = s2 ? (rate + '/' + bits) : bits;
-			}
-      if (filetypeText) {
-        s2 = s2 ? s2 + ' ' + filetypeText : filetypeText;
-      }
-			s = s ? (s + '<br>' + s2) : s2;
-		}
-    if (duration) {
-      s = s ? s + ('<br>' + duration) : duration;
+  onNewTrack = (e, currentUri, lastUri) => {
+    if (App.instance.getTopSubview() != this) {
+      return;
     }
-
-		return s;
-	}
-
-  /** Returns album total duration display text, or empty string if fail. */
-  makeAlbumDurationText() {
-    if (!this.tracks || this.tracks.length == 0) {
-      return '';
-    }
-    let albumSeconds = 0;
-    for (let item of this.tracks) {
-      const trackSeconds = parseFloat(item['@_length']);
-      if (isNaN(trackSeconds)) {
-        return ''; // unexpected; give up
-      }
-      albumSeconds += trackSeconds;
-    }
-    const result = Util.durationTextHoursMinutes(albumSeconds);
-    return result;
-  }
-
-  getFiletypeText() {
-    // fwiw hqp appears to filter out 'outlier' music files from a given directory,
-    // so this logic may not ever come into play.
-    let lastGoodSuffix = null;
-    for (const item of this.tracks) {
-      const suffix = Util.getFileSuffix(item['@_name']);
-      if (!suffix) {
-        continue; // meh keep going
-      }
-      if (suffix != lastGoodSuffix) {
-        if (!lastGoodSuffix) {
-          lastGoodSuffix = suffix;
-        } else {
-          cl('multiple suffixes detected', suffix, 'vs', lastGoodSuffix);
-          return null;
-        }
+    const currentTrack = Model.library.getTrackByUri(currentUri);
+    const currentAlbumIndex = this.tracks.indexOf(currentTrack);
+    const lastTrack = Model.library.getTrackByUri(lastUri);
+    const lastAlbumIndex = this.tracks.indexOf(lastTrack);
+    if (currentAlbumIndex > -1) {
+      if (currentAlbumIndex > lastAlbumIndex) {
+        const $listItem = this.listItems$[currentAlbumIndex];
+        Util.autoScrollListItem($listItem, this.$el);
       }
     }
-    if (!lastGoodSuffix) {
-      return null;
-    }
-    return lastGoodSuffix.toUpperCase();
-  }
+  };
 
   getLibraryItemImageRect() {
     const r1 = this.$libraryItemImage[0].getBoundingClientRect();

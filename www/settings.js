@@ -74,6 +74,7 @@ class Settings {
     const s = (b === true || b === 'true') ? 'true' : 'false';
     this._metaEnabled = s;
     this.storage.setItem('metaEnabled', s);
+    $(document).trigger('settings-meta-changed');
   }
 
   get librarySortType() {

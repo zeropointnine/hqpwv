@@ -10,11 +10,17 @@
   margin-top:32px;
   display:flex;
   .settingsMetaInner {
-    margin-left:4px;
-    margin-top:6px;
+    margin-left:6px;
+    margin-top:8px;
   }
 }
 
+#metaDownload {
+  display:block;
+  margin-top:6px;
+  font-size: $font-size-smaller;
+  color:$color-text-less;
+}
 
 #settingsHotkeys {
   table {

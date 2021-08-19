@@ -15,38 +15,66 @@ class LibraryGroupUtil {
   }
 
   /**
-   * Returns 'identity' [group].
+   * Find the "directory level" at which albums no longer share the base directory paths.
    */
-  makeIdentityGroups(albums) {
-    const groups = [];
-    const labels = [];
-
-    const group = [];
-    for (const album of albums) {
-      if (true) {
-        group.push(album);
-      }
+  findBaseDirectoryLevel(albums) {
+    if (albums.length == 0) {
+      return 0;
     }
-    groups.push(group);
-    labels.push('');
 
-    return { groups: groups, labels: labels };
+    const pathArrays = [];
+    for (const album of albums) {
+      const path = album['@_path'];
+      const a = this.makePathArray(path);
+      pathArrays.push(a);
+    }
+
+    let level = 0;
+    
+    while (true) {
+
+      let lastSubdir;
+      for (let i = 0; i < pathArrays.length; i++) {
+
+        const pathArray = pathArrays[i];
+
+        if (level >= pathArray.length - 1) {
+          return level;
+        }
+
+        const subdir = pathArray[level];
+
+        if (i == 0) {
+          lastSubdir = subdir;
+          continue;
+        }
+
+        if (subdir !== lastSubdir) {
+          return level;
+        }
+      }
+      level++;
+    }
+
+
   }
 
   /**
    * Assumption is that array is already sorted by album path.
    */
   makeDirectoryGroups(albums) {
-    const dirLevel = this.findSharedDirectoryLevel(albums);
+    const dirLevel = this.findBaseDirectoryLevel(albums);
 
     const groups = [];
     const labels = [];
 
     let group;
-
     let lastSubdir = null;
+
     for (const album of albums) {
-      const subdir = album['pathArray'][dirLevel];
+      const path = album['@_path'];
+      const pathArray = this.makePathArray(path);
+      const subdir = pathArray[dirLevel];
       if (subdir != lastSubdir) {
         group = [];
         groups.push(group);
@@ -55,51 +83,21 @@ class LibraryGroupUtil {
       }
 
       group.push(album);
-
       lastSubdir = subdir;
     }
     return { groups: groups, labels: labels };
   }
 
   /**
-   * Find the "directory level" at which elements no longer share the same ancestor directory/ies.
+   * Returns 'identity' group object.
    */
-  findSharedDirectoryLevel(albums) {
-
-    // If path is '/a/b/c', dirLevel=1 means 'b'
-    let dirLevel = 0;
-
-    // Hash of unique directory names for all albums at a given path level (where value is the count).
-    // Don't rly need this info for main 'generator' loop, but that's ok, for now.
-    let directoryNames;
-
-    while (true) {
-
-      directoryNames = {};
-
-      for (const album of albums) {
-
-        const path = album['@_path'];
-        const pathArray = this.makePathArray(path);
-        album['pathArray'] = pathArray; // save for later
-        const dir = pathArray[dirLevel];
-        if (!directoryNames[dir]) {
-          directoryNames[dir] = 0;
-        }
-        directoryNames[dir]++;
-      }
-
-      // List of unique directory names at the given directory level
-      const keysArray = Object.keys(directoryNames);
-      if (keysArray.length > 1) {
-        break;
-      } else {
-        dirLevel++;
-      }
-    }
-
-    // cl('result', dirLevel, directoryNames);
-    return dirLevel;
+  makeIdentityGroups(albums) {
+    const groups = [];
+    const group = [...albums];
+    groups.push(group);
+    const labels = [];
+    labels.push('');
+    return { groups: groups, labels: labels };
   }
 
   makePathArray(path) {

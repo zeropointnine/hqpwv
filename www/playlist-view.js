@@ -1,15 +1,16 @@
+import Commands from './commands.js';
+import MetaUtil from './meta-util.js';
+import Model from './model.js';
+import PlaylistContextMenu from './playlist-context-menu.js';
+import PlaylistSavePanel from './playlist-save-panel.js';
+import PlaylistViewUtil from './playlist-view-util.js';
+import PlaylistVo from './playlist-vo.js'
+import Service from './service.js';
+import Settings from './settings.js';
 import Subview from './subview.js';
 import Util from './util.js';
+import Values from './values.js';
 import ViewUtil from './view-util.js';
-import Model from './model.js';
-import ModelUtil from './model-util.js';
-import Commands from './commands.js';
-import Service from './service.js';
-import ModalPointerUtil from './modal-pointer-util.js';
-import MetaUtil from './meta-util.js'
-import PlaylistVo from './playlist-vo.js'
-import PlaylistContextMenu from './playlist-context-menu.js';
-import HistoryView from './history-view.js';
 
 /**
  * Playlist view 'proper', containing list of tracks.
@@ -18,7 +19,9 @@ export default class PlaylistView extends Subview {
 
   $repeatButton;
   $historyButton;
-  historyView;
+  $loadButton;
+  $saveButton;
+  savePanel;
   contextMenu;
   playlist;
   trackItems$;
@@ -31,7 +34,10 @@ export default class PlaylistView extends Subview {
   	this.$list = this.$el.find("#playlistList");
     this.$repeatButton = this.$el.find('#playlistRepeatButton');
     this.$historyButton = this.$el.find('#playlistHistoryButton');
+    this.$loadButton = this.$el.find('#playlistLoadButton');
+    this.$saveButton = this.$el.find('#playlistSaveButton');
 
+    this.savePanel = new PlaylistSavePanel(this.$el.find('#playlistSaver'));
     this.contextMenu = new PlaylistContextMenu();
 
   	this.$el.find("#playlistCloseButton").on("click tap", () => $(document).trigger('playlist-close-button'));
@@ -40,10 +46,14 @@ export default class PlaylistView extends Subview {
     this.$historyButton.addClass('isDisabled');
     this.$historyButton.on("click tap", () => $(document).trigger('playlist-history-button'));
 
+    this.$loadButton.on("click tap", () => $(document).trigger('playlist-load-button'));
+    this.$saveButton.on("click tap", this.onSaveButton);
     this.$repeatButton.on('click tap', this.onRepeatButton);
 
     Util.addAppListener(this, 'model-playlist-updated', this.populate);
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
+    Util.addAppListener(this, 'settings-meta-changed', this.updateMetaButtons);
+    Util.addAppListener(this, 'meta-load-result', this.updateMetaButtons);
 	}
 
   onShow() {
@@ -52,6 +62,10 @@ export default class PlaylistView extends Subview {
     $(document).on('model-status-updated', this.updateSelectedItem);
     $(document).on('model-state-updated', this.updateRepeatButton);
     $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
+    $(document).on('new-track', this.onNewTrack);
+
+    this.updateMetaButtons();
+    this.showSavePanel(false);
 
     Service.queueCommandFront(Commands.state());
   }
@@ -61,6 +75,7 @@ export default class PlaylistView extends Subview {
     $(document).off('model-status-updated', this.updateSelectedItem);
     $(document).off('model-state-updated', this.updateRepeatButton);
     $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
+    $(document).off('new-track', this.onNewTrack);
   }
 
   populate() {
@@ -75,34 +90,37 @@ export default class PlaylistView extends Subview {
 		this.$list.empty();
 
     if (this.playlist.array.length == 0) {
+
       const $nonItem = $(`<div class="playHisNonItem">Playlist is empty</span>`);
       this.$list.append($nonItem);
-      return;
-    }
 
-    for (let i = 0; i < this.playlist.array.length; i++) { // todo do not reference model.playlist.array here
+    } else {
 
-      const item = this.playlist.array[i];
-      const itemPrevious = (i > 0) ? Model.playlist.array[i - 1] : null;
-      const itemNext = (i < Model.playlist.array.length - 1) ? Model.playlist.array[i + 1] : null;
-      const album = Model.library.getLibraryItemByTrackUri(item['@_uri']);
+      for (let i = 0; i < this.playlist.array.length; i++) { // todo do not reference model.playlist.array here
 
-      const $albumLine = this.makeAlbumLineDiv(album, item, itemPrevious);
-      if ($albumLine) {
-        this.$list.append($albumLine);
-        $albumLine.find('.playlistAlbumButton').on('click tap', this.onAlbumButton);
+        const item = this.playlist.array[i];
+        const itemPrevious = (i > 0) ? Model.playlist.array[i - 1] : null;
+        const itemNext = (i < Model.playlist.array.length - 1) ? Model.playlist.array[i + 1] : null;
+        const album = Model.library.getAlbumByTrackUri(item['@_uri']);
+
+        const $albumLine = PlaylistViewUtil.makeAlbumHeader(album, item, itemPrevious);
+        if ($albumLine) {
+          this.$list.append($albumLine);
+          $albumLine.find('.playlistAlbumButton').on('click tap', this.onAlbumButton);
+        }
+
+        const $item = PlaylistViewUtil.makeListItem(i, item, itemPrevious, itemNext, album);
+        $item.on("click tap", e => this.onItemClick(e));
+        $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
+        $item.find(".favoriteButton").on("click tap", e => PlaylistViewUtil.onItemFavoriteButtonClick(e));
+
+        this.trackItems$.push($item);
+        this.$list.append($item);
       }
-
-      const $item = this.makeListItem(i, item, itemPrevious, itemNext, album);
-      $item.on("click tap", e => this.onItemClick(e));
-      $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
-      $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
-
-      this.trackItems$.push($item);
-      this.$list.append($item);
     }
 
     this.updateSelectedItem();
+    this.updateMetaButtons();
 	}
 
 	updateSelectedItem = () => {
@@ -121,7 +139,13 @@ export default class PlaylistView extends Subview {
     const lastSelectedIndex = this.selectedIndex;
     this.selectedIndex = Model.playlist.getIndexByUri(this.selectedUri);
     if (this.selectedIndex == -1) {
-      cl('warning no match for uri');
+      // can happen between stop and play states or smth
+    }
+
+    if (!this.trackItems$) {
+      // can happen on startup somehow
+      // console.trace();
+      return;
     }
 
     for (let i = 0; i < this.trackItems$.length; i++) {
@@ -131,11 +155,6 @@ export default class PlaylistView extends Subview {
       } else {
         $item.removeClass("selected");
       }
-    }
-
-    if (this.selectedIndex > lastSelectedIndex) {
-      const $item = this.trackItems$[this.selectedIndex];
-      Util.autoScrollListItem($item, this.$el, 4);
     }
   }
 
@@ -152,134 +171,6 @@ export default class PlaylistView extends Subview {
     }
   };
 
-  makeAlbumLineDiv(album, item, itemPrevious) {
-    if (!album) {
-      return null;
-    }
-    const isSameAsPrevious = this.areFromSameAlbum(item, itemPrevious);
-    if (isSameAsPrevious) {
-      return null;
-    }
-    const imgPath = ModelUtil.getAlbumImageUrl(album);
-    const albumText = album['@_album'];
-    const artistText = album['@_artist'];
-    if (!albumText && !artistText) {
-      return null;
-    }
-
-    let text = '';
-    if (albumText) {
-      text += albumText;
-    }
-    if (artistText) {
-      text += text ? ('<br>' + artistText) : artistText;
-    }
-    if (!text) {
-      return null;
-    }
-
-    let s = '';
-    s += `<div class="playHisItem playlistItem groupFirst playlistAlbumLine">`;
-    s += `<div class="playlistAlbumButton" data-hash="${album['@_hash']}"><img src="${imgPath}"><div class="text">${text}</div></div>`;
-    s += `</div>`;
-    return $(s);
-  }
-
-	makeListItem(index, item, itemPrevious, itemNext, hasAlbum) {
-
-    const isSameAsPrevious = (!itemPrevious && hasAlbum) || this.areFromSameAlbum(item, itemPrevious);
-    const isSameAsNext = this.areFromSameAlbum(item, itemNext);
-
-    let groupingClass = '';
-    if (hasAlbum) {
-      groupingClass = !isSameAsNext ? 'groupLast' : 'groupMiddle';
-    } else {
-      if (!isSameAsPrevious && isSameAsNext) {
-        groupingClass = 'groupFirst';
-      } else if (isSameAsPrevious && !isSameAsNext) {
-        groupingClass = 'groupLast';
-      } else if (isSameAsPrevious && isSameAsNext) {
-        groupingClass = 'groupMiddle';
-      } else { // isSameAsPrevious && isSameAsNext
-        groupingClass = 'single';
-      }
-    }
-
-    let s = '';
-    s += `<div class="playHisItem playlistItem ${groupingClass}" data-index="${index}">`;
-    s += `  <div class="left">${index+1}</div>`;
-    s += `  <div class="main">${this.makeLabel(item, hasAlbum)}</div>`;
-    if (MetaUtil.isEnabled && Model.library.array.length > 0) {
-      const hash = Model.library.getHashForPlaylistItem(item);
-      if (hash) {
-        const isFavorite = MetaUtil.isFavoriteFor(hash);
-        const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
-        const numViews = MetaUtil.getNumViewsFor(hash);
-        s += `<div class="playlistItemMeta">`;
-        s += `<div class="playlistItemViews">${numViews || ''}</div>`;
-        s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
-        s += `</div>`;
-      }
-    }
-    s += `  <div class="right"><div class="contextButton iconButton moreButton" data-index="${index}"></div></div>`;
-    s += `</div>`;
-    return $(s);
-	}
-
-  areFromSameAlbum(track1, track2) {
-    if (!track1 || !track2) {
-      return false;
-    }
-    const uri1 = track1['@_uri'];
-    const uri2 = track2['@_uri'];
-    if (!uri1 || !uri2) {
-      return false;
-    }
-    const base1 = Util.stripFilenameFromHqpUri(uri1);
-    const base2 = Util.stripFilenameFromHqpUri(uri2);
-    return (base1 === base2);
-  }
-
-	makeLabel(item, hasAlbum) {
-    const song = item['@_song'];
-    const seconds = parseFloat(item['@_length']);
-
-    if (hasAlbum) {
-      let result = '';
-      if (song) {
-        result += `${song}`;
-      }
-      if (!result) {
-        result = 'Track';
-      }
-      if (seconds) {
-        result += ` <span class="duration">(${Util.durationText(seconds)})</span>`;
-      }
-      return result;
-    }
-
-    // More detailed
-		const album = item['@_album'];
-		const artist = item['@_artist'] || item['@_album_artist'];
-		let result = '';
-		if (song) {
-			result += `<strong>${song}</strong>`;
-		}
-    if (seconds) {
-      result += ` <span class="duration">(${Util.durationText(seconds)})</span>`;
-    }
-		if (artist) {
-			result += result ? ('<br>' + artist) : artist;
-		}
-		if (album) {
-			result += result ? ('<br>' + album) : album;
-		}
-		if (!result) {
-			result = 'Track';
-		}
-		return result;
-	}
-
 	onItemClick(event) {
 		const index = parseInt($(event.currentTarget).attr("data-index"));
 		Service.queueCommandFrontAndGetStatus(
@@ -293,12 +184,11 @@ export default class PlaylistView extends Subview {
     this.contextMenu.show(this.$el, $(button), index);
 	}
 
-  onClearButton = (e) => {
-    Service.queueCommandsFront(
-        [Commands.playlistClear(), Commands.playlistGet()]);
+  onClearButton = () => {
+    Service.queueCommandsFront([Commands.playlistClear(), Commands.playlistGet()]);
   };
 
-  onRepeatButton = (e) => {
+  onRepeatButton = () => {
     // none -> all -> one
     let value;
     if (this.$repeatButton.hasClass('isAll')) {
@@ -310,28 +200,6 @@ export default class PlaylistView extends Subview {
     }
     Service.queueCommandsFront([Commands.setRepeat(value), Commands.state()]);
   };
-
-  onItemFavoriteButtonClick(event) {
-    event.stopPropagation(); // prevent listitem from responding to same event
-    const $button = $(event.currentTarget);
-    const index = parseInt($button.attr("data-index"));
-    const item = Model.playlist.array[index];
-    const hash = Model.library.getHashForPlaylistItem(item);
-    if (!hash) {
-      cl('warning no hash for ', item['@_uri']);
-      return;
-    }
-    const oldValue = MetaUtil.isFavoriteFor(hash);
-    const newValue = !oldValue;
-    // update button
-    if (newValue) {
-      $button.addClass('isSelected');
-    } else {
-      $button.removeClass('isSelected');
-    }
-    // update model
-    MetaUtil.setFavoriteFor(hash, newValue);
-  }
 
   onMetaTrackIncremented = (e, hash, count) => {
     for (let i = 0; i < this.playlist.array.length; i++) {
@@ -353,10 +221,61 @@ export default class PlaylistView extends Subview {
   onAlbumButton = (e) => {
     const $el = $(e.currentTarget);
     const hash = $el.attr('data-hash');
-    const album = Model.library.getItemByHash(hash);
+    const album = Model.library.getAlbumByAlbumHash(hash);
     if (!album) {
       return;
     }
     $(document).trigger('playlist-context-album', album);
+  };
+
+  onSaveButton = () => {
+    const b = ViewUtil.isDisplayed(this.savePanel.$el);
+    this.showSavePanel(!b);
+  };
+
+  onNewTrack = (e, currentUri, lastUri) => {
+    cl('a')
+    const currentIndex = this.playlist.getIndexByUri(currentUri);
+    const lastIndex = this.playlist.getIndexByUri(lastUri);
+    cl('b', currentIndex, lastIndex)
+    if (currentIndex > -1) {
+      if (currentIndex > lastIndex) {
+        const $item = this.trackItems$[currentIndex];
+        cl('c', $item)
+        Util.autoScrollListItem($item, this.$el);
+      }
+    }
+  };
+
+  showSavePanel(b) {
+    if (b) {
+      this.savePanel.show();
+    } else {
+      this.savePanel.hide();
+    }
+  }
+
+  updateMetaButtons() {
+    // buttons' visibility
+    ViewUtil.setDisplayed(this.$loadButton, Settings.isMetaEnabled);
+    ViewUtil.setDisplayed(this.$saveButton, Settings.isMetaEnabled && !Values.areOnDifferentMachines);
+    ViewUtil.setDisplayed(this.$historyButton, Settings.isMetaEnabled);
+    // load and history button enabledness
+    const loadAndHistoryEnabled = (Settings.isMetaEnabled && MetaUtil.isEnabled);
+    if (loadAndHistoryEnabled) {
+      this.$loadButton.removeClass('isDisabled');
+      this.$historyButton.removeClass('isDisabled');
+    } else {
+      this.$loadButton.addClass('isDisabled');
+      this.$historyButton.addClass('isDisabled');
+    }
+    // save button enabledness
+    const saveEnabled = (Settings.isMetaEnabled && MetaUtil.isEnabled)
+        && (this.playlist && this.playlist.array.length > 0);
+    if (saveEnabled) {
+      this.$saveButton.removeClass('isDisabled');
+    } else {
+      this.$saveButton.addClass('isDisabled');
+    }
   }
 }

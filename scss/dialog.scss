@@ -1,4 +1,4 @@
-#dialogOuter {
+#generalDialogOuter {
   visibility: hidden;
   position: absolute;
   z-index: 10002;
@@ -8,7 +8,7 @@
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
 
-  #dialog {
+  #generalDialog {
     position: absolute;
     width: 700px;
     left: 50%;
@@ -17,7 +17,7 @@
     background-color: $color-bg;
     border: 2px solid $color-listitem;
 
-    #dialogTitle {
+    #generalDialogTitle {
       color: $color-accent;
       font-size: 16px;
       font-weight: bold;
@@ -26,17 +26,17 @@
       background-color: $color-listitem-less;
     }
 
-    #dialogMessage {
+    #generalDialogMessage {
       padding: $space-unit $space-unit 0 $space-unit;
       max-height: 400px;
       margin-bottom: $space-unit;
     }
 
-    #dialogBottom {
+    #generalDialogBottom {
       text-align: center;
       padding-bottom: $space-unit;
 
-      #dialogButton {
+      #generalDialogButton {
         display: inline-block;
         min-width: 80px;
       }
@@ -44,18 +44,18 @@
   }
 }
 
-#dialogOuter.isFatal {
+#generalDialogOuter.isFatal {
   background-color: rgba(0, 0, 0, 0.5);
-  #dialog {
-    #dialogTitle {
+  #generalDialog {
+    #generalDialogTitle {
       color: $color-accent;
     }
   }
 }
 
 @include tablet {
-  #dialogOuter {
-    #dialog {
+  #generalDialogOuter {
+    #generalDialog {
       width: 450px;
       margin-left:-225px;
     }
@@ -63,7 +63,7 @@
 }
 
 @include mobile {
-  #dialogOuter {
+  #generalDialogOuter {
     #dialog {
       top: 35px;
       width: 300px;

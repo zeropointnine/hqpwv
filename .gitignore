@@ -3,4 +3,6 @@
 dist/
 node_modules/
 www/css/
+
 hqpwv-metadata.json
+hqpwv-playlists/

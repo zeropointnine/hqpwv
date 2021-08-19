@@ -2,7 +2,7 @@ import StatusVo from './status-vo.js';
 import Util from './util.js';
 import Values from './values.js';
 import Model from './model.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import Busyer from './busyer.js';
@@ -61,7 +61,11 @@ class Statuser {
   onServiceResponseHandled = (e, type, data) => {
     if (type == 'Status') {
       this.doStatusDiff();
-    } else if (type == 'Play' || type == 'SelectTrack') {
+      return;
+    }
+
+    if (type == 'Play' || type == 'SelectTrack') {
+      // do-next now (don't wait)
       this.doNext();
     }
   };
@@ -79,8 +83,7 @@ class Statuser {
         // cl('statuser ignoring detect');
         this.ignoreNextNewTrackDetected = false;
       } else {
-        // cl('statuser new-track');
-        $(document).trigger('new-track');
+        $(document).trigger('new-track', [currentUri, lastUri]);
 
         // Reset view-detect variables
         this.viewDetectUri = currentUri;
@@ -100,7 +103,7 @@ class Statuser {
         if (delta > VIEW_DETECT_DURATION_MS) {
           this.viewDetectHasTriggered = true;
           // cl('statuser - view detected')
-          const hash = Model.library.getHashForUri(currentUri);
+          const hash = Model.library.getTrackHashForTrackUri(currentUri);
           if (!hash) {
             return;
           }

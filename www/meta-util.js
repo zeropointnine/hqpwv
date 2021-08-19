@@ -2,6 +2,7 @@ import Values from './values.js';
 import Util from './util.js';
 import Settings from './settings.js';
 import Model from './model.js';
+import ToastView from './toast-view.js';
 
 const HISTORY_MAX_ITEMS = 1000;
 
@@ -15,48 +16,57 @@ const HISTORY_MAX_ITEMS = 1000;
 class MetaUtil {
 
   isServerEnabled;
-  serverFilepath;
+  serverMainFilepath;
 
+  isLoading;
   isFailed;
-  isInitialized;
   isReady;
 
-  /**
-   * JSON hash object that comes from hqpwv server
-   * Key is track hash.
-   * Value is an object { favorite, views }
-   */
-  meta;
-
+  _tracks;
+  _history;
+  
   constructor() {}
 
-  // todo promises. c'mon.
   init() {
-
-    // Dev convenience:
+    // Dev convenience
     if (!window.hqpwv) {
       window.hqpwv = {};
     }
     window.hqpwv.MetaUtil = this;
 
+    this.isLoading = true;
+
     this.fetchInfo((result) => {
       if (!result) {
+        cl('warning meta info failed');
+        this.doFail();
         return;
       }
-      this.fetchMeta((result) => {
+      this.fetchMain((result) => {
         if (!result) {
+          cl('warning meta main failed');
+          this.doFail();
           return;
         }
+        // success
+        this.isLoading = false;
+        this.isFailed = false;
         this.isReady = true;
+        $(document).trigger('meta-load-result', true);
       });
     });
   }
 
+  doFail() {
+    this.isLoading = false;
+    this.isFailed = true;
+    ToastView.show(`<span class="colorAccent">Server metadata init failed; some features will be disabled.</span>`, 5000);
+  }
+
   fetchInfo(resultCallback) {
     const onSuccess = (data, textStatus, jqXHR) => {
-      this.isServerEnabled = (data.isEnabled);
-      this.serverFilepath = (data.filepath);
-      this.isInitialized = true;
+      this.isServerEnabled = data['isEnabled'];
+      this.serverMainFilepath = data['mainFilepath'];
       resultCallback(true);
     };
     const onError = (e) => {
@@ -68,17 +78,20 @@ class MetaUtil {
     $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 
-  fetchMeta(resultCallback) {
+  fetchMain(resultCallback) {
     const onSuccess = (data, textStatus, jqXHR) => {
-      this.meta = data;
-      if (!this.meta['tracks']) {
-        cl('warning meta missing tracks');
-        this.meta['tracks'] = {};
+      if (!!data['error']) {
+        cl('warning', data['error']);
+        resultCallback(false);
+        return;
       }
-      if (!this.meta['history']) {
-        cl('warning meta missing history');
-        this.meta['history'] = {};
+      if (!data['tracks'] || !data['history']) {
+        cl('warning missing required property', data);
+        resultCallback(false);
+        return;
       }
+      this._tracks = data['tracks'];
+      this._history = data['history'];
       resultCallback(true);
     };
     const onError = (e) => {
@@ -86,7 +99,8 @@ class MetaUtil {
       cl('warning get meta failed', e);
       resultCallback(false);
     };
-    const url = `${Values.META_ENDPOINT}?getData`;
+
+    const url = `${Values.META_ENDPOINT}?getMain`;
     $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 
@@ -94,21 +108,19 @@ class MetaUtil {
     return (Settings.isMetaEnabled && this.isReady); // todo isServerEnabled?
   }
 
-  // ---
-  // History
-
-  get history() {
-    return this.meta['history'];
+  get tracks() {
+    return this._tracks;
   }
 
-  // ---
-  // Track-related
+  get history() {
+    return this._history;
+  }
 
   isFavoriteFor(hash) {
-    if (!this.meta['tracks'][hash]) {
+    if (!this._tracks[hash]) {
       return false;
     }
-    const o = this.meta['tracks'][hash];
+    const o = this._tracks[hash];
     const value = o['favorite'];
     return (value === true || value === 'true');
   }
@@ -120,18 +132,29 @@ class MetaUtil {
     if (!hash) {
       return false;
     }
-    let o = this.meta['tracks'][hash];
+    let o = this._tracks[hash];
     if (!o) {
-      this.meta['tracks'][hash] = {};
-      o = this.meta['tracks'][hash];
+      this._tracks[hash] = {};
+      o = this._tracks[hash];
     }
     o['favorite'] = isFavorite;
 
-    this.pushTrackFavorite(hash, isFavorite);
+    this.setFavoriteOnServer(hash, isFavorite);
+  }
+
+  setFavoriteOnServer(hash, isFavorite) {
+    if (!hash) {
+      cl('warning no hash');
+      return;
+    }
+    const onSuccess = (data, textStatus, jqXHR) => { /*cl(data);*/ };
+    const onError = (e) => cl('warning update track favorite failed', e);
+    const url = `${Values.META_ENDPOINT}?updateTrackFavorite&hash=${hash}&value=${isFavorite}`;
+    $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 
   getNumViewsFor(hash) {
-    let o = this.meta['tracks'][hash];
+    let o = this._tracks[hash];
     if (!o) {
       return 0;
     }
@@ -149,14 +172,14 @@ class MetaUtil {
     if (!hash) {
       return;
     }
-    let o = this.meta['tracks'][hash];
+    let o = this._tracks[hash];
     if (!o) {
-      this.meta['tracks'][hash] = {};
-      o = this.meta['tracks'][hash];
+      this._tracks[hash] = {};
+      o = this._tracks[hash];
     }
     const newValue = this.getNumViewsFor(hash) + 1;
     o['views'] = newValue;
-    this.pushIncrementTrackViews(hash);
+    this.incrementTrackViewsOnServer(hash);
 
     // Also add to history (Server will have done the same as well!)
     this.addToHistory(hash);
@@ -164,34 +187,7 @@ class MetaUtil {
     $(document).trigger('meta-track-incremented', [hash, newValue]);
   }
 
-  addToHistory(hash) {
-    const a = this.meta['history'];
-    const o = {
-      'hash': hash,
-      'time': new Date().getTime()
-    };
-    a.push(o);
-    const excess = a.length - HISTORY_MAX_ITEMS;
-    if (excess > 0) {
-      a.splice(0, excess)
-    }
-  }
-
-  // ---
-  // Push-to-server-related
-
-  pushTrackFavorite(hash, isFavorite) {
-    if (!hash) {
-      cl('warning no hash');
-      return;
-    }
-    const onSuccess = (data, textStatus, jqXHR) => { /*cl(data);*/ };
-    const onError = (e) => cl('warning update track favorite failed', e);
-    const url = `${Values.META_ENDPOINT}?updateTrackFavorite&hash=${hash}&value=${isFavorite}`;
-    $.ajax( { url: url, error: onError, success: onSuccess } );
-  }
-
-  pushIncrementTrackViews(hash) {
+  incrementTrackViewsOnServer(hash) {
     if (!hash) {
       cl('warning no hash');
       return;
@@ -200,6 +196,18 @@ class MetaUtil {
     const onError = (e) => cl('warning increment track views failed', e);
     const url = `${Values.META_ENDPOINT}?incrementTrackViews&hash=${hash}`;
     $.ajax( { url: url, error: onError, success: onSuccess } );
+  }
+
+  addToHistory(hash) {
+    const o = {
+      'hash': hash,
+      'time': new Date().getTime()
+    };
+    this._history.push(o);
+    const excess = this._history.length - HISTORY_MAX_ITEMS;
+    if (excess > 0) {
+      this._history.splice(0, excess)
+    }
   }
 }
 

@@ -54,14 +54,25 @@ Util.durationTextHoursMinutes = (totalSeconds) => {
  * Strips filename from an uri coming from hqplayer.
  * May not be complete.
  */
-Util.stripFilenameFromHqpUri = (uri) => {
-  if (!uri) {
-    return uri;
+Util.stripFilenameFromPath = (path) => {
+  if (!path) {
+    return path;
   }
-  const i1 = uri.indexOf('/');
-  const i2 = uri.indexOf('\\');
+  const i1 = path.indexOf('/');
+  const i2 = path.indexOf('\\');
   const separator = (i1 >= i2) ? '/' : '\\';
-  const result = uri.substring(0, uri.lastIndexOf(separator));
+  const result = path.substring(0, path.lastIndexOf(separator));
+  return result;
+};
+
+Util.getFilenameFromPath = (path) => {
+  if (!path) {
+    return path;
+  }
+  const i1 = path.indexOf('/');
+  const i2 = path.indexOf('\\');
+  const separator = (i1 >= i2) ? '/' : '\\';
+  const result = path.substring(path.lastIndexOf(separator) + 1);
   return result;
 };
 
@@ -181,7 +192,7 @@ Util.autoScrollListItem = ($listItem, $holder, step=2) => {
     return;
   }
 
-  $(document.body).css('pointer-events', 'none');
+  $(document).trigger('disable-user-input');
   let count = 100; // failsafe lol
   const f = () => {
     // Must be recalculated on every frame
@@ -190,11 +201,37 @@ Util.autoScrollListItem = ($listItem, $holder, step=2) => {
     const delta = getBottomEdgeDistance($listItem);
     if (delta < 1.01 || count-- <= 0) {
       clearInterval(id);
-      $(document).trigger('restore-pointer-events');
+      $(document).trigger('enable-user-input');
       return;
     }
     const target = $holder.scrollTop() + step; // (delta * 0.35);
     $holder.scrollTop(target)
   };
   const id = setInterval(f, 16);
+};
+
+/**
+ * Initiates browser file download.
+ *
+ * @param filename filename that will be pre-populated in browser "Save-as" dialog.
+ * @param mimeType eg, "text/plain"
+ * @param content
+ */
+Util.downloadFile = (filename, mimeType, content) => {
+  const blob = new Blob([content], { type: mimeType });
+  const a = document.createElement('a');
+  a.setAttribute('download', filename);
+  a.setAttribute('href', window.URL.createObjectURL(blob));
+  a.click();
+};
+
+Util.areUriAndPathEquivalent = (uri, path) => {
+  if (!uri && !path) {
+    return true;
+  }
+  if (!uri || !path) {
+    return false;
+  }
+  path = path.replace('file://', '');
+  return (uri == path);
 };

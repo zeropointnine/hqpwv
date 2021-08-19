@@ -4,7 +4,7 @@
  */
 const fs = require("fs");
 const path = require('path');
-const FILENAME = 'hqpwv-metadata.json'; // todo put this in the right docs dir?
+const FILENAME = 'hqpwv-metadata.json';
 const PATH = path.resolve(FILENAME);
 const ACTIVITY_COUNTER_THRESH = 10;
 const ACTIVITY_TIMEOUT_DURATION = 5 * 60 * 1000;
@@ -15,67 +15,70 @@ let isEnabled = false;
 let activityCounter = 0;
 let activityTimeoutId = 0;
 
-const init = (resultCallback) => {
-
-  // Verify file exists or access
-  try {
-    fs.accessSync(FILENAME, fs.constants.R_OK | fs.constants.W_OK)
-  } catch (err) {
-    if (err.code == 'ENOENT') {
-      createFile(resultCallback);
-      return;
-    }
-    console.log('- error: file access to meta', err.code);
-    console.log('  ' + PATH);
-    resultCallback(false);
-    return;
+/**
+ * Returns true for success.
+ */
+const init = () => {
+  let isSuccess;
+  isSuccess = initFile();
+  if (!isSuccess) {
+    return false;
   }
+  isSuccess = loadData();
+  if (!isSuccess) {
+    return false;
+  }
+  isEnabled = true;
+  startActivityTimeout();
+  return true;
+};
 
-  // Load data
+/**
+ * Verifies files exists and is read/writable, or creates it.
+ * Returns true for success.
+ */
+const initFile = () => {
+  try {
+    fs.accessSync(FILENAME, fs.constants.R_OK | fs.constants.W_OK);
+  } catch (err) {
+    const doesntExist = (err.code == 'ENOENT');
+    if (doesntExist) {
+      console.log('- create new metadata');
+      data = makeData();
+      const result = saveFile();
+      return result;
+    } else {
+      console.log('- error:', FILENAME, err.code);
+      return false;
+    }
+  }
+  return true;
+};
+
+const loadData = () => {
   let filedata;
   try {
     filedata = fs.readFileSync(FILENAME, {encoding: 'utf8'});
   } catch (err) {
-    console.log(`- error: couldn't load meta`, err.code);
+    console.log(`- error: couldn't load metadata`, err.code);
     console.log('  ' + PATH);
-    resultCallback(false);
-    return;
+    return false;
   }
-
-  // Parse data
   let o = null;
   try {
     o = JSON.parse(filedata);
   } catch (err) {
-    console.log(`- error: couldn't parse meta`);
+    console.log(`- error: couldn't parse metadata`);
     console.log('  ' + PATH);
-    resultCallback(false);
+    return false;
   }
-
   console.log('- loaded metadata');
   console.log('  ' + PATH);
   data = o;
-  finishInit();
-  resultCallback(true); // init done
+  return true;
 };
 
-const createFile = (resultCallback) => {
-  console.log('- will create new meta file');
-  data = makeEmptyDataObject()
-  saveToFile(saveResult => {
-    if (saveResult) {
-      finishInit();
-    }
-    resultCallback(saveResult);
-  });
-};
-
-finishInit = () => {
-  isEnabled = true;
-  startActivityTimeout();
-};
-
-makeEmptyDataObject = () => {
+makeData = () => {
   const o = {
     tracks: {},
     history: []
@@ -95,34 +98,22 @@ const getIsEnabled = () => {
 
 const getIsDirty = () => {
   return (activityCounter > 0);
-}
+};
 
-const saveToFile = (resultCallback) => {
-  // todo save to intermediate file and swap on success?
+// todo save to intermediate file and swap on success?
+const saveFile = () => {
   try {
     fs.writeFileSync(FILENAME, JSON.stringify(data), {encoding: 'utf8'});
   } catch (err) {
-    console.log('- warning error saving meta file', err.code);
+    console.log(`- warning couldn't save metadata`, err.code);
     console.log('  ' + PATH);
-    if (resultCallback != null) {
-      resultCallback(false);
-    }
-    return;
+    return false;
   }
-  console.log('- saved meta file');
-  console.log('  ' + PATH);
-  if (resultCallback != null) {
-    resultCallback(true);
-  }
+  console.log('- saved metadata');
+  return true;
 };
 
-/**
- * Removes track entries which are not in library.
- */
-const clean = (resultCallback) => {
-  // todo
-  resultCallback(true);
-};
+// ---
 
 const getData = () => {
   return data;
@@ -198,6 +189,14 @@ const addToHistory = (hash) => {
   }
 };
 
+/**
+ * Removes track entries which are not in library.
+ */
+const clean = (resultCallback) => {
+  // todo
+  resultCallback(true);
+};
+
 // Cheesy auto-save logic
 
 activityTouch = () => {
@@ -223,7 +222,7 @@ onActivityTimeout = () => {
 activitySaveMetaAndStartTimeout = () => {
   activityCounter = 0;
   clearTimeout(activityTimeoutId);
-  saveToFile();
+  saveFile();
   startActivityTimeout();
 };
 
@@ -234,13 +233,13 @@ module.exports = {
   getIsEnabled: getIsEnabled,
   getFilepath: getFilepath,
   getIsDirty: getIsDirty,
-  saveToFile: saveToFile,
-  clean: clean,
+  saveFile: saveFile,
   getData: getData,
   getTracks: getTracks,
   getHistory: getHistory,
   getShallowCopyEmptyHistory: getShallowCopyEmptyHistory,
   updateTrackFavorite: updateTrackFavorite,
   incrementTrackViews: incrementTrackViews,
-  updateTrackViews: updateTrackViews
+  updateTrackViews: updateTrackViews,
+  clean: clean
 };

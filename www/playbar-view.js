@@ -2,7 +2,7 @@ import Util from './util.js';
 import ViewUtil from './view-util.js';
 import ModalPointerUtil from './modal-pointer-util.js';
 import Model from './model.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import ProgressView from './progress-view.js';
@@ -31,6 +31,7 @@ export default class PlaybarView {
   constructor() {
   	this.$el = $("#playbarView");
 
+    // Rem, button states are mostly governed by css classes on root view.
     this.$playButton = this.$el.find("#playButton");
     this.$stopButton = this.$el.find("#stopButton");
     this.$previousButton = this.$el.find("#previousButton");
@@ -60,9 +61,11 @@ export default class PlaybarView {
     this.$playingText.on("click tap", () => $(document).trigger('playbar-show-playlist'));
     this.$volumeToggle.on('click tap', this.onVolumeToggle);
 
-    Util.addAppListener(this, 'model-status-updated', this.onModelStatusUpdated);
     Util.addAppListener(this, 'model-playlist-updated', this.onModelPlaylistUpdated);
+    Util.addAppListener(this, 'model-status-updated', this.onModelStatusUpdated);
+    Util.addAppListener(this, 'model-state-updated', this.onModelStateUpdated);
     Util.addAppListener(this, 'progress-thumb-drag', this.onProgressThumbDrag);
+
 
     this.pointerUtil = new ModalPointerUtil(
         [this.$volumeToggle, this.volumePanel.$el],
@@ -97,7 +100,7 @@ export default class PlaybarView {
     // nb also: status.track is not correct when track is changed while in paused state.
 
     const totalTracks = Model.playlist.array.length;
-    const atTrack = Model.playlist.getCurrentIndex();
+    const atTrack = Model.playlist.currentIndex;
     if (totalTracks == this.totalTracks && atTrack == this.atTrack) {
       return;
     }
@@ -109,7 +112,7 @@ export default class PlaybarView {
 
   /**
    * Updates the 'now playing' text line.
-   * Uses data from both Model.status and Model.playlist.
+   * Relies on both Model.status and Model.playlist.
    */
   _updatePlayingText() {
     let s = '';
@@ -118,14 +121,22 @@ export default class PlaybarView {
           ? `Stopped`
           : `<span class="colorTextLess">Playlist is empty</span>`;
     } else {
-      if (Model.status.metadata['@_artist']) {
-        s += Model.status.metadata['@_artist'];
+      const meta = Model.status.metadata;
+      if (meta['@_artist']) {
+        s += meta['@_artist'];
       }
-      if (Model.status.metadata['@_song']) {
+      if (meta['@_song']) {
         if (s) {
           s += ' - ';
         }
-        s += Model.status.metadata['@_song'];
+        let song;
+        if (Util.areUriAndPathEquivalent(meta['@_song'], meta['@_uri'])) {
+          // hqp uses full path when file has no song metadata
+          song = Util.getFilenameFromPath(meta['@_song']);
+        } else {
+          song = meta['@_song'];
+        }
+        s += song;
       }
       if (!s) {
         // can occur when 'past' playlist and about to stop
@@ -172,6 +183,22 @@ export default class PlaybarView {
     this.$trackLength.text(this.totalSecondsText);
   }
 
+  _updatePreviousNextButtons() {
+    // rem, classes on page holder also inform disabledness as well
+    if (Model.playlist.isOnFirstTrack) {
+      this.$previousButton.addClass('isDisabled');
+    }  else {
+      this.$previousButton.removeClass('isDisabled');
+    }
+
+    const isRepeat = (Model.state.isRepeatAll || Model.state.isRepeatOne);
+    if (Model.playlist.isOnLastTrack && !isRepeat) {
+      this.$nextButton.addClass('isDisabled');
+    }  else {
+      this.$nextButton.removeClass('isDisabled');
+    }
+  }
+
   showVolumePanel() {
     if (this.isVolumePanelShowing) {
       return;
@@ -188,6 +215,7 @@ export default class PlaybarView {
     this.volumePanel.hide();
     this.pointerUtil.clear();
   }
+
   onModelStatusUpdated(e) {
     this._updatePlayingText();
     if (!this.progressView.isDragging) {
@@ -196,10 +224,16 @@ export default class PlaybarView {
     }
     this._updateTotalSeconds();
     this._updatePlaylistNumbers();
+    this._updatePreviousNextButtons();
   }
 
   onModelPlaylistUpdated(e) {
     this._updatePlaylistNumbers();
+    this._updatePreviousNextButtons();
+  }
+
+  onModelStateUpdated(e) {
+    this._updatePreviousNextButtons();
   }
 
   onPlayButton = (e) => {

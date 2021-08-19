@@ -5,17 +5,17 @@ import ViewUtil from './view-util.js';
  */
 class DialogView {
 
-  $outer = $('#dialogOuter');
-  $dialog = this.$outer.find('#dialog');
-  $title = this.$dialog.find('#dialogTitle');
-  $message = this.$dialog.find('#dialogMessage');
-  $button = this.$dialog.find('#dialogButton');
+  $outer = $('#generalDialogOuter');
+  $dialog = this.$outer.find('#generalDialog');
+  $title = this.$dialog.find('#generalDialogTitle');
+  $message = this.$dialog.find('#generalDialogMessage');
+  $button = this.$dialog.find('#generalDialogButton');
 
   constructor() { }
 
   show(titleText, messageHtmlText, buttonText, isFatalStyle, onButton) {
 
-    $(document.body).css('pointer-events', 'none');
+    $(document).trigger('disable-user-input');
     this.$dialog.css('pointer-events', 'auto');
 
     isFatalStyle
@@ -29,8 +29,8 @@ class DialogView {
 
     this.$button.on('click tap', e => {
       ViewUtil.setVisible(this.$outer, false);
-      $(document.body).css('pointer-events', '');
       this.$dialog.css('pointer-events', '');
+      $(document).trigger('enable-user-input');
       onButton();
     });
   }

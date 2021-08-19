@@ -44,7 +44,7 @@ export default class PlaylistContextMenu extends ContextMenu {
     this.index = index;
     
     const playlistItem = Model.playlist.array[index];
-    this.matchingLibraryItem = Model.library.getLibraryItemByTrackUri(playlistItem['@_uri']);
+    this.matchingLibraryItem = Model.library.getAlbumByTrackUri(playlistItem['@_uri']);
 
     ViewUtil.setDisplayed(this.$upItem, index > 0);
     ViewUtil.setDisplayed(this.$downItem, index < Model.playlist.array.length - 1);

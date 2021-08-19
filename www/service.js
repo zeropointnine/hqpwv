@@ -1,6 +1,8 @@
-import Values from './values.js';
 import Commands from './commands.js';
+import DataUtil from './data-util.js';
 import Model from './model.js';
+import ToastView from './toast-view.js';
+import Values from './values.js';
 
 /**
  * Manages calls to webservice `commands` endpoint.
@@ -117,7 +119,9 @@ class Service {
 		this.makeRequest();
 	}
 
-	/** Makes request to server using the xml in `currentItem` */
+	/**
+   * Makes request to server using the xml in `currentItem`
+   */
 	makeRequest() {
     if (!this.currentItem.xml.includes('<Status')) {
       // cl(`${Values.uptimeString} service ${this.currentItem.xml.substr(0,60)}`);
@@ -126,8 +130,10 @@ class Service {
     $.ajax({ url: url, error: this.onError, success: this.onSuccess}); // todo timeout: ___ ?
   }
 
+  /**
+   * If too many consecutive errors, send an event (just once).
+   */
   onError = (jqXHR, textStatus, errorThrown ) => {
-    // If too many consecutive errors, send an event (just once).
     if (!this.hasSentServerErrorEvent) {
       if (this.serverErrorCounter == 0) {
         this.serverErrorStartTime = new Date().getTime();
@@ -155,17 +161,27 @@ class Service {
     this.serverErrorCounter = 0;
     this.serverErrorStartTime = 0;
 
+    // First, show toast on hqp-reported error
+    const errorText = DataUtil.isResultError(data);
+    if (errorText) {
+      if (errorText != DataUtil.NO_ERROR_TEXT_TEXT) {
+        // hqp will report error w/o error text if doing next-track from last-track (ie, more like a warning)
+        // which make me suspect it may do likewise in similarly non-error-like situations
+        ToastView.show(`<span class="colorAccent">HQPlayer-reported error: ${errorText}</span>`, 3000);
+      }
+    }
+
     // Store model data if applicable;
 		// model will send event that it's been updated.
-		if (data['Status']) {
+		if (data['Status'] != undefined) {
       Model.setStatusUsingResponseObject(data['Status']);
-    } else if (data['State']) {
+    } else if (data['State'] != undefined) {
       Model.setStateUsingResponseObject(data);
-		} else if (data['PlaylistGet']) {
+		} else if (data['PlaylistGet'] != undefined) {
 			Model.setPlaylistDataUsingResponseObject(data);
-		} else if (data['LibraryGet']) {
-			Model.setLibraryDataUsingResponseObject(data);
-		} else if (data['GetInfo']) {
+		} else if (data['LibraryGet'] != undefined) {
+      Model.setLibraryDataUsingResponseObject(data);
+		} else if (data['GetInfo']!= undefined) {
       Model.setInfoUsingResponseObject(data);
     }
 
@@ -185,6 +201,7 @@ class Service {
     $(document).trigger('service-response-handled', [type, data]);
 
     if (data['error']) {
+      // Rem, this is an error coming from the hqpwv server, not hqp.
       if (!this.hasSentProxyErrorEvent) {
         // If too many consecutive 'proxy errors', send event (just 1).
         if (this.proxyErrorCounter == 0) {

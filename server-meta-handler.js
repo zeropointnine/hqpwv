@@ -3,17 +3,15 @@
  */
 const meta = require('./meta');
 
-const go = (request, response) => {
+const doGet = (request, response) => {
 
   if (request.query['info'] !== undefined) {
     response.send({
       'isEnabled': meta.getIsEnabled(),
-      'filepath': meta.getFilepath()
+      'mainFilepath': meta.getFilepath()
     });
     return;
   }
-
-  // ---
 
   if (!meta.getIsEnabled()) {
     response.send( { error: 'meta_disabled'} );
@@ -21,14 +19,14 @@ const go = (request, response) => {
   }
 
   // ---
-  // 'get' methods
+  // 'accessor' methods
 
-  if (request.query['getData'] !== undefined) {
+  if (request.query['getMain'] !== undefined) {
     response.send(meta.getData());
     return;
   }
 
-  if (request.query['getDataDownload'] !== undefined) {
+  if (request.query['getDownload'] !== undefined) {
     response.setHeader('Content-Type', 'text/json');
     response.setHeader('Content-disposition', 'attachment;filename=hqpwv-metadata.json');
     const o = meta.getShallowCopyEmptyHistory();
@@ -37,7 +35,7 @@ const go = (request, response) => {
   }
 
   // ---
-  // 'put' methods
+  // 'mutator' methods
 
   const hash = request.query['hash'];
   const value = request.query['value'];
@@ -72,9 +70,38 @@ const go = (request, response) => {
     return;
   }
 
+  if (request.query['deletePlaylist'] !== undefined) {
+    const name = request.query['name'];
+    const index = request.query['index'];
+    if (!name || isNaN(index)) {
+      response.status(400).json( {error: 'bad_param'} );
+      return;
+    }
+    const result = meta.deletePlaylist(name, index);
+    response.send( { result: result } );
+    return;
+  }
+
+  response.status(400).json( {error: 'missing_required_param'} );
+};
+
+const doPost = (request, response) => {
+  if (request.query['addPlaylist'] != undefined) {
+    const o = request.body;
+    const uriKey = 'uris[]'; // weird `body-parser` thing
+    if (o[uriKey]) {
+      o['uris'] = o[uriKey];
+      delete o[uriKey];
+    }
+    let result = meta.addPlaylist(request.body);
+    response.send({ result: result });
+    return;
+  }
+
   response.status(400).json( {error: 'missing_required_param'} );
 };
 
 module.exports = {
-  go: go
+  doGet: doGet,
+  doPost: doPost
 };

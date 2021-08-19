@@ -66,6 +66,7 @@
   font-family: "Noto Sans TC", sans-serif;
   font-size: 16px;
   color: #ccc;
+  scrollbar-color: #383838 #101010;
   -webkit-tap-highlight-color: transparent;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -102,6 +103,15 @@ ul {
 li:before {
   content: "​";
   position: absolute;
+}
+
+input,
+input[type=button],
+input[type=reset],
+input[type=submit],
+html input[disabled],
+input::-moz-focus-inner {
+  all: unset;
 }
 
 .noTransition {
@@ -184,6 +194,18 @@ li:before {
   background-position: center;
   background-size: 24px 24px;
 }
+.iconButton:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  opacity: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1c1c1c;
+  transition: opacity 400ms ease-out;
+}
 .iconButton:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
@@ -248,7 +270,12 @@ li:before {
 
 .textButton.isDisabled {
   pointer-events: none;
-  color: #888;
+  color: #666;
+}
+
+.buttonBlink:after {
+  transition: background-color 0s linear;
+  opacity: 1;
 }
 
 .contextMenu {
@@ -547,7 +574,7 @@ li:before {
   transition: left 400ms cubic-bezier(0, 0.5, 0.3, 1), top 400ms cubic-bezier(0, 0.5, 0.3, 1), width 400ms cubic-bezier(0, 0.5, 0.3, 1), height 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 
-#dialogOuter {
+#generalDialogOuter {
   visibility: hidden;
   position: absolute;
   z-index: 10002;
@@ -557,7 +584,7 @@ li:before {
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }
-#dialogOuter #dialog {
+#generalDialogOuter #generalDialog {
   position: absolute;
   width: 700px;
   left: 50%;
@@ -566,7 +593,7 @@ li:before {
   background-color: #101010;
   border: 2px solid #282828;
 }
-#dialogOuter #dialog #dialogTitle {
+#generalDialogOuter #generalDialog #generalDialogTitle {
   color: #ff2200;
   font-size: 16px;
   font-weight: bold;
@@ -574,35 +601,35 @@ li:before {
   border-bottom: 2px solid #282828;
   background-color: #1c1c1c;
 }
-#dialogOuter #dialog #dialogMessage {
+#generalDialogOuter #generalDialog #generalDialogMessage {
   padding: 16px 16px 0 16px;
   max-height: 400px;
   margin-bottom: 16px;
 }
-#dialogOuter #dialog #dialogBottom {
+#generalDialogOuter #generalDialog #generalDialogBottom {
   text-align: center;
   padding-bottom: 16px;
 }
-#dialogOuter #dialog #dialogBottom #dialogButton {
+#generalDialogOuter #generalDialog #generalDialogBottom #generalDialogButton {
   display: inline-block;
   min-width: 80px;
 }
 
-#dialogOuter.isFatal {
+#generalDialogOuter.isFatal {
   background-color: rgba(0, 0, 0, 0.5);
 }
-#dialogOuter.isFatal #dialog #dialogTitle {
+#generalDialogOuter.isFatal #generalDialog #generalDialogTitle {
   color: #ff2200;
 }
 
 @media (max-width: 768px) {
-  #dialogOuter #dialog {
+  #generalDialogOuter #generalDialog {
     width: 450px;
     margin-left: -225px;
   }
 }
 @media (max-width: 480px) {
-  #dialogOuter #dialog {
+  #generalDialogOuter #dialog {
     top: 35px;
     width: 300px;
     margin-left: -150px;
@@ -621,7 +648,9 @@ li:before {
 #playingText {
   display: inline-block;
   margin-left: 12px;
-  margin-bottom: 12px;
+  margin-top: 1px;
+  height: 24px;
+  margin-bottom: 11px;
   max-width: calc(100% - 124px);
   white-space: nowrap;
   overflow: hidden;
@@ -633,6 +662,9 @@ li:before {
 }
 @media (max-width: 480px) {
   #playingText {
+    margin-top: 1px;
+    height: 20px;
+    margin-bottom: 11px;
     max-width: calc(100% - 108px);
   }
 }
@@ -930,9 +962,9 @@ li:before {
 
 #showPlaylistButton {
   position: absolute;
-  height: 72px;
   top: 12px;
   right: 12px;
+  height: calc(100% - 24px);
 }
 #showPlaylistButton:before {
   background-image: url("./../img/icons/queue_music_white_24dp.svg");
@@ -945,7 +977,7 @@ li:before {
 
 #playlistNumberAt {
   position: absolute;
-  top: 31px;
+  top: 33px;
   width: 100%;
   text-align: center;
   font-size: 11px;
@@ -953,7 +985,7 @@ li:before {
 
 #playlistNumberStroke {
   position: absolute;
-  top: 49px;
+  top: 51px;
   left: 11px;
   height: 1px;
   width: 14px;
@@ -962,33 +994,12 @@ li:before {
 
 #playlistNumberTotal {
   position: absolute;
-  top: 51px;
+  top: 53px;
   width: 100%;
   text-align: center;
   font-size: 11px;
 }
 
-@media (max-width: 480px) {
-  #showPlaylistButton {
-    height: 64px;
-    right: 12px;
-  }
-  #showPlaylistButton:before {
-    background-position: center 4px;
-  }
-
-  #playlistNumberAt {
-    top: 28px;
-  }
-
-  #playlistNumberStroke {
-    top: 45px;
-  }
-
-  #playlistNumberTotal {
-    top: 46px;
-  }
-}
 #bottomScrim {
   position: absolute;
   width: 100%;
@@ -1086,40 +1097,6 @@ li:before {
   margin-right: 38px;
 }
 
-#playlistView {
-  margin: 0;
-  padding: 0;
-  overflow: clip;
-  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
-}
-#playlistView.animIn {
-  border-top: 1px solid #282828;
-}
-
-#playlistMainView {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  transition: left 400ms ease-in-out;
-}
-
-#historyView {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  transition: left 400ms ease-in-out;
-}
-
-#playlistHeader {
-  margin-bottom: 8px;
-}
-
-#historyHeader {
-  margin-bottom: 8px;
-}
-
 .playHisNonItem {
   padding-top: 16px;
   color: #999;
@@ -1160,7 +1137,6 @@ li:before {
 .playHisItem.groupFirst {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
-  margin-top: 16px;
   margin-bottom: 0px;
   border-top: 1px solid #282828;
   border-left: 1px solid #282828;
@@ -1197,17 +1173,35 @@ li:before {
 }
 
 .playHisItem.single {
-  margin-top: 16px;
   margin-bottom: 16px;
   border: 1px solid #282828;
 }
 
-#playlistCloseButton {
-  margin-left: auto;
+#playlistView {
+  margin: 0;
+  padding: 0;
+  overflow: clip;
+  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
+}
+#playlistView.animIn {
+  border-top: 1px solid #282828;
+}
+
+#playlistMainView {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  transition: left 400ms ease-in-out;
+}
+
+#playlistHeader {
+  margin-bottom: 8px;
 }
 
 #playlistRepeatButton {
-  margin-left: 12px;
+  margin-left: auto;
+  margin-right: 8px;
   position: relative;
   padding-left: 42px;
   background-color: transparent;
@@ -1240,12 +1234,82 @@ li:before {
   background-image: url("./../img/icons/repeat_one_on_white_24dp.svg");
 }
 
-#playlistHistoryButton {
-  margin-left: auto;
-  background-color: transparent;
+.playlistButtons {
+  margin-top: 12px;
+  margin-bottom: 0;
+  display: flex;
 }
+
+#playlistClearButton {
+  background-color: transparent;
+  color: #999;
+}
+#playlistClearButton:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+#playlistLoadButton,
+#playlistSaveButton,
+#playlistHistoryButton {
+  margin-left: 8px;
+  background-color: transparent;
+  color: #999;
+}
+#playlistLoadButton:hover,
+#playlistSaveButton:hover,
 #playlistHistoryButton:hover {
   background-color: rgba(255, 255, 255, 0.15);
+}
+#playlistLoadButton.isDisabled,
+#playlistSaveButton.isDisabled,
+#playlistHistoryButton.isDisabled {
+  color: #666;
+}
+
+#playlistList {
+  margin-top: 16px;
+}
+
+#playlistSaver {
+  position: relative;
+  transition: height 400ms cubic-bezier(0, 0.5, 0.3, 1);
+  overflow: clip;
+}
+#playlistSaver .inner {
+  position: relative;
+  padding: 16px;
+  background-color: #1c1c1c;
+  border: 1px solid #424242;
+}
+#playlistSaver label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+#playlistSaver .inputLine {
+  display: flex;
+}
+#playlistSaver .inputLine #playlistSaveInput {
+  border: 1px solid #282828;
+  height: 36px;
+  line-height: 36px;
+  padding-left: 8px;
+  padding-right: 8px;
+  background-color: #ccc;
+  color: #101010;
+  flex: 1 1;
+  width: 100%;
+}
+#playlistSaver .inputLine #playlistSaveOkayButton {
+  margin-left: 12px;
+}
+
+#playlistSaveCloseButton {
+  position: absolute;
+  right: 6px;
+  top: 6px;
 }
 
 .playlistItem {
@@ -1298,6 +1362,7 @@ li:before {
 }
 
 .playlistAlbumLine {
+  display: flex;
   padding-left: 12px;
   padding-top: 12px;
   cursor: default;
@@ -1308,6 +1373,7 @@ li:before {
 .playlistAlbumLine .playlistAlbumButton {
   display: flex;
   align-items: center;
+  margin-right: 16px;
   cursor: pointer;
 }
 .playlistAlbumLine .playlistAlbumButton:hover {
@@ -1316,10 +1382,31 @@ li:before {
 .playlistAlbumLine .playlistAlbumButton img {
   width: 48px;
   height: 48px;
+  align-self: start;
 }
 .playlistAlbumLine .playlistAlbumButton .text {
   margin-left: 16px;
   padding-right: 12px;
+}
+.playlistAlbumLine .statsText {
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 18px;
+  color: #666;
+  text-align: right;
+  align-self: start;
+}
+
+#historyView {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  transition: left 400ms ease-in-out;
+}
+
+#historyHeader {
+  margin-bottom: 8px;
 }
 
 .historyItem {
@@ -1337,6 +1424,10 @@ li:before {
   margin-left: 16px;
 }
 
+.historyItem .moreButton.isDisabled {
+  opacity: 0.4;
+}
+
 #historyList {
   margin-top: 24px;
 }
@@ -1347,6 +1438,90 @@ li:before {
 }
 
 #historyContextAlbum {
+  border-top: 1px solid #282828;
+}
+
+#loadPlaylistView {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  transition: left 400ms ease-in-out;
+}
+
+#loadHeader {
+  margin-bottom: 8px;
+}
+
+.loadListCustomSubheader {
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.loadListHqpSubheader {
+  margin-top: 22px;
+  margin-bottom: 12px;
+}
+
+#loadCustomList,
+#loadHqpList {
+  margin-top: 18px;
+}
+
+.loadItem {
+  display: flex;
+  position: relative;
+  margin-bottom: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 8px;
+  padding-left: 44px;
+}
+.loadItem:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  opacity: 0.7;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  background-position: 8px center;
+  background-image: url("./../img/icons/featured_play_list_white_24dp.svg");
+}
+.loadItem .numTracks {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 14px;
+  color: #999;
+  line-height: 36px;
+  padding-top: 2px;
+}
+.loadItem .moreButton {
+  margin-left: auto;
+}
+
+.loadNonItem {
+  cursor: default;
+  color: #999;
+  background-color: #101010;
+}
+.loadNonItem:hover {
+  background-color: #101010;
+}
+
+.loadFyiItem {
+  font-size: 14px;
+  color: #999;
+}
+.loadFyiItem:before {
+  background-image: url("./../img/icons/info_white_24dp.svg");
+}
+
+#loadContextAlbum {
   border-top: 1px solid #282828;
 }
 
@@ -1453,6 +1628,9 @@ li:before {
 }
 .libraryGroupLabel .inner {
   line-height: 36px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .libraryGroup {
@@ -1635,6 +1813,9 @@ li:before {
     padding-left: 0;
   }
   #albumViewTexts #albumViewTextsInner {
+    text-align: center;
+    margin-left: 8px;
+    margin-right: 8px;
     padding-bottom: 0;
   }
   #albumViewTexts #albumViewTextsInner #albumViewTitle {
@@ -1649,7 +1830,7 @@ li:before {
     display: none;
   }
   #albumViewTexts #albumViewTextsInner #albumViewButtons {
-    margin-top: 12px;
+    margin-top: 20px;
   }
 }
 @media (max-width: 480px) {
@@ -1659,8 +1840,12 @@ li:before {
     width: 100%;
   }
 
+  #albumViewTexts #albumViewTextsInner {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
   #albumViewTexts #albumViewTextsInner #albumViewTitle {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 20px;
     line-height: 23px;
   }
@@ -1680,18 +1865,36 @@ li:before {
 
 .albumItem {
   display: flex;
+  position: relative;
   align-items: center;
   padding: 12px 8px 12px 16px;
   border-top: 1px solid #282828;
 }
-.albumItem.selected {
-  background-color: #282828;
+.albumItem:before {
+  position: absolute;
+  width: 0;
+  background: #999;
+  content: " ";
+  left: 0;
+  height: 100%;
+  opacity: 1;
+}
+.albumItem.selected:before {
+  width: 4px;
 }
 @media (max-width: 480px) {
   .albumItem {
     left: 0;
-    padding: 8px 4px 8px 8px;
+    padding: 8px 4px 8px 12px;
   }
+}
+
+.isPaused .albumItem.selected:before {
+  opacity: 0.7;
+}
+
+.isBusy .albumItem.selected:before {
+  animation: thumbPulse 1.33s infinite;
 }
 
 .favoriteButton {
@@ -1809,8 +2012,15 @@ li:before {
   display: flex;
 }
 .settingsMeta .settingsMetaInner {
-  margin-left: 4px;
+  margin-left: 6px;
+  margin-top: 8px;
+}
+
+#metaDownload {
+  display: block;
   margin-top: 6px;
+  font-size: 14px;
+  color: #999;
 }
 
 #settingsHotkeys table {

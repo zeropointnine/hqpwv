@@ -1,7 +1,7 @@
 import Util from './util.js';
 import ViewUtil from './view-util.js';
 import Model from './model.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
 import Commands from './commands.js';
 import Service from './service.js';
 import Settings from './settings.js';
@@ -172,7 +172,7 @@ export default class HqpFiltersView {
     }
 
     Service.queueCommandFront(command, (data) => {
-      const b = ModelUtil.isResultOk(data, responseKey); // todo unverified
+      const b = DataUtil.isResultOk(data); // todo unverified
       if (!b) {
         SnackView.show('set-error', 'HQPlayer response', `Couldn't set ${label}`, '');
       }

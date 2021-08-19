@@ -1,33 +1,38 @@
-import Values from './values.js';
-import Util from './util.js';
-import ViewUtil from './view-util.js';
-import MetaUtil from './meta-util.js';
-import Commands from './commands.js';
-import Settings from './settings.js';
-import Model from './model.js';
-import ModelUtil from './model-util.js';
-import HqpConfigModel from './hqp-config-model.js';
-import Native from './native.js';
-import Service from './service.js';
-import Statuser from './statuser.js';
-import Busyer from './busyer.js';
-import PresetRuleApplier from './preset-rule-applier.js';
-import LibraryView from './library-view.js';
 import AlbumView from './album-view.js';
-import PlaylistCompoundView from './playlist-compound-view.js';
-import PlaybarView from './playbar-view.js';
-import TopBar from './top-bar.js';
-import SettingsView from './settings-view.js';
-import HqpSettingsView from './hqp-settings-view.js';
-import FullAlbumOverlay from './full-album-overlay.js';
+import AppUtil from './app-util.js';
+import Busyer from './busyer.js';
+import Commands from './commands.js';
 import DialogView from './dialog-view.js';
+import FullAlbumOverlay from './full-album-overlay.js';
+import HqpConfigModel from './hqp-config-model.js';
+import HqpSettingsView from './hqp-settings-view.js';
+import LibraryView from './library-view.js';
+import MetaUtil from './meta-util.js';
+import Model from './model.js';
+import DataUtil from './data-util.js';
+import Native from './native.js';
+import PlaybarView from './playbar-view.js';
+import PlaylistCompoundView from './playlist-compound-view.js';
+import PresetRuleApplier from './preset-rule-applier.js';
+import Service from './service.js';
+import Settings from './settings.js';
+import SettingsView from './settings-view.js';
 import SnackView from './snack-view.js';
+import Statuser from './statuser.js';
 import ToastView from './toast-view.js';
+import TopBar from './top-bar.js';
+import Util from './util.js';
+import Values from './values.js';
+import ViewUtil from './view-util.js';
 
 /**
- * 
+ * Main class.
+ * Instantiation runs the app.
+ * `document` must already be `ready`.
  */
 export default class App {
+
+  static instance;
 
   topBar = new TopBar();
 	playbarView = new PlaybarView();
@@ -43,7 +48,8 @@ export default class App {
   $hqpSettingsButton = $('#hqpSettingsButton');
 
   instanceId = Math.floor(Math.random() * 99999999);
-  lastHandledKeypressTime = 0;
+  lastKeyTime = 0;
+  minKeyDuration = 350;
   resizeTimeoutId = 0;
   subviewZ = 100;
 
@@ -52,13 +58,18 @@ export default class App {
     $(window).on('resize', this.onWindowResize);
     this.doWindowResize();
 
-    Util.addAppListener(this, 'model-playlist-updated', this.updateStateClasses);
-    Util.addAppListener(this, 'model-status-updated', this.updateStateClasses);
+    Util.addAppListener(this, 'disable-user-input', this.onDisableUserInput);
+    Util.addAppListener(this, 'enable-user-input', this.onUndisableUserInput);
     Util.addAppListener(this, 'busy-start', this.updateBusyClass);
     Util.addAppListener(this, 'busy-end', this.updateBusyClass);
-    this.updateStateClasses();
-
+    Util.addAppListener(this, 'model-playlist-updated', this.updateMostStateClasses);
+    Util.addAppListener(this, 'model-status-updated', this.updateMostStateClasses);
+    Util.addAppListener(this, 'settings-meta-changed', this.onSettingsMetaChanged);
     Util.addAppListener(this, 'library-settings-changed', this.onLibrarySettingsChanged);
+    Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
+    Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
+    Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
+
 		Util.addAppListener(this, 'library-item-click', this.showAlbumView);
 		Util.addAppListener(this, 'album-view-close-button', this.hideAlbumView);
 		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistCompoundView);
@@ -66,16 +77,15 @@ export default class App {
 		Util.addAppListener(this, 'playlist-context-album history-context-album', this.playlistToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
     Util.addAppListener(this, 'hqp-settings-view-close', this.hideHqpSettingsView);
-    Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
-    Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
-    Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
-    Util.addAppListener(this, 'show-toast', this.showToast);
-    Util.addAppListener(this, 'restore-pointer-events', this.onRestorePointerEvents);
+
+    $(document).on('keydown', this.onKeydown);
 
     this.$settingsButton.on("click", () => this.showSettingsView());
     this.$hqpSettingsButton.on("click", () => this.showHqpSettingsView());
 
-    $(document).on('keydown', this.onKeydown);
+    App.instance = this; // yes really
+
+    this.updateMostStateClasses();
 
     // Make the correct things visible
     for (let subview of this.subviews) {
@@ -91,15 +101,13 @@ export default class App {
     this.init();
 	}
 
-  /** Performs series of required asynchronous calls */
+  /** Performs a series of required asynchronous calls. */
   init() {
-
     this.libraryView.setSpinnerState(true);
 
     // These are done in parallel to the hqp service calls
     Native.getInfo(this.instanceId, (data) => {
-      Values.setImagesEndpointUsing(data.hqplayer_ip_address);
-      Values.hqpwvVersion = data.hqpwv_version;
+      Values.setValues(data);
     });
     if (Settings.isMetaEnabled) {
       MetaUtil.init();
@@ -108,6 +116,7 @@ export default class App {
     const step3 = (data) => {
       if (data.error != undefined) {
         this.showFatalError(data.error);
+        return;
       }
       const duration = new Date().getTime() - startTime;
       cl(`init - async calls ${duration}ms`);
@@ -202,7 +211,10 @@ export default class App {
         this.hideAlbumView();
         break;
       case this.playlistView:
-        this.hidePlaylist();
+        const result = this.playlistView.onEscape();
+        if (!result) {
+          this.hidePlaylist();
+        }
         break;
       case this.settingsView:
         this.hideSettingsView();
@@ -226,8 +238,8 @@ export default class App {
 
   showSubview(subview, ...extra) {
     // Disable user input
-    // Subview *must* send 'restore-pointer-events' at end of its show()
-    $(document.body).css('pointer-events', 'none');
+    // Subview *must* send 'enable-user-input' at end of its show()
+    $(document).trigger('disable-user-input');
 
     this.topBar.unhide();
 
@@ -239,8 +251,8 @@ export default class App {
 
   hideSubview(subview) {
     // Disable user input
-    // Subview *must* send 'restore-pointer-events' at end of its hide()
-    $(document.body).css('pointer-events', 'none');
+    // Subview *must* send 'enable-user-input' at end of its hide()
+    $(document).trigger('disable-user-input');
 
     this.topBar.unhide();
 
@@ -252,7 +264,7 @@ export default class App {
   /**
    * Updates page holder css classes related to play state.
    */
-  updateStateClasses() {
+  updateMostStateClasses() {
     // playing, paused, stopped (mutually exclusive)
     if (Model.status.isPlaying) {
       this.$pageHolder.addClass('isPlaying').removeClass('isPaused isStopped');
@@ -277,7 +289,7 @@ export default class App {
       this.$pageHolder.removeClass('isBusy');
     }
   }
-  
+
   /**
    * Updates css classes on #page which describe which subview is currently showing.
    * todo: is this still being used for any thing?!
@@ -368,13 +380,17 @@ export default class App {
   // ---
   // handlers, various
 
+  /**
+   * When a keypress executes an action, we set a `minKeyDuration`
+   * which must elapse before a new keypress will be accepted.
+   * 
+   */
   onKeydown = (e) => {
-
-    if (new Date().getTime() - this.lastHandledKeypressTime < 350) {
-      // avoid any issues from autorepeat or monkey-presses
+    const isFocusInput = $(document.activeElement).is('input');
+    if (isFocusInput) {
       return;
     }
-
+    
     // Ignore keypresses if a modal popup is up (eg context menu, etc)
     // except for the following cases:
     if ($(document.body).css('pointer-events') == 'none') {
@@ -392,53 +408,84 @@ export default class App {
       }
     }
 
-    this.lastHandledKeypressTime = new Date().getTime();
+    const elapsed = new Date().getTime() - this.lastKeyTime;
+    if (elapsed < this.minKeyDuration) {
+      return;
+    }
+
+    this.lastKeyTime = new Date().getTime();
+
+    const short = 100;
+    const long = 450; // should match or exceed css value for $app-standard-duration
 
     switch (e.key) {
       case 'Escape':
         this.hideOnEscape();
+        this.minKeyDuration = long;
         break;
       case 'q':
         this.playbarView.$showPlaylistButton.click();
+        this.minKeyDuration = long;
         break;
       case 'u':
         if (!ViewUtil.isVisible(this.hqpSettingsView.$el)) {
           this.$hqpSettingsButton.click();
+        } else {
+          this.hideHqpSettingsView();
         }
+        this.minKeyDuration = long;
         break;
 
       case 's':
         this.playbarView.$stopButton.click();
+        this.minKeyDuration = long;
         break;
       case 'p':
         this.playbarView.$playButton.click();
+        this.minKeyDuration = long;
         break;
       case 'j':
         this.playbarView.$previousButton.click();
+        this.minKeyDuration = long;
         break;
       case 'k':
         this.playbarView.$nextButton.click();
+        this.minKeyDuration = long;
         break;
       case ',':
         this.playbarView.$seekBackwardButton.click();
+        this.minKeyDuration = short;
         break;
       case '.':
         this.playbarView.$seekForwardButton.click();
+        this.minKeyDuration = short;
         break;
       case '+':
       case '=':
-        this.playbarView.showVolumePanel();
+        if (!ViewUtil.isVisible(this.playbarView.volumePanel.$el)) {
+          this.playbarView.$volumeToggle.click()
+        }
         this.playbarView.volumePanel.$plus1.click();
+        this.minKeyDuration = short;
         break;
       case '-':
-        this.playbarView.showVolumePanel();
+        if (!ViewUtil.isVisible(this.playbarView.volumePanel.$el)) {
+          this.playbarView.$volumeToggle.click();
+        }
         this.playbarView.volumePanel.$minus1.click();
+        this.minKeyDuration = short;
         break;
     }
   };
 
   onLibrarySettingsChanged() {
     this.libraryView.update();
+  }
+
+  onSettingsMetaChanged() {
+    if (Settings.isMetaEnabled && !MetaUtil.isReady && !MetaUtil.isFailed && !MetaUtil.isLoading) {
+      MetaUtil.init();
+    }
   }
 
   /** Triggers resize logic 100ms after last resize event. */
@@ -464,8 +511,11 @@ export default class App {
     }
   }
 
-  onRestorePointerEvents() {
-    $(document.body).css('pointer-events', '')
+  onDisableUserInput() {
+    $(document.body).css('pointer-events', 'none');
+  }
+  onUndisableUserInput() {
+    $(document.body).css('pointer-events', '');
   }
 
   doWindowResize() {
@@ -479,17 +529,6 @@ export default class App {
 
   // ---
   // modal-related
-  // todo move these to dialog and snack classes
-
-  showDialog(titleText, messageHtml, buttonText, isFatal, handler=null) {
-    $(document).off('keydown', this.onKeydown);
-    DialogView.show(titleText, messageHtml, buttonText, isFatal, () => {
-      $(document).on('keydown', this.onKeydown);
-      if (handler) {
-        handler();
-      }
-    });
-  }
 
   showFatalError(errorCode) {
     Statuser.stop();
@@ -498,7 +537,7 @@ export default class App {
     let msg = `HQPWV Server can't connect to HQPlayer`;
     msg += `<br>Please make sure HQPlayer is running.`;
     msg += `<br><br><a href="${Values.TROUBLESHOOTING_HREF}" class="colorTextLess">Troubleshooting tips<a>`;
-    this.showDialog('Problem', msg, 'Reload', true, e => window.location.reload());
+    DialogView.show('Problem', msg, 'Reload', true, e => window.location.reload());
   }
 
   showHqpDisconnectedSnack(errorCode) {
@@ -511,9 +550,5 @@ export default class App {
     const title = `HQPWV Server is not responding`;
     let msg = `Restart server if necessary. <span class="colorTextLess"><a href="${Values.TROUBLESHOOTING_HREF}">Troubleshooting tips<a>.</span>`;
     SnackView.show('server-error', title, msg);
-  }
-
-  showToast(htmlText) {
-    ToastView.show(htmlText)
   }
 }

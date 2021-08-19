@@ -1,41 +1,6 @@
 $leftRightEase: ease-in-out;
 
-#playlistView {
-  margin:0;
-  padding:0;
-  overflow:clip;
-  transition: top $app-standard-duration $app-standard-ease;
-
-  &.animIn {
-    border-top: 1px solid $color-listitem;
-  }
-}
-
 // ---
-
-#playlistMainView {
-  position:absolute;
-  width:100%;
-  height:100%;
-  left:0;
-  transition: left $app-standard-duration $leftRightEase;
-}
-
-#historyView{
-  position:absolute;
-  width:100%;
-  height:100%;
-  left:0;
-  transition: left $app-standard-duration $leftRightEase;
-}
-
-#playlistHeader {
-	margin-bottom: 8px;
-}
-#historyHeader {
-  margin-bottom: 8px;
-}
-
 // Shared list item classes for playlist + history
 
 .playHisNonItem {
@@ -53,12 +18,6 @@ $leftRightEase: ease-in-out;
 	cursor:pointer;
 	&:hover {
 		background-color:$color-listitem;
-	}
-	&.selected {
-		//background-color: $color-listitem-selected;
-		&:hover {
-			//background-color:$color-listitem-selected;
-		}
 	}
   @include mobile {
     padding: 8px 8px 8px 8px;
@@ -86,7 +45,6 @@ $border-radius-mobile:0px;
 .playHisItem.groupFirst {
   border-top-left-radius: $border-radius;
   border-top-right-radius: $border-radius;
-  margin-top:$margin2;
   margin-bottom:$margin1;
   border-top:1px solid $color-listitem;
   border-left:1px solid $color-listitem;
@@ -117,21 +75,38 @@ $border-radius-mobile:0px;
 }
 .playHisItem.single {
   //border-radius: 16px;
-  margin-top:$margin2;
   margin-bottom:$margin2;
   border: 1px solid $color-listitem;
 }
 
 // ---
 
-#playlistCloseButton {
-  margin-left:auto;
+#playlistView {
+  margin:0;
+  padding:0;
+  overflow:clip;
+  transition: top $app-standard-duration $app-standard-ease;
+
+  &.animIn {
+    border-top: 1px solid $color-listitem;
+  }
 }
 
-#playlistClearButton { }
+#playlistMainView {
+  position:absolute;
+  width:100%;
+  height:100%;
+  left:0;
+  transition: left $app-standard-duration $leftRightEase;
+}
+
+#playlistHeader {
+  margin-bottom: 8px;
+}
 
 #playlistRepeatButton {
-  margin-left:12px;
+  margin-left:auto;
+  margin-right:8px;
   position:relative;
   padding-left:42px;
   background-color:transparent;
@@ -159,13 +134,87 @@ $border-radius-mobile:0px;
   }
 }
 
-#playlistHistoryButton {
-  margin-left:auto;
+#playlistCloseButton { }
+
+.playlistButtons {
+  margin-top:12px;
+  margin-bottom:0; // nb
+  display:flex;
+}
+
+#playlistClearButton {
   background-color:transparent;
   &:hover {
     background-color:$color-button-bg;
   }
+  color:$color-text-less;
 }
+
+#playlistLoadButton,
+#playlistSaveButton,
+#playlistHistoryButton {
+  margin-left:8px;
+  background-color:transparent;
+  &:hover {
+    background-color:$color-button-bg;
+  }
+  color:$color-text-less;
+  &.isDisabled {
+    color:$color-text-least;
+  }
+}
+
+#playlistList {
+  margin-top:16px;
+}
+
+// ---
+
+#playlistSaver {
+  position:relative;
+  transition: height $app-standard-duration $app-standard-ease;
+  overflow: clip;
+  .inner {
+    position:relative;
+    padding: 16px;
+    background-color: $color-listitem-less;
+    border:1px solid $color-listitem-selected-over;
+  }
+  label {
+    display:block;
+    text-transform: uppercase;
+    font-size: $font-size-smaller;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .inputLine {
+    display:flex;
+    #playlistSaveInput {
+      border:1px solid $color-listitem;
+      height: $icon-button-side;
+      line-height: $icon-button-side;
+      padding-left:8px;
+      padding-right:8px;
+      background-color: $color-text;
+      color:$color-bg;
+
+      // not sure why this works
+      flex:1 1;
+      width:100%;
+    }
+    #playlistSaveOkayButton {
+      margin-left:12px;
+    }
+  }
+}
+#playlistSaveCloseButton {
+  position:absolute;
+  right:6px;
+  top:6px;
+}
+
+// ---
 
 .playlistItem {
   position:relative;
@@ -173,7 +222,6 @@ $border-radius-mobile:0px;
   // selected indicator
   &:before {
     width: 0;
-
     background: $color-text-less;
     content: ' ';
     position: absolute;
@@ -242,34 +290,54 @@ $border-radius-mobile:0px;
 }
 
 .playlistAlbumLine {
+  display:flex;
   padding-left:12px;
   padding-top:12px;
   cursor:default;
-
   &:hover {
     background-color:$color-listitem-less;
   }
-
   .playlistAlbumButton {
     display:flex;
     align-items:center;
+    margin-right:16px;
     cursor:pointer;
     &:hover {
       background-color: $color-listitem;
     }
-
     img {
       width:48px;
       height:48px;
+      align-self:start;
     }
     .text {
       margin-left:16px;
       padding-right:12px;
     }
   }
+  .statsText {
+    margin-left:auto;
+    font-size: $font-size-smaller;
+    line-height:18px;
+    color:$color-text-least;
+    text-align:right;
+    align-self:start;
+  }
 }
 
 // ---
+
+#historyView{
+  position:absolute;
+  width:100%;
+  height:100%;
+  left:0;
+  transition: left $app-standard-duration $leftRightEase;
+}
+
+#historyHeader {
+  margin-bottom: 8px;
+}
 
 .historyItem {
   cursor:default;
@@ -288,6 +356,10 @@ $border-radius-mobile:0px;
   }
 }
 
+.historyItem .moreButton.isDisabled {
+    opacity:0.4;
+}
+
 #historyList {
   margin-top:24px;
 }
@@ -298,5 +370,84 @@ $border-radius-mobile:0px;
 }
 
 #historyContextAlbum {
+  border-top:1px solid $color-listitem;
+}
+
+// ---
+
+#loadPlaylistView{
+  position:absolute;
+  width:100%;
+  height:100%;
+  left:0;
+  transition: left $app-standard-duration $leftRightEase;
+}
+
+#loadHeader {
+  margin-bottom: 8px;
+}
+
+#loadCloseButton { }
+
+.loadListCustomSubheader {
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.loadListHqpSubheader {
+  margin-top: 22px;
+  margin-bottom: 12px;
+}
+
+#loadCustomList,
+#loadHqpList {
+  margin-top:18px;
+}
+
+.loadItem {
+  display:flex;
+  position:relative;
+
+  margin-bottom:8px;
+  padding-top:8px;
+  padding-bottom:8px;
+  padding-right:8px;
+  padding-left: ($icon-button-side + 8px);
+  &:before {
+    @include iconBefore;
+    background-position: 8px center;
+    background-image: url('./../img/icons/featured_play_list_white_24dp.svg');
+  }
+  .numTracks {
+    display:inline-block;
+    margin-left:6px;
+    font-size: $font-size-smaller;
+    color:$color-text-less;
+    line-height:$icon-button-side;
+    padding-top:2px;
+  }
+  .moreButton {
+    margin-left:auto;
+  }
+}
+
+.loadNonItem {
+  cursor:default;
+  color:$color-text-less;
+  background-color:$color-bg;
+  &:hover {
+    background-color:$color-bg;
+  }
+}
+
+.loadFyiItem {
+  &:before {
+    background-image: url('./../img/icons/info_white_24dp.svg');
+  }
+  font-size: $font-size-smaller;
+  color:$color-text-less;
+}
+
+#loadContextAlbum {
   border-top:1px solid $color-listitem;
 }

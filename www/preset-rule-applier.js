@@ -70,7 +70,7 @@ class PresetRuleApplier {
       return;
     }
 
-    PresetUtil.applyPresetAndResume(preset, Model.playlist.getCurrentIndex() + 1);
+    PresetUtil.applyPresetAndResume(preset, Model.playlist.currentIndex + 1);
   }
 
   doAb() {
@@ -80,7 +80,7 @@ class PresetRuleApplier {
     if (!preset) {
       return;
     }
-    PresetUtil.applyPresetAndResume(preset, Model.playlist.getCurrentIndex() + 1);
+    PresetUtil.applyPresetAndResume(preset, Model.playlist.currentIndex + 1);
   }
 
   getPresetByOptionValue(value) {

@@ -1,5 +1,6 @@
 import Model from './model.js';
-import ModelUtil from './model-util.js';
+import DataUtil from './data-util.js';
+import AlbumUtil from './album-util.js';
 
 /**
  * Functions that construct and return xml "commands"
@@ -45,15 +46,23 @@ Commands.playlistClear = () => {
 
 Commands.playlistRemove = (index) => {
 	return `<PlaylistRemove index="${index}" />`;
-}
+};
 
 Commands.playlistMoveUp = (index) => {
 	return `<PlaylistMoveUp index="${index}" />`;
-}
+};
 
 Commands.playlistMoveDown = (index) => {
 	return `<PlaylistMoveDown index="${index}" />`;
+};
+
+Commands.getTransport = () => {
+  return `<GetTransport />`;
 }
+
+Commands.setTransport = (value, arg) => {
+  return `<SetTransport value="${value}" arg="${arg}" />`;
+};
 
 Commands.setRepeat = (value) => {
   return `<SetRepeat value="${value}" />`;
@@ -135,20 +144,22 @@ Commands.volumeDown = () => {
   return `<VolumeDown />`;
 };
 
-// Higher-level functions that take service json data as arguments or reaches out to Model
-// todo move out of Commands
 
-Commands.addTrackUsingAlbumAndIndex = (album, trackIndex, queued=0, clear=0) => {
+// Higher-level functions
+
+Commands.playlistAddUsingAlbumAndIndex = (album, trackIndex) => {
 	const albumPath = album['@_path'];
-	const track = Model.getTracksOf(album)[trackIndex];
+	const track = AlbumUtil.getTracksOf(album)[trackIndex];
 	const trackFilename = track['@_name'];
 	const uri = `file://${albumPath}/${trackFilename}`; // todo system directory separator char
-	return Commands.playlistAdd(uri, queued, clear);
+	return Commands.playlistAdd(uri);
 };
 
-/** Makes an array of <PlaylistAdd> commands using album object. */
-Commands.addTrackUsingAlbumAndIndices = (album, startIndex=-1, endIndex=-1, isPlayNow=false) => {
-	const tracks = Model.getTracksOf(album);
+/**
+ * Makes an array of <PlaylistAdd> commands using album object and start/end indices.
+ */
+Commands.playlistAddUsingAlbumAndIndices = (album, startIndex=0, endIndex=-1) => {
+	const tracks = AlbumUtil.getTracksOf(album);
 	startIndex = parseInt(startIndex);
 	if (!(startIndex >= 0)) {
 		startIndex = 0;
@@ -160,24 +171,10 @@ Commands.addTrackUsingAlbumAndIndices = (album, startIndex=-1, endIndex=-1, isPl
 	if (endIndex < startIndex) {
 		endIndex = startIndex;
 	}
-
 	const items = [];
-	if (isPlayNow) {
-		items.push(Commands.stop());
-		items.push(Commands.playlistClear());
-	}
 	for (let i = startIndex; i <= endIndex; i++) {
-		const xml = Commands.addTrackUsingAlbumAndIndex(album, i);
-		items.push( xml);
+		const xml = Commands.playlistAddUsingAlbumAndIndex(album, i);
+		items.push(xml);
 	}
-	if (isPlayNow) {
-    // todo 'playNow' unreliable maybe bc 'stop' can take a while?
-		items.push(Commands.play());
-	}
-
-  items.push(Commands.playlistGet());
-
-	// Always add status command at the end of operations like this.
-	items.push(Commands.status());
 	return items;
 };
