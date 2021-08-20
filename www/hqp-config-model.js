@@ -12,7 +12,7 @@ import Service from './service.js';
 class HqpConfigModel {
 
   MODE_PCM = 'PCM';
-  PCM_MULTIPLE_A = 44100;
+  PCM_MULTIPLE_A = 44100; // todo move this
   PCM_MULTIPLE_B = 48000;
 
   modesArray = [];

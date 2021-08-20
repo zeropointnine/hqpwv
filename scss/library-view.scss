@@ -31,48 +31,6 @@
   color:$color-text-least;
 }
 
-#libraryOptionsView {
-  margin-left:auto;
-  display:flex;
-}
-#libraryBitrateButton {
-  &:before {
-    background-image: url('./../img/icons/filter_alt_white_24dp.svg');
-  }
-  &.badge {
-    &:after {
-      content: ' ';
-      display: block;
-      position: absolute;
-      left: 22px;
-      top: 4px;
-      width: 5px;
-      height: 5px;
-      background-color: $color-text;
-      border-radius: 5px;
-      border:2px solid $color-bg;
-    }
-  }
-}
-#librarySortButton {
-  margin-left: 4px;
-  &:before {
-    background-image: url('./../img/icons/sort_white_24dp.svg');
-  }
-}
-#libraryBitrateDropdown {
-  width:175px;
-  margin-right:4px;
-}
-#librarySortDropdown {
-  width:175px;
-  margin-right:4px;
-}
-
-.isDisabled #libraryOptionsView {
-  pointer-events: none;
-}
-
 #librarySpinner {
   position:absolute;
   left:50%;
@@ -83,7 +41,7 @@
 
 // Wrapper of the main library content
 #libraryContent {
-  margin-top:$space-unit;
+  margin-top:($space-unit * 1.5);
 	margin-left:auto;
 	margin-right:auto;
 	// width set programmatically so columns remain centered
@@ -94,21 +52,64 @@
 
 // Precedes libraryGroup
 .libraryGroupLabel {
+
+  position:relative;
+  &:before {
+    @include iconBefore();
+    background-position: 6px center;
+    background-image: url('./../img/icons/expand_less_white_24dp.svg');
+  }
+  &.isCollapsed{
+    &:before {
+      background-image: url('./../img/icons/expand_more_white_24dp.svg');
+    }
+  }
+
+  display:flex;
+  align-items: center;
   margin-left: 6px;
   margin-right: 6px;
-  padding-left:4px;
+  padding-left:28px;
   padding-right:12px;
   height:$icon-button-side;
   border-top: 1px solid $color-listitem;
+  // border-left: 1px solid $color-listitem;
   margin-bottom: 8px;
-  display:flex;
+
+  cursor:pointer;
+
   .inner {
+    margin-left:6px;
     line-height:36px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
+
+  .folderIcon {
+    &:before {
+      background-image: url('./../img/icons/folder_white_24dp.svg');
+    }
+  }
+  .waveIcon {
+    &:before {
+      background-image: url('./../img/icons/sound-wave-1.svg');
+    }
+  }
+  .genreIcon {
+    &:before {
+      background-image: url('./../img/icons/category_white_24dp.svg');
+    }
+  }
+
+  .count {
+    margin-left: 10px;
+    padding-top:4px;
+    font-size: $font-size-smaller;
+    color: $color-text-least;
+  }
 }
+
 
 // Wraps library items.
 // The list may have one or more groups.
@@ -116,6 +117,9 @@
   display:flex;
   flex-wrap: wrap;
   margin-bottom:8px;
+  &.isCollapsed{
+    display:none;
+  }
 }
 
 .libraryItem {
@@ -195,8 +199,81 @@
   opacity:1;
 }
 
-.folderIcon {
+// ---
+// options-related
+
+#libraryOptionsView {
+  margin-left:auto;
+  display:flex;
+}
+
+#libraryOptionsButtons {
+  position:relative;
+  height:$icon-button-side;
   &:before {
-    background-image: url('./../img/icons/folder_white_24dp.svg');
+    content: ' ';
+    position:absolute;
+    width:100%;
+    height:100%;
+    background-color: $color-listitem;
+    opacity: 0;
+  }
+  &.isSelected {
+    &:before {
+      transition:opacity ($app-standard-duration / 2) $app-standard-ease;
+      opacity:1;
+    }
   }
 }
+
+#libraryGroupButton {
+  &:before {
+    background-image: url('./../img/icons/category_white_24dp.svg');
+  }
+}
+
+#librarySortButton {
+  &:before {
+    background-image: url('./../img/icons/sort_white_24dp.svg');
+  }
+}
+#libraryBitrateButton {
+  &:before {
+    background-image: url('./../img/icons/filter_alt_white_24dp.svg');
+  }
+  &.badge {
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      left: 22px;
+      top: 4px;
+      width: 5px;
+      height: 5px;
+      background-color: $color-text;
+      border-radius: 5px;
+      border:2px solid $color-bg;
+    }
+  }
+}
+#libraryGroupDropdown,
+#librarySortDropdown,
+#libraryBitrateDropdown {
+  width:175px;
+  margin-right: 8px;
+
+  opacity:0;
+  transform: translate(38px);
+  transition:
+  transform ($app-standard-duration / 2) $app-standard-ease,
+  opacity ($app-standard-duration / 2) linear;
+  &.animIn {
+    opacity:1;
+    transform: translate(0);
+  }
+}
+
+.isDisabled #libraryOptionsView {
+  pointer-events: none;
+}
+

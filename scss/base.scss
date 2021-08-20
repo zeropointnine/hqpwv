@@ -105,7 +105,7 @@ $app-standard-duration: 400ms;
 	color: $color-text;
 
   // does nothing for chrome, safari
-  scrollbar-color: $color-listitem-selected $color-bg;
+  scrollbar-color: $color-listitem-selected-over $color-listitem-less;
 
   // Mobile Chrome: Prevent light blue pressed state on tappable things
   -webkit-tap-highlight-color: transparent;

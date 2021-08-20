@@ -13,13 +13,18 @@ import ModalPointerUtil from './modal-pointer-util.js';
  */
 export default class LibraryOptionsView {
 
+  $buttonsHolder = $('#libraryOptionsButtons');
+
   $bitrateButton = $('#libraryBitrateButton');
   bitrateDropdown = new Dropdown($('#libraryBitrateDropdown'), true);
 
   $sortButton = $('#librarySortButton');
   sortDropdown = new Dropdown($('#librarySortDropdown'));
 
-  dropdowns = [this.bitrateDropdown, this.sortDropdown];
+  $groupButton = $('#libraryGroupButton');
+  groupDropdown = new Dropdown($('#libraryGroupDropdown'));
+
+  dropdowns = [this.sortDropdown, this.bitrateDropdown, this.groupDropdown];
 
   pointerUtil;
 
@@ -27,6 +32,7 @@ export default class LibraryOptionsView {
     this.$el = $el;
     this.$sortButton.on('click tap', e => this.toggleDropdown(this.sortDropdown));
     this.$bitrateButton.on('click tap', e => this.toggleDropdown(this.bitrateDropdown));
+    this.$groupButton.on('click tap', e => this.toggleDropdown(this.groupDropdown));
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
     this.pointerUtil = new ModalPointerUtil(this.$el, () => this.hideDropdowns());
 
@@ -43,10 +49,16 @@ export default class LibraryOptionsView {
     // Select corresponding button (not great)
     if (dropdown == this.bitrateDropdown) {
       this.$sortButton.removeClass('isSelected');
+      this.$groupButton.removeClass('isSelected');
       this.$bitrateButton.addClass('isSelected');
-    } else { // is sortDropdown
+    } else if (dropdown == this.sortDropdown) {
       this.$bitrateButton.removeClass('isSelected');
+      this.$groupButton.removeClass('isSelected');
       this.$sortButton.addClass('isSelected');
+    } else { // is gruop
+      this.$bitrateButton.removeClass('isSelected');
+      this.$sortButton.removeClass('isSelected');
+      this.$groupButton.addClass('isSelected');
     }
 
     // Show given dropdown only
@@ -58,44 +70,59 @@ export default class LibraryOptionsView {
     dropdown.show();
 
     // Update dropdown item selection/s
-    const items = (dropdown == this.bitrateDropdown)
-        ? Settings.libraryBitratesArray
-        : [Settings.librarySortType];
+    let items;
+    switch (dropdown) {
+      case this.groupDropdown:
+        items = [Settings.libraryGroupType];
+        break;
+      case this.sortDropdown:
+        items = [Settings.librarySortType];
+        break;
+      case this.bitrateDropdown:
+      default:
+        items = Settings.libraryBitratesArray;
+        break;
+    }
     dropdown.selectItems(items);
+
+    this.$buttonsHolder.addClass('isSelected');
 
     this.pointerUtil.start();
   }
 
   hideDropdowns() {
+    this.$buttonsHolder.removeClass('isSelected');
+
     this.$sortButton.removeClass('isSelected');
     this.$bitrateButton.removeClass('isSelected');
+    this.$groupButton.removeClass('isSelected');
 
     for (const dropdown of this.dropdowns) {
       dropdown.hide();
     }
-
     this.pointerUtil.clear();
   }
-
-  onDocumentClick = (e) => {
-    const isThis = (this.$el.has($(e.target)).length > 0);
-    if (!isThis) {
-      this.hideDropdowns();
-    }
-  };
 
   onDropdownItemSelect = (e, dropdownId, value) => {
     if (dropdownId == 'librarySortDropdown') {
       this.handleSortSelect(value);
     } else if (dropdownId == 'libraryBitrateDropdown') {
-      this.handleBitrateSelect(value)
+      this.handleBitrateSelect(value);
+    } else {
+      this.handleGroupSelect(value);
     }
   };
 
   handleSortSelect(value) {
     this.hideDropdowns();
     Settings.librarySortType = value;
-    $(document).trigger('library-settings-changed');
+    setTimeout(() => $(document).trigger('library-settings-changed'), 16);
+  }
+
+  handleGroupSelect(value) {
+    this.hideDropdowns();
+    Settings.libraryGroupType = value;
+    setTimeout(() => $(document).trigger('library-settings-changed'), 16);
   }
 
   handleBitrateSelect(value) {

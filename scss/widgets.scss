@@ -23,6 +23,7 @@
   height:36px;
   position:relative;
   width:150px; // must have hardcoded width; override this
+  z-index:9999;
   display:none;
 
   .dropdownTitle {

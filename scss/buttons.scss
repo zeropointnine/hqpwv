@@ -72,6 +72,16 @@
   }
 }
 
+.expandIcon {
+  &:before {
+    background-image: url('./../img/icons/expand_more_white_24dp.svg');
+  }
+}
+.isExpanded .expandIcon:before {
+  background-image: url('./../img/icons/expand_less_white_24dp.svg');
+}
+
+
 // ---
 
 .textButton {

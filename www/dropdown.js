@@ -50,9 +50,16 @@ export default class Dropdown {
 
   show() {
     ViewUtil.setDisplayed(this.$el, true);
+    // Force reflow after display:block so that css anim will trigger
+    this.$el[0].offsetHeight;
+    ViewUtil.setVisible(this.$el, true);
+    // This class can be optionally added for anim-in effect
+    this.$el.addClass('animIn');
   }
 
   hide() {
+    this.$el.removeClass('animIn');
+    ViewUtil.setVisible(this.$el, false);
     ViewUtil.setDisplayed(this.$el, false);
   }
 

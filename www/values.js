@@ -1,7 +1,7 @@
 import Util from './util.js';
 
 /**
- * Various simple global values.
+ * Various global values.
  */
 class Values {
 
@@ -14,6 +14,8 @@ class Values {
   META_ENDPOINT = this.ENDPOINTS_BASE_URL + 'meta';
   META_DOWNLOAD_LINK = this.ENDPOINTS_BASE_URL + 'meta?getDownload';
   PLAYLIST_ENDPOINT = this.ENDPOINTS_BASE_URL + 'playlist';
+
+
 
   _hqpwvIp;
   _hqpwvVersion = '';

@@ -36,7 +36,8 @@ export default class LibraryView extends Subview {
 
   /** Array of album arrays. */
   groups;
-  groupHtmlLabels;
+  /** Parallel array of labels that go with each group. */
+  labels;
 
   constructor() {
     super($("#libraryView"));
@@ -76,22 +77,32 @@ export default class LibraryView extends Subview {
     // Make filtered albums array
     const a = Model.library.albums;
     this.albums = LibraryUtil.makeFilteredAlbumsArray(a);
-    LibraryUtil.sortAlbums(this.albums, Settings.librarySortType);
 
-    const o = LibraryGroupUtil.makeGroups(this.albums);
+    // Make groups
+    const groupType = Settings.libraryGroupType;
+    const o = LibraryGroupUtil.makeGroups(this.albums, groupType);
     this.groups = o['groups'];
-    this.groupHtmlLabels = o['labels'];
+    this.labels = o['labels'];
 
+    // Sort each group
+    LibraryGroupUtil.sortAlbumsWithinGroups(this.groups);
+
+    // Populate list
     this.$content.empty();
-
-    if (this.albums.length == 0) {
-      const $none = this.makeNoneItem();
-      this.$content.append($none);
+    const isLibraryEmpty = (Model.library.albums.length == 0);
+    const isLibraryViewEmpty = (this.albums.length == 0) || (this.groups.length == 0)
+        || (this.groups.length == 1 && this.groups[0].length == 0);
+    if (isLibraryEmpty) {
+      const $item = this.makeLibraryIsEmptyItem();
+      this.$content.append($item);
+    } else if (isLibraryViewEmpty) {
+      const $item = this.makeLibraryViewIsEmptyItem();
+      this.$content.append($item);
     } else {
       for (let i = 0; i < this.groups.length; i++) {
         const group = this.groups[i];
-        const groupHtmlLabel = this.groupHtmlLabels[i];
-        this.appendGroupDiv(group, groupHtmlLabel);
+        const label = this.labels[i];
+        this.appendGroupDivs(group, label, groupType);
       }
     }
 
@@ -106,14 +117,17 @@ export default class LibraryView extends Subview {
   /**
    * Makes a group DOM element and its list items.
    */
-  appendGroupDiv(group, htmlLabel) {
+  appendGroupDivs(group, label=null, labelType=null) {
 
-    if (htmlLabel) {
-      const $label = $(`<div class="libraryGroupLabel">${htmlLabel}</div>`);
+    const isCollapsed = Settings.libraryCollapsedGroups.includes(label);
+
+    if (label) {
+      const $label = this.makeGroupLabel(label, labelType, group.length, isCollapsed);
       this.$content.append($label);
     }
 
-    const $group = $(`<div class="libraryGroup"></div>`);
+    const $group = $(`<div class="libraryGroup ${isCollapsed ? 'isCollapsed' : ''}"></div>`);
+
     for (let i = 0; i < group.length; i++) {
       const item = group[i];
       const $item = this.makeListItem(item);
@@ -124,6 +138,34 @@ export default class LibraryView extends Subview {
       $group.append($item);
     }
     this.$content.append($group);
+  }
+
+  makeGroupLabel(label, labelType, numItems, isCollapsed) {
+
+    let iconClass;
+    switch (labelType) {
+      case 'path':
+        iconClass = 'folderIcon';
+        break;
+      case 'bitrate':
+        iconClass = 'waveIcon';
+        break;
+      case 'genre':
+        iconClass = 'genreIcon';
+        break;
+    }
+    const iconSpan = iconClass ? `<span class="icon ${iconClass}"></span>` : '';
+    const textSpan = `<span class="inner">${label}</span>`;
+
+    let s = '';
+    s += `<div class="libraryGroupLabel ${isCollapsed ? 'isCollapsed' : ''}">`;
+    s += `${iconSpan}${textSpan}`;
+    s += `<span class="count">(${numItems})</span>`;
+    s += `</div>`;
+
+    const $label = $(s);
+    $label.on('click tap', this.onGroupLabelClick);
+    return $label;
   }
 
   makeListItem(album) {
@@ -145,18 +187,19 @@ export default class LibraryView extends Subview {
     return $item;
   }
 
-  makeNoneItem() {
+  makeLibraryIsEmptyItem() {
+    const s = `<div id="libraryNoneItem">No items</div>`;
+    return $(s);
+  }
+
+  makeLibraryViewIsEmptyItem() {
     let s;
-    if (Model.library.albums && Model.library.albums.length > 0) {
-      s = `<div id="libraryNoneItem">No items</div>`;
-    } else {
-      s = `<div id="libraryNoneItem">`;
-      s += `<span class="colorAccent">Library is empty.</span><br><br>`;
-      s += `<span class="colorTextLess">Add music to your HQPlayer library<br>`;
-      s += `<em>(HQPlayer > File > Library...)</em><br>`;
-      s += `and reload page.</span>`;
-      s += `</div>`;
-    }
+    s = `<div id="libraryNoneItem">`;
+    s += `<span class="colorAccent">Library is empty.</span><br><br>`;
+    s += `<span class="colorTextLess">Add music to your HQPlayer library<br>`;
+    s += `<em>(HQPlayer > File > Library...)</em><br>`;
+    s += `and reload page.</span>`;
+    s += `</div>`;
     return $(s);
   }
 
@@ -191,6 +234,34 @@ export default class LibraryView extends Subview {
     if (event.keyCode == 13) {
       this.onItemClick(event);
     }
+  };
+
+  onGroupLabelClick = (event) => {
+    const $label = $(event.currentTarget);
+    const $group = $label.next();
+    const shouldCollapse = !$label.hasClass('isCollapsed');
+    if (shouldCollapse) {
+      $label.addClass('isCollapsed');
+      $group.addClass('isCollapsed');
+    } else {
+      $label.removeClass('isCollapsed');
+      $group.removeClass('isCollapsed');
+    }
+
+    // update settings
+    const label = $label.find('.inner').text(); // ew
+    const index = Settings.libraryCollapsedGroups.indexOf(label);
+    cl('xxx', index, label);
+    if (shouldCollapse) {
+      if (index == -1) {
+        Settings.libraryCollapsedGroups.push(label);
+      }
+    } else {
+      if (index > -1) {
+        Settings.libraryCollapsedGroups.splice(index, 1);
+      }
+    }
+    Settings.commitLibraryCollapsedGroups();
   };
 
 	onIntersection = (entries, self) => {

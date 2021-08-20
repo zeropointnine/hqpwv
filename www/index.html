@@ -44,16 +44,13 @@
 
 							<div id="libraryOptionsView">
 
-								<div id="libraryBitrateDropdown" class="dropdown">
-									<div class="dropdownTitle">Filter by</div>
+								<div id="libraryGroupDropdown" class="dropdown">
+									<div class="dropdownTitle">Group by</div>
 									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="all">Show all</div>
-										<div class="dropdownItem isMulti" data-value="pcm1fs">44/48k</div>
-										<div class="dropdownItem isMulti" data-value="pcm2fs">88/96k</div>
-										<div class="dropdownItem isMulti" data-value="pcm4fs">176/192k</div>
-										<div class="dropdownItem isMulti" data-value="pcm8fs">352/384k</div>
-										<div class="dropdownItem isMulti" data-value="pcm16fs_plus">705/768k+</div>
-										<div class="dropdownItem isMulti" data-value="dsd_all">DSD</div>
+										<div class="dropdownItem" data-value="none">None (default)</div>
+										<div class="dropdownItem" data-value="genre">Genre</div>
+										<div class="dropdownItem" data-value="path">Subdirectory</div>
+										<div class="dropdownItem" data-value="bitrate">Samplerate</div>
 									</div>
 								</div>
 								<div id="librarySortDropdown" class="dropdown">
@@ -61,13 +58,28 @@
 									<div class="dropdownItems">
 										<div class="dropdownItem" data-value="artist">Artist</div>
 										<div class="dropdownItem" data-value="album">Album</div>
-										<div class="dropdownItem" data-value="path">Directory path</div>
 										<div class="dropdownItem" data-value="random">Random</div>
 									</div>
 								</div>
+								<div id="libraryBitrateDropdown" class="dropdown">
+									<div class="dropdownTitle">Filter by</div>
+									<div class="dropdownItems">
+										<div class="dropdownItem" data-value="all">Show all</div>
+										<div class="dropdownItem isMulti" data-value="pcm1fs">44/48K</div>
+										<div class="dropdownItem isMulti" data-value="pcm2fs">88/96K</div>
+										<div class="dropdownItem isMulti" data-value="pcm4fs">176/192K</div>
+										<div class="dropdownItem isMulti" data-value="pcm8fs">352/384K</div>
+										<div class="dropdownItem isMulti" data-value="pcm16fs_plus">705/768K+</div>
+										<div class="dropdownItem isMulti" data-value="dsd_all">DSD</div>
+									</div>
+								</div>
 
-								<div id="libraryBitrateButton" class="iconButton toggleButton"></div>
-								<div id="librarySortButton" class="iconButton toggleButton"></div>
+								<div id="libraryOptionsButtons"><div
+									id="libraryGroupButton" class="iconButton toggleButton"></div><div
+									id="librarySortButton" class="iconButton toggleButton"></div><div
+									id="libraryBitrateButton" class="iconButton toggleButton"
+								></div></div>
+
 							</div>
 
 						</div>

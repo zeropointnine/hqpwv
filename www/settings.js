@@ -9,8 +9,10 @@ class Settings {
   storage = window.localStorage;
 
   _metaEnabled;
-  _libraryBitratesArray;
+  _libraryGroupType;
   _librarySortType;
+  _libraryBitratesArray;
+  _libraryCollapsedGroups;
   _presetsArray;
   _currentRule;
   _thresholdRule;
@@ -25,6 +27,18 @@ class Settings {
 
     this._metaEnabled = this.storage.getItem('metaEnabled') || 'true';
 
+    this._libraryGroupType = this.storage.getItem('libraryGroupType') || 'none';
+
+    s = this.storage.getItem('libraryCollapsedGroups');
+    try {
+      this._libraryCollapsedGroups = JSON.parse(s) || [];
+    } catch (exc) {
+      cl('warning', s, exc);
+      this._libraryCollapsedGroups = [];
+    }
+
+    this._librarySortType = this.storage.getItem('librarySortType') || 'artist';
+
     s = this.storage.getItem('libraryBitratesArray');
     try {
       this._libraryBitratesArray = JSON.parse(s) || ['all'];
@@ -32,8 +46,6 @@ class Settings {
       cl('warning', s, exc);
       this._libraryBitratesArray = ['all'];
     }
-
-    this._librarySortType = this.storage.getItem('librarySortType') || 'artist';
 
     s = this.storage.getItem('presetsArray');
     try {
@@ -77,6 +89,15 @@ class Settings {
     $(document).trigger('settings-meta-changed');
   }
 
+  get libraryGroupType() {
+    return this._libraryGroupType;
+  }
+
+  set libraryGroupType(s) {
+    this._libraryGroupType = s;
+    this.storage.setItem('libraryGroupType', s);
+  }
+
   get librarySortType() {
     return this._librarySortType;
   }
@@ -93,6 +114,15 @@ class Settings {
   commitLibraryBitratesArray() {
     const s = JSON.stringify(this._libraryBitratesArray);
     this.storage.setItem('libraryBitratesArray', s);
+  }
+
+  get libraryCollapsedGroups() {
+    return this._libraryCollapsedGroups;
+  }
+
+  commitLibraryCollapsedGroups() {
+    const s = JSON.stringify(this._libraryCollapsedGroups);
+    this.storage.setItem('libraryCollapsedGroups', s);
   }
 
   get presetsArray() {

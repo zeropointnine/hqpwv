@@ -141,11 +141,8 @@ export default class LibraryVo {
 
   // ---
 
-  /**
-   * Separates the library items into albums and playlists,
-   * and inits dependent stuff.
-   */
   init(responseArray) {
+    // Separate items into albums and playlists
     this._albums = [];
     this._hqPlaylistItems = [];
     for (let i = responseArray.length - 1; i >= 0; i--) {
@@ -155,9 +152,11 @@ export default class LibraryVo {
       } else if (this.isPlaylist(item)) {
         this._hqPlaylistItems.push(item);
       } else {
-        cl('info item is not album or playlist, ignoring ', item['@_path']);
+        // cl('info item is not album or playlist, ignoring ', item['@_path']);
       }
     }
+
+    // Sort teh playlists by name
     this._hqPlaylistItems.sort((a, b) => {
       const s1 = a['@_album'].toLowerCase();
       const s2 = b['@_album'].toLowerCase();
@@ -170,6 +169,7 @@ export default class LibraryVo {
       }
     });
 
+    // Init album lookup
     this.initTrackUriToTrackHash();
   }
 
