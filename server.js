@@ -35,7 +35,11 @@ app.use(express.static(WEBPAGE_DIR));
  */
 app.get('/endpoints/command', (request, response) => {
   if (isBusy) {
-    console.log("webserver - rejected command, is busy");
+    let info = '';
+    if (request.query.xml) {
+      info = `${request.query.xml.substr(0,40)}`;
+    }
+    console.log(`- proxy busy, rejected ${info} from ${request.connection.remoteAddress}`);
     response.send({ error: "server_is_busy" });
     return;
   }

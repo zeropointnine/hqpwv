@@ -269,14 +269,6 @@ $border-radius-mobile:0px;
   }
 }
 
-
-//  border-left: 0.1px solid $color-accent;
-//  transition: border-width ($app-standard-duration / 2) linear;
-//  &.selected {
-//    border-left: 3px solid $color-accent;
-//    transition: border-width ($app-standard-duration / 2) linear;
-//  }
-
 .playlistItemMeta {
   height:$icon-button-side; // w/o this, is too tall, not sure why
   margin-left:12px;

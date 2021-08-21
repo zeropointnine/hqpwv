@@ -31,9 +31,9 @@ TODO
 - Filter (search) controls to the library view.
 - Flat track listing view, with filter controls.
 - Zoomed-in "now playing" view.
-- Saved playlists.
 - Support random playback.
 - Pagination system for extremely-large user libraries?
+- ~~Saved playlists.~~ added
 - ~~Add 'metadata layer' to track number of plays and likes.~~ added
 - ~~Add UI for controling HQPlayer upsampling filters.~~ added
 - ~~Allow for running HQPWV on a different machine than HQPlayer.~~ added

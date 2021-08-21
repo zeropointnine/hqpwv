@@ -36,6 +36,7 @@ export default class AlbumContextMenu extends ContextMenu {
     ViewUtil.setDisplayed(this.$itemPlayNowMultiple, !isLastItem);
   }
 
+  // @Override
   onItemClick(event) {
     super.onItemClick(event);
     const $item = $(event.currentTarget);
@@ -47,9 +48,6 @@ export default class AlbumContextMenu extends ContextMenu {
     let endIndex;
     switch (id) {
       case 'albumContextItemQueue':
-        Service.queueCommand(s);
-        return;
-
         endIndex = startIndex;
         isPlayNow = false;
         break;

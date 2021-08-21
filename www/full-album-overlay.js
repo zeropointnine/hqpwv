@@ -48,7 +48,7 @@ class FullAlbumOverlay {
     ViewUtil.setCssSync(this.$overlayScreen, () => this.$overlayScreen.css('opacity', 0));
     this.$overlayScreen.css('opacity', 1);
 
-    $(document).on('debounced-window-resize', this.onWindowResize);
+    $(document).on('debounced-window-resize', this.onWindowResize); // todo this may not be necessary anymore?
   }
 
   animateOut() {

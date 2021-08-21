@@ -488,7 +488,7 @@ export default class App {
     }
   }
 
-  /** Triggers resize logic 100ms after last resize event. */
+  /** Triggers custom resize event 100ms after last window resize event. */
   onWindowResize = (e) => {
     clearTimeout(this.resizeTimeoutId);
     this.resizeTimeoutId = setTimeout(() => {

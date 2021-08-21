@@ -1,3 +1,8 @@
+// Margin 'unit' used for list item spacing
+$marginUnit: 8px;
+$marginUnitMobile: 6px;
+
+
 #libraryView {
   // special case for lib view
   padding-left:0;
@@ -41,12 +46,16 @@
 
 // Wrapper of the main library content
 #libraryContent {
-  margin-top:($space-unit * 1.5);
+  margin-top:$space-unit;
 	margin-left:auto;
 	margin-right:auto;
-	// width set programmatically so columns remain centered
+  padding-left:8px; // net effect is that listitems align 16px from edge
+  padding-right:8px;
+  max-width:1800px;
   @include mobile {
     margin-top:$space-unit-mobile;
+    padding-left:6px; // net effect is that listitems align 12px from edges
+    padding-right:6px;
   }
 }
 
@@ -124,42 +133,74 @@
 
 .libraryItem {
   position:relative;
-	width: 240px;
+	width: calc(16.666% - #{$marginUnit * 2}); // 6 cols from 1501px to maxwidth
 	background:$color-listitem;
-	padding: 12px 12px 12px 12px;
-	margin-left: 8px;
-	margin-right: 8px;
-	margin-bottom: 16px;
-	cursor:pointer;
+  cursor:pointer;
 
-  @include tablet {
-    width:224px;
-  }
+	padding: 12px;
+	margin-left: $marginUnit;
+	margin-right: $marginUnit;
+	margin-bottom: $marginUnit * 2;
 
   @include mobile {
-    width:144px;
-    padding:6px 6px 6px 6px;
-    margin-left: 4px;
-    margin-right: 4px;
-    margin-bottom: 8px;
+    padding: 9px;
+    margin-left: $marginUnitMobile;
+    margin-right: $marginUnitMobile;
+    margin-bottom: $marginUnitMobile * 2;
   }
 }
 
-.libraryItemPicture {
-	width:(240px - 12px - 12px);
-	height:(240px - 12px - 12px);
-	background:rgba(0,0,0,0.0);
-	margin-bottom: 4px;
-  object-fit: cover;
+// Special breakpoints for num-columns!
 
-  @include tablet {
-    width: (224px - 12px - 12px);
-    height: (224px - 12px - 12px);
+// 5cols from 1201-1500px
+@media (max-width: 1500px)  {
+  .libraryItem {
+    width: calc(20% - #{$marginUnit * 2});
+  }
+}
+// 4cols from 901-1200px
+@media (max-width: 1200px)  {
+  .libraryItem {
+    width: calc(25% - #{$marginUnit * 2});
+  }
+}
+// 3cols from 601-900px
+@media (max-width: 900px)  {
+  .libraryItem {
+    width: calc(33.333% - #{$marginUnit * 2});
+  }
+}
+// 2cols up to 600px
+@media (max-width: 600px)  {
+  .libraryItem {
+    width: calc(50% - #{$marginUnit * 2});
+  }
+}
+// 2cols special case for mobile breakpoint's spacing settings
+@media (max-width: $mobile-max-width)  {
+  .libraryItem {
+    width: calc(50% - #{$marginUnitMobile * 2});
+  }
+}
+
+
+.libraryItemPicture {
+	position:relative;
+  width:100%;
+	margin-bottom: 4px;
+
+  // force square aspect ratio
+  &:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
   }
 
-  @include mobile {
-    width: (144px - 6px - 6px);
-    height: (144px - 6px - 6px);
+  img {
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit: cover;
   }
 }
 
@@ -183,16 +224,12 @@
   padding-right:4px;
   padding-bottom:2px;
   right:12px;
-  top:198px;
+  bottom:68px;
   opacity:0;
   transition: opacity 0.12s linear;
-  @include tablet {
-    right:12px;
-    top:182px;
-  }
   @include mobile {
     right:6px;
-    top:108px;
+    bottom:58px;
   }
 }
 .libraryItem:hover .libraryItemBits {
@@ -220,7 +257,7 @@
   }
   &.isSelected {
     &:before {
-      transition:opacity ($app-standard-duration / 2) $app-standard-ease;
+      transition:opacity ($app-standard-duration * 0.5) $app-standard-ease;
       opacity:1;
     }
   }
@@ -265,8 +302,8 @@
   opacity:0;
   transform: translate(38px);
   transition:
-  transform ($app-standard-duration / 2) $app-standard-ease,
-  opacity ($app-standard-duration / 2) linear;
+  transform ($app-standard-duration * 0.5) $app-standard-ease,
+  opacity ($app-standard-duration * 0.5) linear;
   &.animIn {
     opacity:1;
     transform: translate(0);

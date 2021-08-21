@@ -41,9 +41,10 @@
 
 #albumViewTexts {
   width:50%;
-  align-items:center;
   padding-left:32px;
+  align-self:center;
   display: flex;
+  align-items:center;
   #albumViewTextsInner { // wrapped content gets v-aligned
     height:auto;
     padding-bottom:24px;  // raise vertically a little (looks better)

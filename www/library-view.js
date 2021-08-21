@@ -12,12 +12,6 @@ import Model from './model.js';
 import Service from './service.js';
 import LibraryOptionsView from './library-options-view.js';
 
-// Must match css (.libraryItem width + marginLeft + marginRight)
-const ITEM_SPAN_H_MOBILE = 144 + 4 + 4;
-const ITEM_SPAN_H_TABLET = 224 + 8 + 8;
-const ITEM_SPAN_H_DESKTOP = 240 + 8 + 8;
-const MAX_COLS = 6;
-
 /**
  * Library view containing a list of albums.
  * Is always visible under any other main views.
@@ -44,11 +38,9 @@ export default class LibraryView extends Subview {
   	this.$content = this.$el.find("#libraryContent");
     this.$itemCount = this.$el.find('#libraryNumbers');
     this.$spinner = this.$el.find('#librarySpinner');
-  	this.updateListWidth();
 
     this.optionsView = new LibraryOptionsView(this.$el.find("#libraryOptionsView"));
 
-    $(document).on('debounced-window-resize', e => this.updateListWidth());
     $(document).on('init-images-finished', e => this.forceReloadImages());
 
     const config = { root: this.$el[0], rootMargin: (window.screen.height * 0.66) + 'px', threshold: 0  };
@@ -107,7 +99,6 @@ export default class LibraryView extends Subview {
     }
 
     this.$itemCount.text(`(${this.albums.length}/${Model.library.albums.length})`);
-    this.updateListWidth();
     $(document).trigger('library-view-populated', this.albums.length);
 
     const duration = new Date().getTime() - startTime;
@@ -176,7 +167,7 @@ export default class LibraryView extends Subview {
     const bits = AlbumUtil.getBitrateText(album);
 
     let s = `<div class="libraryItem" data-hash="${hash}">`; /* tabindex="0" */
-    s +=      `<img class="libraryItemPicture" data-src=${imgPath} />`;
+    s +=      `<div class="libraryItemPicture"><img data-src=${imgPath} /></div>`;
     s +=      `<div class="libraryItemText1">${artist}</div>`;
     s +=      `<div class="libraryItemText2">${albumText}</div>`;
     if (bits) {
@@ -203,27 +194,7 @@ export default class LibraryView extends Subview {
     return $(s);
   }
 
-  /**
-   * Sets width of container to some multiple of the span of an item.
-   * Allows content to remain horizontally centered.
-   */
-	updateListWidth() {
-    const outer = this.$el.width();
-    let itemSpanH;
-    if (Breakpoint.isMobile) {
-      itemSpanH = ITEM_SPAN_H_MOBILE;
-    } else if (Breakpoint.isTablet) {
-      itemSpanH = ITEM_SPAN_H_TABLET;
-    } else {
-      itemSpanH = ITEM_SPAN_H_DESKTOP;
-    }
-    let multiple = Math.floor(outer / itemSpanH);
-    multiple = Math.min(multiple, MAX_COLS);
-		const inner = multiple * itemSpanH;
-		this.$content.width(inner + "px");
-	}
-
-	onItemClick = (event) => {
+  onItemClick = (event) => {
     const $item = $(event.currentTarget);
 		const hash = $item.attr("data-hash");
     const album = Model.library.getAlbumByAlbumHash(hash);
@@ -251,7 +222,6 @@ export default class LibraryView extends Subview {
     // update settings
     const label = $label.find('.inner').text(); // ew
     const index = Settings.libraryCollapsedGroups.indexOf(label);
-    cl('xxx', index, label);
     if (shouldCollapse) {
       if (index == -1) {
         Settings.libraryCollapsedGroups.push(label);
@@ -265,7 +235,7 @@ export default class LibraryView extends Subview {
   };
 
 	onIntersection = (entries, self) => {
-		for (const entry of entries) {
+    for (const entry of entries) {
 			const $img = $(entry.target);
 			if (entry.isIntersecting) {
 				const src = $img.attr('data-src');

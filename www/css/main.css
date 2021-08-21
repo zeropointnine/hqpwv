@@ -1573,13 +1573,18 @@ input::-moz-focus-inner {
 }
 
 #libraryContent {
-  margin-top: 24px;
+  margin-top: 16px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 8px;
+  padding-right: 8px;
+  max-width: 1800px;
 }
 @media (max-width: 480px) {
   #libraryContent {
     margin-top: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 
@@ -1648,47 +1653,63 @@ input::-moz-focus-inner {
 
 .libraryItem {
   position: relative;
-  width: 240px;
+  width: calc(16.666% - 16px);
   background: #282828;
-  padding: 12px 12px 12px 12px;
+  cursor: pointer;
+  padding: 12px;
   margin-left: 8px;
   margin-right: 8px;
   margin-bottom: 16px;
-  cursor: pointer;
-}
-@media (max-width: 768px) {
-  .libraryItem {
-    width: 224px;
-  }
 }
 @media (max-width: 480px) {
   .libraryItem {
-    width: 144px;
-    padding: 6px 6px 6px 6px;
-    margin-left: 4px;
-    margin-right: 4px;
-    margin-bottom: 8px;
+    padding: 9px;
+    margin-left: 6px;
+    margin-right: 6px;
+    margin-bottom: 12px;
   }
 }
 
-.libraryItemPicture {
-  width: 216px;
-  height: 216px;
-  background: rgba(0, 0, 0, 0);
-  margin-bottom: 4px;
-  object-fit: cover;
+@media (max-width: 1500px) {
+  .libraryItem {
+    width: calc(20% - 16px);
+  }
 }
-@media (max-width: 768px) {
-  .libraryItemPicture {
-    width: 200px;
-    height: 200px;
+@media (max-width: 1200px) {
+  .libraryItem {
+    width: calc(25% - 16px);
+  }
+}
+@media (max-width: 900px) {
+  .libraryItem {
+    width: calc(33.333% - 16px);
+  }
+}
+@media (max-width: 600px) {
+  .libraryItem {
+    width: calc(50% - 16px);
   }
 }
 @media (max-width: 480px) {
-  .libraryItemPicture {
-    width: 132px;
-    height: 132px;
+  .libraryItem {
+    width: calc(50% - 12px);
   }
+}
+.libraryItemPicture {
+  position: relative;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.libraryItemPicture:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+.libraryItemPicture img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .libraryItemText1 {
@@ -1713,20 +1734,14 @@ input::-moz-focus-inner {
   padding-right: 4px;
   padding-bottom: 2px;
   right: 12px;
-  top: 198px;
+  bottom: 68px;
   opacity: 0;
   transition: opacity 0.12s linear;
-}
-@media (max-width: 768px) {
-  .libraryItemBits {
-    right: 12px;
-    top: 182px;
-  }
 }
 @media (max-width: 480px) {
   .libraryItemBits {
     right: 6px;
-    top: 108px;
+    bottom: 58px;
   }
 }
 
@@ -1839,9 +1854,10 @@ input::-moz-focus-inner {
 
 #albumViewTexts {
   width: 50%;
-  align-items: center;
   padding-left: 32px;
+  align-self: center;
   display: flex;
+  align-items: center;
 }
 #albumViewTexts #albumViewTextsInner {
   height: auto;
