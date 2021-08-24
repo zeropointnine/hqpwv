@@ -8,14 +8,17 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const app = express();
 const ip = require('ip');
-const packageJson = require('./package.json');
+
+const log = require('./log');
+const packageJson = require('./../package.json');
 const proxy = require('./proxy');
 const meta = require('./meta');
 const metaHandler = require('./server-meta-handler');
 const playlistHandler = require('./server-playlist-handler');
 const playlists = require('./playlists');
+
 const APP_FILENAME = `hqpwv`;
-const WEBPAGE_DIR = path.join( __dirname, './www' );
+const WEBPAGE_DIR = path.join( __dirname, './../www' );
 const DEFAULT_PORT = 8000;
 
 let port;
@@ -39,7 +42,7 @@ app.get('/endpoints/command', (request, response) => {
     if (request.query.xml) {
       info = `${request.query.xml.substr(0,40)}`;
     }
-    console.log(`- proxy busy, rejected ${info} from ${request.connection.remoteAddress}`);
+    log.w(`proxy busy, rejected ${info} from ${request.connection.remoteAddress}`);
     response.send({ error: "server_is_busy" });
     return;
   }
@@ -96,17 +99,17 @@ const onProxyReady = (ip) => {
   // Init meta
   let isSuccess = meta.init();
   if (!isSuccess) {
-    console.log('- warning meta init failed, hqpwv metadata disabled')
+    log.x('- warning meta init failed, hqpwv metadata disabled')
   } else {
-    console.log('- meta ready');
+    log.x('- meta ready');
   }
 
   // Init custom playlists
   isSuccess = playlists.init();
   if (!isSuccess ) {
-    console.log('- warning custom playlists init failed, will be disabled')
+    log.x('- warning custom playlists init failed, will be disabled')
   } else {
-    console.log('- custom playlists ready');
+    log.x('- custom playlists ready');
   }
 };
 
@@ -114,27 +117,27 @@ const onProxyReady = (ip) => {
 
 const onError = (e) => {
   if (e.code == 'EADDRINUSE') {
-    console.log(`\nERROR: Port ${port} is in use.`);
-    console.log(`\nTry using a different port:`);
-    console.log(`     ${APP_FILENAME} -port [PORTNUMBER]\n`);
+    log.x(`\nERROR: Port ${port} is in use.`);
+    log.x(`\nTry using a different port:`);
+    log.x(`     ${APP_FILENAME} -port [PORTNUMBER]\n`);
     showPromptAndExit();
   } else {
-    console.log(`\nserver caught error: ${e.code}`);
+    log.e(`server caught error: ${e.code}`);
   }
 };
 
 const onSuccess = () => {
-  console.log(`- webserver is ready on port ${port}`);
+  log.x(`- webserver is ready on port ${port}`);
   const ipAddress = ip.address();
   const urlText = ipAddress
       ? `http://${ipAddress}:${port}`
       : `the IP address of this machine on port ${port}`; // yek
-  console.log(`\n----------------------------------------------------`);
-  console.log(`READY.`);
-  console.log(`Now browse to ${urlText}`);
-  console.log(`from a device on your local network.`);
-  console.log(`Please keep this process running.`);
-  console.log(`----------------------------------------------------\n`);
+  log.x(`\n----------------------------------------------------`);
+  log.x(`READY.`);
+  log.x(`Now browse to ${urlText}`);
+  log.x(`from a device on your local network.`);
+  log.x(`Please keep this process running.`);
+  log.x(`----------------------------------------------------\n`);
 };
 
 /**
@@ -170,18 +173,18 @@ isArgHelp = () => {
 };
 
 printHelp = () => {
-  console.log('Optional arguments:');
-  console.log('\n--port [portnumber]');
-  console.log('    Port to run the webserver on (default is ' + DEFAULT_PORT + ')');
-  console.log('\n--hqpip [ip_address]');
-  console.log('    IP address of the machine running HQPlayer.');
-  console.log('    Only necessary if running multiple instances');
-  console.log('    of HQPlayer on the network.');
-  console.log('');
+  log.x('Optional arguments:');
+  log.x('\n--port [portnumber]');
+  log.x('    Port to run the webserver on (default is ' + DEFAULT_PORT + ')');
+  log.x('\n--hqpip [ip_address]');
+  log.x('    IP address of the machine running HQPlayer.');
+  log.x('    Only necessary if running multiple instances');
+  log.x('    of HQPlayer on the network.');
+  log.x('');
 };
 
 const showPromptAndExit = () => {
-  console.log('\nPress any key to exit');
+  log.x('\nPress any key to exit');
   process.stdin.setRawMode(true);
   process.stdin.resume();
   process.stdin.on('data', process.exit.bind(process, 1))
@@ -192,22 +195,22 @@ process.on( "SIGINT", function() {
   if (meta.getIsDirty()) {
     meta.saveFile();
   }
-  console.log('- done');
+  log.x('- done');
   process.exit();
 });
 
 // ---
 
-console.log(`\n----------------------------------------------------`);
-console.log('HQPWV Server', packageJson.version);
-console.log('Project page: ' + packageJson.homepage);
+log.x(`\n----------------------------------------------------`);
+log.x('HQPWV Server', packageJson.version);
+log.x('Project page: ' + packageJson.homepage);
 if (isArgHelp()) {
-  console.log(`----------------------------------------------------\n`);
+  log.x(`----------------------------------------------------\n`);
   printHelp();
   return;
 } else {
-  console.log('Use --help for available options.');
-  console.log(`----------------------------------------------------\n`);
+  log.x('Use --help for available options.');
+  log.x(`----------------------------------------------------\n`);
 }
 
 port = getArgPort();

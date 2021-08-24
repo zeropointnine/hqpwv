@@ -23,7 +23,7 @@ export default class AlbumUtil {
   }
 
   static makeAlbumStatsText(album) {
-    const duration = AlbumUtil.makeAlbumDurationText();
+    const duration = AlbumUtil.makeAlbumDurationText(AlbumUtil.getTracksOf(album));
     const date = album['@_date'];
     const genre = album['@_genre'];
     const bitrateText = AlbumUtil.getBitrateText(album);

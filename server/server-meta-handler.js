@@ -1,6 +1,7 @@
 /**
  * Server mechanics for metadata layer or smth.
  */
+const log = require('./log');
 const meta = require('./meta');
 
 const doGet = (request, response) => {

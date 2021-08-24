@@ -106,5 +106,4 @@ export default class LibraryView extends Subview {
   onAlbumViewPopulated(numItems) {
     this.$albumViewItemCount.text(`(${numItems}/${Model.library.albums.length})`);
   }
-
 }

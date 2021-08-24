@@ -4,6 +4,9 @@
  */
 const fs = require("fs");
 const path = require('path');
+
+const log = require('./log');
+
 const FILENAME = 'hqpwv-metadata.json';
 const PATH = path.resolve(FILENAME);
 const ACTIVITY_COUNTER_THRESH = 10;
@@ -43,12 +46,12 @@ const initFile = () => {
   } catch (err) {
     const doesntExist = (err.code == 'ENOENT');
     if (doesntExist) {
-      console.log('- create new metadata');
+      log.x('- create new metadata');
       data = makeData();
       const result = saveFile();
       return result;
     } else {
-      console.log('- error:', FILENAME, err.code);
+      log.x('- error:', FILENAME, err.code);
       return false;
     }
   }
@@ -60,20 +63,20 @@ const loadData = () => {
   try {
     filedata = fs.readFileSync(FILENAME, {encoding: 'utf8'});
   } catch (err) {
-    console.log(`- error: couldn't load metadata`, err.code);
-    console.log('  ' + PATH);
+    log.x(`- error: couldn't load metadata`, err.code);
+    log.x('  ' + PATH);
     return false;
   }
   let o = null;
   try {
     o = JSON.parse(filedata);
   } catch (err) {
-    console.log(`- error: couldn't parse metadata`);
-    console.log('  ' + PATH);
+    log.x(`- error: couldn't parse metadata`);
+    log.x('  ' + PATH);
     return false;
   }
-  console.log('- loaded metadata');
-  console.log('  ' + PATH);
+  log.x('- loaded metadata');
+  log.x('  ' + PATH);
   data = o;
   return true;
 };
@@ -105,11 +108,11 @@ const saveFile = () => {
   try {
     fs.writeFileSync(FILENAME, JSON.stringify(data), {encoding: 'utf8'});
   } catch (err) {
-    console.log(`- warning couldn't save metadata`, err.code);
-    console.log('  ' + PATH);
+    log.x(`- warning couldn't save metadata`, err.code);
+    log.x('  ' + PATH);
     return false;
   }
-  console.log('- saved metadata');
+  log.x('- saved metadata');
   return true;
 };
 

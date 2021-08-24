@@ -152,6 +152,7 @@ export default class LibraryVo {
       } else if (this.isPlaylist(item)) {
         this._hqPlaylistItems.push(item);
       } else {
+        // Happens with PGGB'd albums converted to wavpack, which oftentimes drops all metadata, wtf/fml
         // cl('info item is not album or playlist, ignoring ', item['@_path']);
       }
     }

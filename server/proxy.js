@@ -2,12 +2,13 @@
  * Acts as go-between between `server.js` and HQPlayer.
  * Gets called by `server.js` via `sendCommandToHqp()` and then calls back with a payload.
  * Talks to HQPlayer via TCP socket.
- * 'Static class'.
  */
 
 const dgram = require('dgram');
 const net = require("net");
 const fastXmlParser = require('fast-xml-parser');
+
+const log = require('./log');
 
 const TROUBLESHOOTING_URL = 'https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md';
 const UDP_ADDRESS = "239.192.0.199";
@@ -47,12 +48,12 @@ const initDiscoverySocket = () => {
 	if (discoSocket) {
 		discoSocket.close();
 	}
-  console.log('- creating udp socket');
+  log.x('- creating udp socket');
 	discoSocket = dgram.createSocket('udp4');
 	
   discoSocket.on('error', () => {
-    console.log(`\nudp socket error:\n${err.stack}\n`);
-    discoSocket.close(); // todo recovery logic?
+    log.w(`udp socket error:\n${err.stack}\n`);
+    discoSocket.close();
   });
   discoSocket.on('message', onDiscoSocketMessage);
   discoSocket.on('listening', onDiscoSocketListening);
@@ -61,26 +62,26 @@ const initDiscoverySocket = () => {
 };
 
 const onDiscoSocketListening = () => {
-  console.log(`- udp socket listening on ${discoSocket.address().address}:${discoSocket.address().port}`);
+  log.x(`- udp socket listening on ${discoSocket.address().address}:${discoSocket.address().port}`);
   discoSocket.setMulticastLoopback(true);
-  console.log(`- waiting for response from HQPlayer...`);
+  log.x(`- waiting for response from HQPlayer...`);
   timeoutId = setTimeout(onDiscoveryTimeout, 1500);
   sendUdpCommand(`<discover>hqplayer</discover>`);
 };
 
 const onDiscoSocketMessage = (msg, rinfo) => {
-  console.log(`- udp socket received message from ${rinfo.address}:${rinfo.port}`);
+  log.x(`- udp socket received message from ${rinfo.address}:${rinfo.port}`);
   if (!msg.toString().includes('<discover')) {
-    console.log(`  unrecognized message, ignoring`);
+    log.x(`  unrecognized message, ignoring:`, msg.toString().substr(0,30));
     return;
   }
   let json;
   try {
     json = fastXmlParser.parse(msg.toString(), XML_PARSER_OPTIONS);
   } catch (error) {
-    console.log(`\nERROR: Couldn't parse udp data as xml`);
-    console.log(msg.toString());
-    console.log(error + '\n');
+    log.x(`\nERROR: Couldn't parse udp data as xml`);
+    log.x(msg.toString());
+    log.x(error + '\n');
     return;
   }
 
@@ -89,11 +90,11 @@ const onDiscoSocketMessage = (msg, rinfo) => {
     return; // shdnthpn
   }
   if (o['@_result'] != 'OK') {
-    console.log(`\nWARNING: Did not get expected result=OK`);
+    log.x(`\nWARNING: Did not get expected result=OK`);
     return;
   }
 
-  console.log('  ' + o['@_name']);
+  log.x('  ' + o['@_name']);
 
   validHqpIps.push(rinfo.address);
   validHqpHostnames.push(o['@_name']);
@@ -109,26 +110,26 @@ const onDiscoveryTimeout = () => {
     return;
   }
 
-  console.log('');
+  log.x('');
   hqpIp = validHqpIps[0];
   initSocket();
 };
 
 const printNoResponse = () => {
-  console.log(`\nERROR: No response from HQPlayer`);
-  console.log(`\nTIPS:`);
-  console.log(`1. Make sure HQPlayer is currently running`);
-  console.log(`2. Make sure HQPlayer's Settings dialog is not open.`);
-  console.log(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
-  console.log(`4. For more troubleshooting info, see ${TROUBLESHOOTING_URL}.\n`);
+  log.x(`\nERROR: No response from HQPlayer`);
+  log.x(`\nTIPS:`);
+  log.x(`1. Make sure HQPlayer is currently running`);
+  log.x(`2. Make sure HQPlayer's Settings dialog is not open.`);
+  log.x(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
+  log.x(`4. For more troubleshooting info, see ${TROUBLESHOOTING_URL}.\n`);
   exitOnKeypress();
 };
 
 const doSelectInstance = () => {
-  console.log('\nSelect which instance of HQPlayer to connect to:');
+  log.x('\nSelect which instance of HQPlayer to connect to:');
   const limit = Math.min(validHqpHostnames.length, 9);
   for (let i = 0; i < limit; i++) {
-    console.log(`  [${i+1}] ${validHqpIps[i]} (${validHqpHostnames[i]})`);
+    log.x(`  [${i+1}] ${validHqpIps[i]} (${validHqpHostnames[i]})`);
   }
   process.stdin.setRawMode(true);
   process.stdin.resume();
@@ -146,7 +147,7 @@ const onSelectInstanceKeypress = (buffer) => {
     return;
   }
 
-  console.log('');
+  log.x('');
   process.stdin.off('data', onSelectInstanceKeypress);
   process.stdin.setRawMode(false);
 
@@ -158,8 +159,8 @@ const sendUdpCommand = (message) => {
   message = XML_HEADER + message;
 	discoSocket.send(message, PORT, UDP_ADDRESS, (error) => {
     if (error) {
-      console.log(`\nERROR sending udp message`);
-      console.log(error + '\n');
+      log.x(`\nERROR sending udp message`);
+      log.x(error + '\n');
       exitOnKeypress();
     }
   });
@@ -168,17 +169,17 @@ const sendUdpCommand = (message) => {
 };
 
 const initSocket = () => {
-  console.log(`- connecting to tcp socket ${hqpIp}:${PORT}`);
+  log.x(`- connecting to tcp socket ${hqpIp}:${PORT}`);
   // Note, could also create connection using hostname instead of IP.
   // IP has proven to be more reliable when reconnecting windows hqpwv server to mac hqplayer, fwiw.
   socket = net.createConnection(PORT, hqpIp, () => {
-    console.log('- tcp socket connected');  // rem, still need to wait for 'ready'
+    log.x('- tcp socket connected');  // rem, still need to wait for 'ready'
   });
   socket.on("error", onSocketError);
   socket.on("end", onSocketEnd);
   socket.on("data", onData);
   socket.on("ready", () => {
-    console.log('- tcp socket ready');
+    log.x('- tcp socket ready');
     if (initCallback) {
       initCallback(hqpIp);
       initCallback = null;
@@ -192,7 +193,7 @@ const initSocket = () => {
  * and also when settings is open (ECONNREFUSED).
  */
 const onSocketError = (error) => {
-  console.log('socket error:', error.message);
+  log.w('socket error:', error.message);
   if (responseCallback) {
     doCallback({error: "socket_error"});
   }
@@ -204,7 +205,7 @@ const onSocketError = (error) => {
 const onSocketEnd = () => {
   // This would only ever get initiated by hqp.
   // FYI, hqp will end the socket if it receives bad xml sometimes.
-  console.log('socket ended');
+  log.w('socket ended');
   if (responseCallback) {
     doCallback({ error: "socket_end" });
   }
@@ -215,7 +216,7 @@ const onSocketEnd = () => {
 // -------------------------------------------------------------------
 
 const sendCommandToHqp = (xml, callback) => {
-  // console.log(`client request: ${xml.substr(0,80)}`);
+  // log.x(`client request: ${xml.substr(0,80)}`);
 
   if (!socket) {
     callback({ error: "not_connected"});
@@ -238,25 +239,26 @@ const sendCommandToHqp = (xml, callback) => {
     return;
   }
 
-  // console.log('sending to hqp:', xml.substr(0, 80));
+  // log.x('sending to hqp:', xml.substr(0, 80));
   socket.write(XML_HEADER + clientRequestXml);
-}
+};
 
 // ---
 
 const onData = (data) => {
-  // console.log(`received ${data.length} bytes`);
-
-  if (!clientRequestXml) {
-    // hqp is sending data while no 'command' is pending.
-    console.log(`warning: got data without command - ${data.toString().substr(0, 80)}`);
-    return;
-  }
+  // log.x(`received ${data.length} bytes`);
 
   const dataAsString = data.toString();
 
+  if (!clientRequestXml) {
+    // hqp is sending data while no 'command' is pending.
+    log.w(`received data unprompted: ${dataAsString.substr(0, 80)}`);
+    return;
+  }
+
+
   if (isFirstChunk) {
-    // console.log('is first chunk');
+    // log.x('is first chunk');
     isFirstChunk = false;
 
     if (!dataAsString.startsWith("<?xml")) {
@@ -270,7 +272,7 @@ const onData = (data) => {
       // So, do nothing.
 
       // doCallback({ error: "hqp_unknown_command" });
-      // console.log(dataAsString.substr(0,80))
+      // log.x(dataAsString.substr(0,80))
       // return;
     }
 
@@ -290,14 +292,14 @@ const onData = (data) => {
 // ---
 
 const processFirstChunk = (data, dataAsString) => {
-  // console.log(`is first normal chunk`);
+  // log.x(`is first normal chunk`);
   normalBuffer = data;
   finishNormalIfPossible(dataAsString, true);
 }
 
 const processNextChunk = (data, dataAsString) => {
   normalBuffer = Buffer.concat([normalBuffer, data]); // todo expensive? wd buffer stream be more efficient?
-  // console.log(`is subsequent normal chunk, buffer len ${normalBuffer.length}`);
+  // log.x(`is subsequent normal chunk, buffer len ${normalBuffer.length}`);
   finishNormalIfPossible(dataAsString, false);
 }
 
@@ -322,7 +324,7 @@ const finishNormalIfPossible = (dataAsString, isFirstChunk) => {
         }
       }
     } else {
-      console.log('warning: non-possibly-multichunk response did not parse, finishing anyway');
+      log.w('non-possibly-multichunk response did not parse, finishing anyway');
       isComplete = true;
     }
   }
@@ -366,7 +368,7 @@ const postProcessLibrary = (json) => {
 
 const doCallback = (json) => {
   if (json.error) {
-    console.log('- sending error response to client:', json.error);
+    log.w('sending error response to client:', json.error);
   }
   responseCallback(json);
   clearValues();
@@ -392,7 +394,7 @@ const reset = () => {
 };
 
 const exitOnKeypress = () => {
-  console.log('Press any key to exit');
+  log.x('Press any key to exit');
   process.stdin.setRawMode(true);
   process.stdin.resume();
   process.stdin.on('data', process.exit.bind(process, 1))

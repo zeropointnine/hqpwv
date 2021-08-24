@@ -13,7 +13,9 @@ export default class ProgressView {
   $inner;
   $thumb;
   isDragging = false;
+
   ratio = 0;
+  seconds = -1;
 
   constructor() {
     this.$el = $('#playProgressView');
@@ -30,12 +32,33 @@ export default class ProgressView {
     return this.$el;
   }
 
-  /** Updates thumb pos using ratio. */
-  update(ratio, forceUpdate = false) {
+  /**
+   * Updates thumb pos
+   *
+   * @param ratio
+   * @param seconds - when -1, will always update css property, non-animated
+   */
+  update(ratio, seconds) {
+    const lastRatio = this.ratio;
+    const lastSeconds = this.seconds;
+
     ratio = Math.min(ratio, 1);
     ratio = Math.max(ratio, 0);
     this.ratio = ratio;
-    if (!this.isDragging || forceUpdate) {
+    this.seconds = seconds;
+
+    const shouldSetCss = (lastRatio != this.ratio || seconds == -1);
+    if (shouldSetCss) {
+      const delta = this.seconds - lastSeconds;
+      const shouldAnimate = (delta >= 0) && (delta < 2.2) && Model.status.isPlaying && !this.isDragging;
+      if (shouldAnimate && !this.$thumb.hasClass('isAnimating')) {
+        cl('add anim class')
+        this.$thumb.addClass('isAnimating');
+        this.$thumb[0].offsetHeight; // force reflow
+      } else if (!shouldAnimate && this.$thumb.hasClass('isAnimating')) {
+        cl('remove anim class')
+        this.$thumb.removeClass('isAnimating');
+      }
       this.$thumb.css('left', (this.ratio * 100) + "%");
     }
   }
@@ -45,13 +68,13 @@ export default class ProgressView {
     $(window).on("mousemove touchmove", this.onDrag);
     $(window).on("mouseup touchend touchcancel", this.endDrag);
     const ratio = this.eventToRatioX(e);
-    this.update(ratio, true);
+    this.update(ratio, -1);
     $(document).trigger('progress-thumb-drag', ratio);
   };
 
   onDrag = (e) => {
     this.dragRatio = this.eventToRatioX(e);
-    this.update(this.dragRatio, true);
+    this.update(this.dragRatio, -1);
     $(document).trigger('progress-thumb-drag', this.dragRatio);
   };
 

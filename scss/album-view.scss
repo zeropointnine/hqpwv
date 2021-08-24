@@ -99,9 +99,6 @@
       #albumViewStats {
         margin-top:$space-unit-mobile;
       }
-      #albumViewPath {
-        display:none;
-      }
       #albumViewButtons {
         margin-top:20px;
       }
@@ -132,7 +129,7 @@
         display:none;
       }
       #albumViewButtons {
-        margin-top:$space-unit-mobile;
+        margin-top:($space-unit-mobile * 1.5);
       }
     }
   }
@@ -171,7 +168,7 @@
 
   @include mobile {
     left: 0;
-    padding: 8px 4px 8px 12px;
+    padding: 8px 8px 8px 12px;
   }
 }
 .isPaused .albumItem {

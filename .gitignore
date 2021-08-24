@@ -1,6 +1,6 @@
 .DS_Store
 .idea/
-dist/
+dist/hqpwv-server-*
 node_modules/
 www/css/
 

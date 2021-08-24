@@ -25,6 +25,8 @@
   width:150px; // must have hardcoded width; override this
   z-index:9999;
   display:none;
+  color:red;
+  border:1px solid $color-listitem;
 
   .dropdownTitle {
     height: 36px;
@@ -35,7 +37,7 @@
     font-weight: bold;
     text-transform: uppercase;
     line-height:36px;
-    background-color:$color-listitem-selected;
+    background-color:$color-bg;//color-listitem-selected;
   }
   .dropdownItems {
     position:absolute;
@@ -43,7 +45,7 @@
     left:0;
     top:36px;
     width:100%;
-    background:$color-listitem;
+    background:$color-bg; //color-listitem;
 
     .dropdownItem {
       $ht: 36px;
@@ -52,7 +54,7 @@
       cursor: pointer;
       white-space: nowrap;
       &:hover {
-        background-color: $color-listitem-over;
+        background-color: $color-listitem-over;//over;
       }
       &.isSelected {
         cursor: default;

@@ -1,6 +1,7 @@
 /**
  * Server mechanics for playlist api.
  */
+const log = require('./log');
 const playlists = require('./playlists');
 
 const doGet = (request, response) => {

@@ -254,6 +254,18 @@ $thumb-width: 20px;
   margin-left: $thumb-width * -0.5;
   cursor:pointer;
   background-color:$color-accent;
+
+  transition:left 0s linear;
+  &.isAnimating {
+    transition:left 1s linear;
+  }
+
+  @include mobile {
+    transition: none;
+    &.isAnimating {
+      transition: none;
+    }
+  }
 }
 .isStopped #playProgressThumb {
   pointer-events:none;

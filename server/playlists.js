@@ -6,6 +6,8 @@ const fs = require("fs");
 const path = require('path');
 const PATH = path.resolve('hqpwv-playlists');
 
+const log = require('./log');
+
 let isEnabled = false;
 
 /**
@@ -17,10 +19,10 @@ const init = () => {
   }
   fs.mkdirSync(PATH);
   if (fs.existsSync(PATH)) {
-    console.log('- created dir', PATH)
+    log.x('- created dir', PATH)
     return true;
   }
-  console.log(`- error: couldn't create directory`, PATH);
+  log.x(`- error: couldn't create directory`, PATH);
   return false;
 };
 
@@ -49,15 +51,15 @@ const getPlaylists = () => {
 const savePlaylist = (name, data) => {
   // Validate, if only a little
   if (!name) {
-    console.log('- warning no filename');
+    log.w('save playlist no filename');
     return false;
   }
   if (!data.startsWith('#EXTM3U')) {
-    console.log('- warning received bad playlist data');
+    log.w('save playlist received bad playlist data');
     return false;
   }
   if (data.length > 500 * 1000) {
-    console.log('- warning, sus');
+    log.w('save playlist sus filelength, ignoring');
     return false;
   }
   // todo sanitize name ffs
@@ -69,8 +71,7 @@ const savePlaylist = (name, data) => {
   try {
     fs.writeFileSync(filepath, data, {encoding: 'utf8'});
   } catch (err) {
-    console.log(`- warning couldn't save playlist`, err.code);
-    console.log('  ' + filepath);
+    log.w(`save playlist couldn't save`, err.code, filepath);
     return false;
   }
   return true;
@@ -85,13 +86,13 @@ const deletePlaylist = (name) => {
   }
   const filepath = PATH + path.sep + name;
   if (!fs.existsSync(filepath)) {
-    console.log('- warning no such file to delete', filepath);
+    log.w('delete playlist no such file to delete', filepath);
     return false;
   }
   try {
     fs.unlinkSync(filepath);
   } catch (e) {
-    console.log(`- warning couldn't delete file`, e.code, filepath);
+    log.w(`delete playlist couldn't delete file`, e.code, filepath);
     return false;
   }
   return true;

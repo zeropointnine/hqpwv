@@ -81,7 +81,8 @@
 }
 #appTitle {
   font-size:18px;
-  color:#888;
+  font-weight: bold;
+  color:$color-text-least;
   flex: 1;
   visibility: hidden;
   @include mobile {

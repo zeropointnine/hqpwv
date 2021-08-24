@@ -14,6 +14,7 @@ Commands.getInfo = () => {
 };
 
 Commands.status = () => {
+  // nb, explicit subscribe=0!
 	return `<Status subscribe="0" />`;
 };
 

@@ -318,6 +318,8 @@ input::-moz-focus-inner {
   width: 150px;
   z-index: 9999;
   display: none;
+  color: red;
+  border: 1px solid #282828;
 }
 .dropdown .dropdownTitle {
   height: 36px;
@@ -328,7 +330,7 @@ input::-moz-focus-inner {
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: #383838;
+  background-color: #181818;
 }
 .dropdown .dropdownItems {
   position: absolute;
@@ -336,7 +338,7 @@ input::-moz-focus-inner {
   left: 0;
   top: 36px;
   width: 100%;
-  background: #282828;
+  background: #181818;
 }
 .dropdown .dropdownItems .dropdownItem {
   line-height: 36px;
@@ -514,7 +516,8 @@ input::-moz-focus-inner {
 
 #appTitle {
   font-size: 18px;
-  color: #888;
+  font-weight: bold;
+  color: #666;
   flex: 1;
   visibility: hidden;
 }
@@ -962,6 +965,18 @@ input::-moz-focus-inner {
   margin-left: -10px;
   cursor: pointer;
   background-color: #ff2200;
+  transition: left 0s linear;
+}
+#playProgressThumb.isAnimating {
+  transition: left 1s linear;
+}
+@media (max-width: 480px) {
+  #playProgressThumb {
+    transition: none;
+  }
+  #playProgressThumb.isAnimating {
+    transition: none;
+  }
 }
 
 .isStopped #playProgressThumb {
@@ -2043,9 +2058,6 @@ input::-moz-focus-inner {
   #albumViewTexts #albumViewTextsInner #albumViewStats {
     margin-top: 12px;
   }
-  #albumViewTexts #albumViewTextsInner #albumViewPath {
-    display: none;
-  }
   #albumViewTexts #albumViewTextsInner #albumViewButtons {
     margin-top: 20px;
   }
@@ -2073,7 +2085,7 @@ input::-moz-focus-inner {
     display: none;
   }
   #albumViewTexts #albumViewTextsInner #albumViewButtons {
-    margin-top: 12px;
+    margin-top: 18px;
   }
 }
 #albumPlayNowButton {
@@ -2102,7 +2114,7 @@ input::-moz-focus-inner {
 @media (max-width: 480px) {
   .albumItem {
     left: 0;
-    padding: 8px 4px 8px 12px;
+    padding: 8px 8px 8px 12px;
   }
 }
 

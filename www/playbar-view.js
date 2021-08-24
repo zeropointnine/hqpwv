@@ -156,11 +156,8 @@ export default class PlaybarView {
     if (isNaN(ratio)) {
       ratio = 0;
     }
-    if (ratio == this.ratio) {
-      return;
-    }
     this.ratio = ratio;
-    this.progressView.update(this.ratio);
+    this.progressView.update(ratio, seconds);
   }
 
   _updateCurrentSeconds() {
