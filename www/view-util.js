@@ -30,7 +30,13 @@ ViewUtil.isDisplayed = ($el) => {
 };
 
 ViewUtil.setDisplayed = ($el, b) => {
-	$el.css("display", (b ? "block" : "none"));
+  let value;
+  if (b === 'flex') {
+    value = b;
+  } else {
+    value = !!(b) ? 'block' : 'none';
+  }
+	$el.css("display", value);
 };
 
 /**

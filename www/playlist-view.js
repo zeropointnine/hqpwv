@@ -234,14 +234,11 @@ export default class PlaylistView extends Subview {
   };
 
   onNewTrack = (e, currentUri, lastUri) => {
-    cl('a')
     const currentIndex = this.playlist.getIndexByUri(currentUri);
     const lastIndex = this.playlist.getIndexByUri(lastUri);
-    cl('b', currentIndex, lastIndex)
     if (currentIndex > -1) {
       if (currentIndex > lastIndex) {
         const $item = this.trackItems$[currentIndex];
-        cl('c', $item)
         Util.autoScrollListItem($item, this.$el);
       }
     }

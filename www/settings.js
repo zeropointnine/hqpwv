@@ -9,6 +9,8 @@ class Settings {
   storage = window.localStorage;
 
   _metaEnabled;
+  _librarySearchType;
+  _librarySearchValue;
   _libraryGroupType;
   _librarySortType;
   _libraryBitratesArray;
@@ -27,14 +29,18 @@ class Settings {
 
     this._metaEnabled = this.storage.getItem('metaEnabled') || 'true';
 
+    this._librarySearchType = this.storage.getItem('librarySearchType') || 'track';
+
+    this._librarySearchValue = this.storage.getItem('librarySearchValue') || '';
+
     this._libraryGroupType = this.storage.getItem('libraryGroupType') || 'none';
 
     s = this.storage.getItem('libraryCollapsedGroups');
     try {
-      this._libraryCollapsedGroups = JSON.parse(s) || [];
+      this._libraryCollapsedGroups = JSON.parse(s) || {};
     } catch (exc) {
       cl('warning', s, exc);
-      this._libraryCollapsedGroups = [];
+      this._libraryCollapsedGroups = {};
     }
 
     this._librarySortType = this.storage.getItem('librarySortType') || 'artist';
@@ -89,6 +95,24 @@ class Settings {
     $(document).trigger('settings-meta-changed');
   }
 
+  get librarySearchType() {
+    return this._librarySearchType;
+  }
+
+  set librarySearchType(s) {
+    this._librarySearchType = s;
+    this.storage.setItem('librarySearchType', s);
+  }
+
+  get librarySearchValue() {
+    return this._librarySearchValue;
+  }
+
+  set librarySearchValue(s) {
+    this._librarySearchValue = s;
+    this.storage.setItem('librarySearchValue', s);
+  }
+
   get libraryGroupType() {
     return this._libraryGroupType;
   }
@@ -118,6 +142,18 @@ class Settings {
 
   get libraryCollapsedGroups() {
     return this._libraryCollapsedGroups;
+  }
+
+  addLibraryCollapsedGroup(key) {
+    this._libraryCollapsedGroups[key] = 1;
+    this.commitLibraryCollapsedGroups();
+  }
+
+  removeLibraryCollapsedGroup(key) {
+    if (this._libraryCollapsedGroups[key] !== undefined) {
+      delete this._libraryCollapsedGroups[key];
+      this.commitLibraryCollapsedGroups();
+    }
   }
 
   commitLibraryCollapsedGroups() {

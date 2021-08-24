@@ -8,20 +8,22 @@ import ViewUtil from './view-util.js';
 /**
  *
  */
-export default class HistoryContextMenu extends ContextMenu {
+class TrackListItemContextMenu extends ContextMenu {
 
   data;
 
+  hello = Math.random();
+
   constructor() {
-    super($("#historyContextMenu"));
+    super($("#trackListItemContextMenu"));
   }
 
-  show($holder, $button, historyListItemData) {
+  show($holder, $button, data) {
     super.show($holder, $button);
-    this.data = historyListItemData;
+    this.data = data;
   }
 
-  // @Override
+  // override
   onItemClick(event) {
     super.onItemClick(event);
 
@@ -31,7 +33,7 @@ export default class HistoryContextMenu extends ContextMenu {
     let uri;
     let commands;
     switch (id) {
-      case 'historyContextQueue':
+      case 'trackListItemContextQueue':
         uri = DataUtil.makeUriUsingAlbumAndTrack(this.data['album'], this.data['track']);
         commands = [
           Commands.playlistAdd(uri),
@@ -40,7 +42,7 @@ export default class HistoryContextMenu extends ContextMenu {
         ];
         Service.queueCommandsFront(commands);
         break;
-      case 'historyContextPlayNow':
+      case 'trackListItemContextPlayNow':
         uri = DataUtil.makeUriUsingAlbumAndTrack(this.data['album'], this.data['track']);
         commands = [
           Commands.stop(),
@@ -52,9 +54,11 @@ export default class HistoryContextMenu extends ContextMenu {
         ];
         Service.queueCommandsFront(commands);
         break;
-      case 'historyContextAlbum':
+      case 'trackListItemContextAlbum':
         $(document).trigger('history-context-album', this.data['album']);
         break;
     }
   }
 }
+
+export default new TrackListItemContextMenu(); // NB! singleton-like

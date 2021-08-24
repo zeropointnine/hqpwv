@@ -53,18 +53,29 @@
     margin-left:-6px;
   }
   span.w {
-    margin-left:-2px;
+    margin-left:-3px;
   }
   span.v {
     margin-left:-4px;
   }
 
   @include mobile {
-    top:-26px;
+    top:-28px;
     left:-5px;
     span {
-      font-size: 60px;
-      margin-left:0 !important;
+      font-size: 61px;
+    }
+    span.q {
+      margin-left:-5px;
+    }
+    span.p {
+      margin-left:-5px;
+    }
+    span.w {
+      margin-left:-1px;
+    }
+    span.v {
+      margin-left:-3px;
     }
   }
 }

@@ -1,33 +1,13 @@
 import HqpConfigModel from './hqp-config-model.js';
-import LibraryUtil from './library-util.js';
+import LibraryDataUtil from './library-data-util.js';
 import ModalPointerUtil from './modal-pointer-util.js';
 import Settings from './settings.js';
 import ViewUtil from './view-util.js';
 
 /**
- *
+ * Util fns for making 'library groups' 
  */
 class LibraryGroupUtil {
-
-  makeGroups(albums, groupType) {
-    if (groupType == 'path') {
-      return this.makeDirectoryGroups(albums);
-    }
-    if (groupType == 'bitrate') {
-      return this.makeBitrateGroups(albums);
-    }
-    if (groupType == 'genre') {
-      return this.makeGenreGroups(albums);
-    }
-    return this.makeIdentity(albums);
-  }
-
-  /** Sorts the elements within each individual group. */
-  sortAlbumsWithinGroups(groups) {
-    for (const group of groups) {
-      LibraryUtil.sortAlbums(group, Settings.librarySortType);
-    }
-  }
 
   /**
    * Find the "directory level" at which albums no longer share the base directory paths.
@@ -70,14 +50,12 @@ class LibraryGroupUtil {
       }
       level++;
     }
-
-
   }
 
   /**
    *
    */
-  makeDirectoryGroups(albums) {
+  makeDirectoryGroups_ORIG(albums) {
     const dirLevel = this.findBaseDirectoryLevel(albums);
 
     const groups = [];
@@ -88,7 +66,7 @@ class LibraryGroupUtil {
 
     // Make shallow copy and sort by path
     albums = [...albums];
-    LibraryUtil.sortAlbums(albums, 'path');
+    albums.sort(LibraryDataUtil.sortByPath);
 
     for (const album of albums) {
       const path = album['@_path'];
@@ -105,6 +83,33 @@ class LibraryGroupUtil {
       lastSubdir = subdir;
     }
     return { groups: groups, labels: labels };
+  }
+
+  makeDirectoryGroups(albums) {
+    const dirLevel = this.findBaseDirectoryLevel(albums);
+
+    const o = {}; // special intermediate object
+    for (const album of albums) {
+      const path = album['@_path'];
+      const pathArray = this.makePathArray(path);
+      const subdir = pathArray[dirLevel];
+      if (!o[subdir]) {
+        o[subdir] = []
+      }
+      o[subdir].push(album);
+    }
+
+    const a = Object.keys(o);
+    a.sort();
+
+    const labels = [];
+    const groups = [];
+    for (const key of a) {
+      labels.push(key);
+      groups.push(o[key]);
+    }
+
+    return { labels:labels, groups: groups };
   }
 
   /**

@@ -1,16 +1,17 @@
+import AlbumUtil from './album-util.js';
+import DataUtil from './data-util.js';
+import LibraryAlbumOptionsView from './library-album-options-view.js';
+import LibraryAlbumsView from './library-albums-view.js';
+import LibrarySearchOptionsView from './library-search-options-view.js';
+import LibrarySearchView from './library-search-view.js';
+import LibraryDataUtil from './library-data-util.js';
+import Model from './model.js';
+import Service from './service.js';
+import Settings from './settings.js';
+import Subview from './subview.js';
 import Util from './util.js';
 import Values from './values.js';
 import ViewUtil from './view-util.js';
-import AlbumUtil from './album-util.js';
-import LibraryUtil from './library-util.js';
-import LibraryGroupUtil from './library-group-util.js';
-import Settings from './settings.js';
-import Subview from './subview.js';
-import Breakpoint from './breakpoint.js';
-import DataUtil from './data-util.js';
-import Model from './model.js';
-import Service from './service.js';
-import LibraryOptionsView from './library-options-view.js';
 
 /**
  * Library view containing a list of albums.
@@ -18,33 +19,30 @@ import LibraryOptionsView from './library-options-view.js';
  */
 export default class LibraryView extends Subview {
 
-  $content;
-  $itemCount;
+  $searchButton;
+  $albumViewItemCount;
   $spinner;
-  optionsView;
 
-  intersectionObs;
-
-  /** Filtered albums. */
-  albums;
-
-  /** Array of album arrays. */
-  groups;
-  /** Parallel array of labels that go with each group. */
-  labels;
+  albumOptionsView;
+  albumsView;
+  searchOptionsView;
+  searchView;
 
   constructor() {
     super($("#libraryView"));
-  	this.$content = this.$el.find("#libraryContent");
-    this.$itemCount = this.$el.find('#libraryNumbers');
+    this.$searchButton = this.$el.find('#librarySearchButton');
+    this.$albumViewItemCount = this.$el.find('#libraryNumbers');
     this.$spinner = this.$el.find('#librarySpinner');
 
-    this.optionsView = new LibraryOptionsView(this.$el.find("#libraryOptionsView"));
+    this.albumOptionsView = new LibraryAlbumOptionsView(this.$el.find("#libraryAlbumOptionsView"));
+    this.albumsView = new LibraryAlbumsView(this.$el.find('#libraryAlbumsView'));
+    this.searchOptionsView = new LibrarySearchOptionsView(this.$el.find("#librarySearchOptionsView"));
+    this.searchView = new LibrarySearchView(this.$el.find('#librarySearchView'));
 
-    $(document).on('init-images-finished', e => this.forceReloadImages());
-
-    const config = { root: this.$el[0], rootMargin: (window.screen.height * 0.66) + 'px', threshold: 0  };
-    this.intersectionObs = new IntersectionObserver(this.onIntersection, config);
+    this.$searchButton.on('click tap', this.onSearchButton);
+    Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
+    Util.addAppListener(this, 'library-search-close-button', this.showAlbumsView);
+    Util.addAppListener(this, 'library-albums-view-populated', this.onAlbumViewPopulated);
   }
 
   setSpinnerState(b) {
@@ -58,191 +56,55 @@ export default class LibraryView extends Subview {
     }
   }
 
-  update() {
+  showFirstTime() {
     this.setSpinnerState(false);
-
-    const startTime = new Date().getTime();
-		if (this.intersectionObs) {
-      this.intersectionObs.disconnect();
-    }
-
-    // Make filtered albums array
-    const a = Model.library.albums;
-    this.albums = LibraryUtil.makeFilteredAlbumsArray(a);
-
-    // Make groups
-    const groupType = Settings.libraryGroupType;
-    const o = LibraryGroupUtil.makeGroups(this.albums, groupType);
-    this.groups = o['groups'];
-    this.labels = o['labels'];
-
-    // Sort each group
-    LibraryGroupUtil.sortAlbumsWithinGroups(this.groups);
-
-    // Populate list
-    this.$content.empty();
-    const isLibraryEmpty = (Model.library.albums.length == 0);
-    const isLibraryViewEmpty = (this.albums.length == 0) || (this.groups.length == 0)
-        || (this.groups.length == 1 && this.groups[0].length == 0);
-    if (isLibraryEmpty) {
-      const $item = this.makeLibraryIsEmptyItem();
-      this.$content.append($item);
-    } else if (isLibraryViewEmpty) {
-      const $item = this.makeLibraryViewIsEmptyItem();
-      this.$content.append($item);
-    } else {
-      for (let i = 0; i < this.groups.length; i++) {
-        const group = this.groups[i];
-        const label = this.labels[i];
-        this.appendGroupDivs(group, label, groupType);
-      }
-    }
-
-    this.$itemCount.text(`(${this.albums.length}/${Model.library.albums.length})`);
-    $(document).trigger('library-view-populated', this.albums.length);
-
-    const duration = new Date().getTime() - startTime;
-    cl(`init - lib populate ${duration}ms`);
+    ViewUtil.setVisible(this.albumsView.$el, true);
+    this.showAlbumsView();
 	}
 
-  /**
-   * Makes a group DOM element and its list items.
-   */
-  appendGroupDivs(group, label=null, labelType=null) {
-
-    const isCollapsed = Settings.libraryCollapsedGroups.includes(label);
-
-    if (label) {
-      const $label = this.makeGroupLabel(label, labelType, group.length, isCollapsed);
-      this.$content.append($label);
-    }
-
-    const $group = $(`<div class="libraryGroup ${isCollapsed ? 'isCollapsed' : ''}"></div>`);
-
-    for (let i = 0; i < group.length; i++) {
-      const item = group[i];
-      const $item = this.makeListItem(item);
-      $item.on("click tap", this.onItemClick);
-      $item.on("keydown", this.onItemKeydown);
-      const img = $item.find('img')[0];
-      this.intersectionObs.observe(img);
-      $group.append($item);
-    }
-    this.$content.append($group);
+  showAlbumsView() {
+    this.searchOptionsView.hide();
+    this.searchView.hide();
+    ViewUtil.setDisplayed(this.$albumViewItemCount, true);
+    this.albumOptionsView.show();
+    this.albumsView.show();
   }
 
-  makeGroupLabel(label, labelType, numItems, isCollapsed) {
-
-    let iconClass;
-    switch (labelType) {
-      case 'path':
-        iconClass = 'folderIcon';
-        break;
-      case 'bitrate':
-        iconClass = 'waveIcon';
-        break;
-      case 'genre':
-        iconClass = 'genreIcon';
-        break;
-    }
-    const iconSpan = iconClass ? `<span class="icon ${iconClass}"></span>` : '';
-    const textSpan = `<span class="inner">${label}</span>`;
-
-    let s = '';
-    s += `<div class="libraryGroupLabel ${isCollapsed ? 'isCollapsed' : ''}">`;
-    s += `${iconSpan}${textSpan}`;
-    s += `<span class="count">(${numItems})</span>`;
-    s += `</div>`;
-
-    const $label = $(s);
-    $label.on('click tap', this.onGroupLabelClick);
-    return $label;
+  showSearchView() {
+    this.albumsView.hide();
+    this.albumOptionsView.hide();
+    ViewUtil.setDisplayed(this.$albumViewItemCount, false);
+    this.searchView.show();
+    this.searchOptionsView.show();
+    // update form controls to match search view values
+    this.searchOptionsView.$input[0].value = this.searchView.lowercaseSearchTerm;
+    this.searchOptionsView.updateOkButton();
   }
 
-  makeListItem(album) {
-    const hash = album['@_hash'];
-    const imgPath = DataUtil.getAlbumImageUrl(album);
-    const artist = album['@_artist'];
-    const albumText = album['@_album'];
-    const bits = AlbumUtil.getBitrateText(album);
-
-    let s = `<div class="libraryItem" data-hash="${hash}">`; /* tabindex="0" */
-    s +=      `<div class="libraryItemPicture"><img data-src=${imgPath} /></div>`;
-    s +=      `<div class="libraryItemText1">${artist}</div>`;
-    s +=      `<div class="libraryItemText2">${albumText}</div>`;
-    if (bits) {
-      s +=    `<div class="libraryItemBits">${bits}</div>`;
-    }
-    s +=    `</div>`; // todo fault
-    const $item = $(s);
-    return $item;
+  onModelLibraryUpdated() {
+    this.albumsView.setAlbums(Model.library.albums);
+    this.searchView.setAlbums(Model.library.albums);
   }
 
-  makeLibraryIsEmptyItem() {
-    const s = `<div id="libraryNoneItem">No items</div>`;
-    return $(s);
-  }
-
-  makeLibraryViewIsEmptyItem() {
-    let s;
-    s = `<div id="libraryNoneItem">`;
-    s += `<span class="colorAccent">Library is empty.</span><br><br>`;
-    s += `<span class="colorTextLess">Add music to your HQPlayer library<br>`;
-    s += `<em>(HQPlayer > File > Library...)</em><br>`;
-    s += `and reload page.</span>`;
-    s += `</div>`;
-    return $(s);
-  }
-
-  onItemClick = (event) => {
-    const $item = $(event.currentTarget);
-		const hash = $item.attr("data-hash");
-    const album = Model.library.getAlbumByAlbumHash(hash);
-		$(document).trigger('library-item-click', [album, $item]);
-	};
-
-  onItemKeydown = (event) => {
-    if (event.keyCode == 13) {
-      this.onItemClick(event);
+  onSearchButton = () => {
+    if (ViewUtil.isDisplayed(this.albumsView.$el)) {
+      this.showSearchView();
+    } else {
+      this.showAlbumsView();
     }
   };
 
-  onGroupLabelClick = (event) => {
-    const $label = $(event.currentTarget);
-    const $group = $label.next();
-    const shouldCollapse = !$label.hasClass('isCollapsed');
-    if (shouldCollapse) {
-      $label.addClass('isCollapsed');
-      $group.addClass('isCollapsed');
-    } else {
-      $label.removeClass('isCollapsed');
-      $group.removeClass('isCollapsed');
+  /** Returns true if handled/'eaten' */
+  onEscape() {
+    if (ViewUtil.isDisplayed(this.searchView.$el)) {
+      this.showAlbumsView();
+      return true;
     }
+    return false;
+  }
 
-    // update settings
-    const label = $label.find('.inner').text(); // ew
-    const index = Settings.libraryCollapsedGroups.indexOf(label);
-    if (shouldCollapse) {
-      if (index == -1) {
-        Settings.libraryCollapsedGroups.push(label);
-      }
-    } else {
-      if (index > -1) {
-        Settings.libraryCollapsedGroups.splice(index, 1);
-      }
-    }
-    Settings.commitLibraryCollapsedGroups();
-  };
+  onAlbumViewPopulated(numItems) {
+    this.$albumViewItemCount.text(`(${numItems}/${Model.library.albums.length})`);
+  }
 
-	onIntersection = (entries, self) => {
-    for (const entry of entries) {
-			const $img = $(entry.target);
-			if (entry.isIntersecting) {
-				const src = $img.attr('data-src');
-				$img.attr('src', src);
-			} else {
-				$img.removeAttr('src');
-			}
-		}
-	};
 }

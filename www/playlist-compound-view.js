@@ -102,13 +102,19 @@ export default class PlaylistCompoundView extends Subview {
     this.mainView.onShow();
 
     ViewUtil.animateCss(this.historyView.$el,
-        null,
-        () => this.historyView.$el.css('left', '100%'),
-        () => ViewUtil.setVisible(this.historyView.$el, false));
+      null,
+      () => this.historyView.$el.css('left', '100%'),
+      () => {
+        ViewUtil.setVisible(this.historyView.$el, false);
+        this.historyView.clear();
+      });
+
     ViewUtil.animateCss(this.mainView.$el,
-        () => { this.mainView.$el.css('left', '-100%'); ViewUtil.setVisible(this.mainView.$el, true); },
-        () => this.mainView.$el.css('left', '0%'),
-        () => {});
+      () => {
+        this.mainView.$el.css('left', '-100%');
+        ViewUtil.setVisible(this.mainView.$el, true); },
+      () => this.mainView.$el.css('left', '0%'),
+      () => {});
   }
 
   mainToLoadView() {

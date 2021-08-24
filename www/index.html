@@ -39,55 +39,61 @@
 			<div id="mainArea">
 
 				<div id="libraryView" class="subview" tabindex="0">
+
 						<div id="libraryHeaderView">
-							<span class="viewTitle">Library</span><span id="libraryNumbers"></span>
 
-							<div id="libraryOptionsView">
+							<span class="viewTitle">Library</span>
+							<span id="libraryNumbers"></span>
 
-								<div id="libraryGroupDropdown" class="dropdown">
-									<div class="dropdownTitle">Group by</div>
-									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="none">None (default)</div>
-										<div class="dropdownItem" data-value="genre">Genre</div>
-										<div class="dropdownItem" data-value="path">Subdirectory</div>
-										<div class="dropdownItem" data-value="bitrate">Samplerate</div>
+							<div style="margin-left:auto; display:flex;">
+								<div id="libraryAlbumOptionsView">
+									<div id="libraryGroupDropdown" class="dropdown">
+										<div class="dropdownTitle">Group by</div>
+										<div class="dropdownItems">
+											<div class="dropdownItem" data-value="none">None (default)</div>
+											<div class="dropdownItem" data-value="genre">Genre</div>
+											<div class="dropdownItem" data-value="path">Subdirectory</div>
+											<div class="dropdownItem" data-value="bitrate">Samplerate</div>
+										</div>
 									</div>
-								</div>
-								<div id="librarySortDropdown" class="dropdown">
-									<div class="dropdownTitle">Sort by</div>
-									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="artist">Artist</div>
-										<div class="dropdownItem" data-value="album">Album</div>
-										<div class="dropdownItem" data-value="random">Random</div>
+									<div id="librarySortDropdown" class="dropdown">
+										<div class="dropdownTitle">Sort by</div>
+										<div class="dropdownItems">
+											<div class="dropdownItem" data-value="artist">Artist</div>
+											<div class="dropdownItem" data-value="album">Album</div>
+											<div class="dropdownItem" data-value="random">Random</div>
+										</div>
 									</div>
-								</div>
-								<div id="libraryBitrateDropdown" class="dropdown">
-									<div class="dropdownTitle">Filter by</div>
-									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="all">Show all</div>
-										<div class="dropdownItem isMulti" data-value="pcm1fs">44/48K</div>
-										<div class="dropdownItem isMulti" data-value="pcm2fs">88/96K</div>
-										<div class="dropdownItem isMulti" data-value="pcm4fs">176/192K</div>
-										<div class="dropdownItem isMulti" data-value="pcm8fs">352/384K</div>
-										<div class="dropdownItem isMulti" data-value="pcm16fs_plus">705/768K+</div>
-										<div class="dropdownItem isMulti" data-value="dsd_all">DSD</div>
-									</div>
+									<div id="libraryOptionsButtons"><div
+											id="librarySortButton" class="iconButton toggleButton"></div><div
+											id="libraryGroupButton" class="iconButton toggleButton"></div></div>
+
+									<div class="librarySearchDivider"></div>
+
 								</div>
 
-								<div id="libraryOptionsButtons"><div
-									id="libraryGroupButton" class="iconButton toggleButton"></div><div
-									id="librarySortButton" class="iconButton toggleButton"></div><div
-									id="libraryBitrateButton" class="iconButton toggleButton"
-								></div></div>
-
+								<div id="librarySearchButton" class="iconButton toggleButton"></div>
 							</div>
+						</div>
 
+						<div id="librarySearchOptionsView">
+							<div id="librarySearchCloseButton" class="iconButton closeButton"></div>
+							<label for="librarySearchInput">Search</label>
+							<div class="inputLine">
+								<input id="librarySearchInput" name="librarySearchInput" type="text" required minlength="1" maxlength="64">
+								<div id="librarySearchOkButton" class="textButton">OK</div>
+							</div>
+							<div class="controlsLine">
+								<div id="searchArtistCheckbox" class="checkbox checkboxSmaller"></div> <span>Artists</span>
+								<div id="searchAlbumCheckbox" class="checkbox checkboxSmaller"></div> <span>Albums</span>
+								<div id="searchTrackCheckbox" class="checkbox checkboxSmaller"></div> <span>Tracks</span>
+							</div>
 						</div>
 
 						<div id="librarySpinner" class="spinner"></div>
 
-						<!-- libraryGroups and libraryItems inside those groups get added in here: -->
-						<div id="libraryContent"></div>
+						<div id="libraryAlbumsView"></div>
+						<div id="librarySearchView"></div>
 				</div>
 
 				<div id="albumView" class="subview" tabindex="0">
@@ -361,10 +367,10 @@
 					<div id="playlistContextRemove" class="contextItem">Remove</div>
 				</div>
 
-				<div id="historyContextMenu" class="contextMenu">
-					<div id="historyContextQueue" class="contextItem">Queue track</div>
-					<div id="historyContextPlayNow" class="contextItem">Play track now</div>
-					<div id="historyContextAlbum" class="contextItem">Go to album</div>
+				<div id="trackListItemContextMenu" class="contextMenu">
+					<div id="trackListItemContextQueue" class="contextItem">Queue track</div>
+					<div id="trackListItemContextPlayNow" class="contextItem">Play track now</div>
+					<div id="trackListItemContextAlbum" class="contextItem">Go to album</div>
 				</div>
 
 				<div id="loadPlaylistContextMenu" class="contextMenu">

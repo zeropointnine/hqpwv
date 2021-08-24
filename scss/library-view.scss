@@ -15,13 +15,10 @@ $marginUnitMobile: 6px;
 }
 
 #libraryHeaderView {
+  display:flex;
   margin-left:$space-unit;
   margin-right:$space-unit;
   height:36px;
-  flex:1;
-
-  display:flex;
-  flex-direction: row;
   align-items:center;
   @include mobile {
     margin-left:$space-unit-mobile;
@@ -45,7 +42,7 @@ $marginUnitMobile: 6px;
 }
 
 // Wrapper of the main library content
-#libraryContent {
+#libraryAlbumsView {
   margin-top:$space-unit;
 	margin-left:auto;
 	margin-right:auto;
@@ -56,6 +53,22 @@ $marginUnitMobile: 6px;
     margin-top:$space-unit-mobile;
     padding-left:6px; // net effect is that listitems align 12px from edges
     padding-right:6px;
+  }
+}
+
+// Wrapper for the search results content
+#librarySearchView {
+  margin-left:auto;
+  margin-right:auto;
+  max-width:1800px;
+
+  margin-top:$space-unit;
+  padding-left:$space-unit;
+  padding-right:$space-unit;
+  @include mobile {
+    margin-top:$space-unit-mobile;
+    padding-left:$space-unit-mobile;
+    padding-right:$space-unit-mobile;
   }
 }
 
@@ -239,8 +252,7 @@ $marginUnitMobile: 6px;
 // ---
 // options-related
 
-#libraryOptionsView {
-  margin-left:auto;
+#libraryAlbumOptionsView {
   display:flex;
 }
 
@@ -310,7 +322,122 @@ $marginUnitMobile: 6px;
   }
 }
 
-.isDisabled #libraryOptionsView {
+.librarySearchDivider {
+  margin: 0 12px 0 12px;
+  height:$icon-button-side;
+  border-left: 1px solid $color-listitem;
+  @include mobile {
+    margin: 0 6px 0 6px;
+  }
+}
+
+#librarySearchButton {
+  &:before {
+    background-image: url('./../img/icons/search_white_24dp.svg');
+  }
+}
+
+// ---
+
+#librarySearchOptionsView {
+  position:relative;
+  background-color: $color-listitem-less;
+  border:1px solid $color-listitem-selected-over;
+  margin: $space-unit $space-unit ($space-unit * 1.5) $space-unit;
+  padding: $space-unit $space-unit $space-unit $space-unit;
+
+  #librarySearchCloseButton {
+    position:absolute;
+    right:6px;
+    top:6px;
+  }
+
+  label {
+    display:block;
+    text-transform: uppercase;
+    font-size: $font-size-smaller;
+    font-weight: bold;
+  }
+
+  .inputLine {
+    margin-top: 16px;
+    display:flex;
+    #librarySearchInput {
+      border:1px solid $color-listitem;
+      height: $icon-button-side;
+      line-height: $icon-button-side;
+      padding-left:8px;
+      padding-right:8px;
+      background-color: $color-text;
+      color:$color-bg;
+
+      // not sure why this works
+      flex:1 1;
+      width:100%;
+    }
+    #librarySearchOkButton {
+      margin-left:12px;
+    }
+  }
+
+  .controlsLine {
+    margin-top: 16px;
+    display:flex;
+    align-items:center;
+
+    #searchArtistCheckbox { }
+    #searchAlbumCheckbox {
+      margin-left:16px;
+    }
+    #searchTrackCheckbox {
+      margin-left:16px;
+    }
+
+    @include mobile {
+    }
+  }
+}
+
+.isDisabled #libraryAlbumOptionsView {
   pointer-events: none;
 }
 
+// ---
+
+// rem, container is flex wrap
+.librarySearchTrackItem {
+  // has no bg col
+  display:flex;
+  align-items:center;
+  width:50%; // 2cols
+  padding: 0px 12px 0 12px;
+  margin-bottom: 24px;
+  cursor:default;
+
+  @include mobile {
+    width:100%;
+    padding: 0 8px 0 8px;
+    margin-bottom:18px;
+  }
+
+  .content {
+    width: calc(100% - 48px);
+  }
+
+  .song, .artist, .album {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .song {
+    font-weight: bold;
+  }
+  .artist, .album {
+    color:$color-text-less;
+  }
+
+
+  .moreButton {
+    margin-left:auto;
+  }
+}

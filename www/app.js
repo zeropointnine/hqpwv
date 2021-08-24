@@ -65,7 +65,6 @@ export default class App {
     Util.addAppListener(this, 'model-playlist-updated', this.updateMostStateClasses);
     Util.addAppListener(this, 'model-status-updated', this.updateMostStateClasses);
     Util.addAppListener(this, 'settings-meta-changed', this.onSettingsMetaChanged);
-    Util.addAppListener(this, 'library-settings-changed', this.onLibrarySettingsChanged);
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
     Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
     Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
@@ -77,6 +76,7 @@ export default class App {
 		Util.addAppListener(this, 'playlist-context-album history-context-album', this.playlistToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
     Util.addAppListener(this, 'hqp-settings-view-close', this.hideHqpSettingsView);
+    Util.addAppListener(this, 'app-do-escape', this.doEscape);
 
     $(document).on('keydown', this.onKeydown);
 
@@ -120,7 +120,7 @@ export default class App {
       }
       const duration = new Date().getTime() - startTime;
       cl(`init - async calls ${duration}ms`);
-      this.libraryView.update();
+      this.libraryView.showFirstTime();
     };
 
     const step2 = () => {
@@ -187,7 +187,7 @@ export default class App {
     this.hideSubview(this.hqpSettingsView);
   }
 
-  hideOnEscape() {
+  doEscape() {
     // first account for overlays, etc
     if (ViewUtil.isDisplayed(FullAlbumOverlay.$overlayScreen)) {
       FullAlbumOverlay.animateOut();
@@ -197,14 +197,13 @@ export default class App {
       this.playbarView.hideVolumePanel();
       return;
     }
-
     if ($(document.body).css('pointer-events') == 'none') {
       return;
     }
-    this.hideTopSubview();
+    this.doTopSubviewEscape();
   }
 
-  hideTopSubview() {
+  doTopSubviewEscape() {
     const subview = this.getTopSubview();
     switch (subview) {
       case this.albumView:
@@ -223,7 +222,7 @@ export default class App {
         this.hideHqpSettingsView();
         break;
       case this.libraryView:
-        // do nothing
+        this.libraryView.onEscape();
         break;
       default:
         if (subview) {
@@ -420,7 +419,7 @@ export default class App {
 
     switch (e.key) {
       case 'Escape':
-        this.hideOnEscape();
+        this.doEscape();
         this.minKeyDuration = long;
         break;
       case 'q':
@@ -477,10 +476,6 @@ export default class App {
         break;
     }
   };
-
-  onLibrarySettingsChanged() {
-    this.libraryView.update();
-  }
 
   onSettingsMetaChanged() {
     if (Settings.isMetaEnabled && !MetaUtil.isReady && !MetaUtil.isFailed && !MetaUtil.isLoading) {

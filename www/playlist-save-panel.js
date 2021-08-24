@@ -37,9 +37,6 @@ export default class PlaylistSavePanel {
     }
     this.playlistArray = [...Model.playlist.array];
 
-    window.test = this.playlistArray;
-
-
     ViewUtil.setDisplayed(this.$el, true);
     this.updateSaveButton();
     this.$input.focus();

@@ -47,6 +47,13 @@
   line-height: $icon-button-side;
 }
 
+.lowKeyCaption {
+  font-size:$font-size-smaller;
+  font-weight:bold;
+  text-transform: uppercase;
+  color:$color-text-least;
+}
+
 @keyframes thumbPulse {
   0% { opacity:1; }
   50% { opacity:0.5; }

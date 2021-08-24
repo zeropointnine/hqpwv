@@ -36,7 +36,7 @@ export default class AlbumContextMenu extends ContextMenu {
     ViewUtil.setDisplayed(this.$itemPlayNowMultiple, !isLastItem);
   }
 
-  // @Override
+  // override
   onItemClick(event) {
     super.onItemClick(event);
     const $item = $(event.currentTarget);

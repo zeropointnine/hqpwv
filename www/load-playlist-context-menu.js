@@ -28,7 +28,7 @@ export default class LoadPlaylistContextMenu extends ContextMenu {
     this.index = index;
   }
 
-  // @Override
+  // override
   onItemClick(event) {
     super.onItemClick(event);
     const $item = $(event.currentTarget);

@@ -91,7 +91,7 @@ body {
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: hidden;
-  background-color: #101010;
+  background-color: #181818;
 }
 
 ul {
@@ -144,7 +144,7 @@ input::-moz-focus-inner {
   height: 100%;
   overflow-y: scroll;
   padding: 16px;
-  background-color: #101010;
+  background-color: #181818;
   transition: opacity 333ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 .subview:focus {
@@ -160,6 +160,13 @@ input::-moz-focus-inner {
   font-size: 16px;
   font-weight: bold;
   line-height: 36px;
+}
+
+.lowKeyCaption {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #666;
 }
 
 @keyframes thumbPulse {
@@ -291,7 +298,7 @@ input::-moz-focus-inner {
   z-index: 10001;
   visibility: hidden;
   top: 0;
-  background: #101010;
+  background: #181818;
   border: 1px solid #282828;
 }
 .contextMenu .contextItem {
@@ -335,6 +342,7 @@ input::-moz-focus-inner {
   line-height: 36px;
   padding: 0 16px 0 34px;
   cursor: pointer;
+  white-space: nowrap;
 }
 .dropdown .dropdownItems .dropdownItem:hover {
   background-color: #323232;
@@ -385,6 +393,11 @@ input::-moz-focus-inner {
   cursor: default;
 }
 
+.checkboxSmaller {
+  width: 30px;
+  height: 30px;
+}
+
 .spinner:before {
   content: " ";
   display: block;
@@ -424,7 +437,7 @@ input::-moz-focus-inner {
 
 #mainArea {
   position: relative;
-  background-color: #101010;
+  background-color: #181818;
   flex: 1;
   overflow: clip;
 }
@@ -436,7 +449,7 @@ input::-moz-focus-inner {
   border-bottom: 1px solid #282828;
   display: flex;
   align-items: center;
-  background-color: #101010;
+  background-color: #181818;
   transition: margin-top 100ms ease-out;
 }
 #topBar.isAnimating {
@@ -472,19 +485,30 @@ input::-moz-focus-inner {
   margin-left: -6px;
 }
 #appLogoInner span.w {
-  margin-left: -2px;
+  margin-left: -3px;
 }
 #appLogoInner span.v {
   margin-left: -4px;
 }
 @media (max-width: 480px) {
   #appLogoInner {
-    top: -26px;
+    top: -28px;
     left: -5px;
   }
   #appLogoInner span {
-    font-size: 60px;
-    margin-left: 0 !important;
+    font-size: 61px;
+  }
+  #appLogoInner span.q {
+    margin-left: -5px;
+  }
+  #appLogoInner span.p {
+    margin-left: -5px;
+  }
+  #appLogoInner span.w {
+    margin-left: -1px;
+  }
+  #appLogoInner span.v {
+    margin-left: -3px;
   }
 }
 
@@ -599,7 +623,7 @@ input::-moz-focus-inner {
   left: 50%;
   margin-left: -350px;
   top: 35px;
-  background-color: #101010;
+  background-color: #181818;
   border: 2px solid #282828;
 }
 #generalDialogOuter #generalDialog #generalDialogTitle {
@@ -650,7 +674,7 @@ input::-moz-focus-inner {
   flex: 0 0 auto;
   height: auto;
   padding: 12px 0 12px 0;
-  background-color: #101010;
+  background-color: #181818;
   z-index: 10001;
 }
 
@@ -1044,7 +1068,7 @@ input::-moz-focus-inner {
   left: 0;
   width: 100%;
   height: 36px;
-  background: #101010;
+  background: #181818;
   border-top: 1px solid #282828;
   padding: 0 16px 0 16px;
   font-size: 14px;
@@ -1307,7 +1331,7 @@ input::-moz-focus-inner {
   padding-left: 8px;
   padding-right: 8px;
   background-color: #ccc;
-  color: #101010;
+  color: #181818;
   flex: 1 1;
   width: 100%;
 }
@@ -1446,7 +1470,7 @@ input::-moz-focus-inner {
   font-size: 14px;
 }
 
-#historyContextAlbum {
+#trackListItemContextAlbum {
   border-top: 1px solid #282828;
 }
 
@@ -1516,10 +1540,10 @@ input::-moz-focus-inner {
 .loadNonItem {
   cursor: default;
   color: #999;
-  background-color: #101010;
+  background-color: #181818;
 }
 .loadNonItem:hover {
-  background-color: #101010;
+  background-color: #181818;
 }
 
 .loadFyiItem {
@@ -1542,12 +1566,10 @@ input::-moz-focus-inner {
 }
 
 #libraryHeaderView {
+  display: flex;
   margin-left: 16px;
   margin-right: 16px;
   height: 36px;
-  flex: 1;
-  display: flex;
-  flex-direction: row;
   align-items: center;
 }
 @media (max-width: 480px) {
@@ -1572,7 +1594,7 @@ input::-moz-focus-inner {
   transition: opacity 1s linear 1s;
 }
 
-#libraryContent {
+#libraryAlbumsView {
   margin-top: 16px;
   margin-left: auto;
   margin-right: auto;
@@ -1581,10 +1603,26 @@ input::-moz-focus-inner {
   max-width: 1800px;
 }
 @media (max-width: 480px) {
-  #libraryContent {
+  #libraryAlbumsView {
     margin-top: 12px;
     padding-left: 6px;
     padding-right: 6px;
+  }
+}
+
+#librarySearchView {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1800px;
+  margin-top: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+@media (max-width: 480px) {
+  #librarySearchView {
+    margin-top: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
@@ -1749,8 +1787,7 @@ input::-moz-focus-inner {
   opacity: 1;
 }
 
-#libraryOptionsView {
-  margin-left: auto;
+#libraryAlbumOptionsView {
   display: flex;
 }
 
@@ -1792,7 +1829,7 @@ input::-moz-focus-inner {
   height: 5px;
   background-color: #ccc;
   border-radius: 5px;
-  border: 2px solid #101010;
+  border: 2px solid #181818;
 }
 
 #libraryGroupDropdown,
@@ -1811,8 +1848,103 @@ input::-moz-focus-inner {
   transform: translate(0);
 }
 
-.isDisabled #libraryOptionsView {
+.librarySearchDivider {
+  margin: 0 12px 0 12px;
+  height: 36px;
+  border-left: 1px solid #282828;
+}
+@media (max-width: 480px) {
+  .librarySearchDivider {
+    margin: 0 6px 0 6px;
+  }
+}
+
+#librarySearchButton:before {
+  background-image: url("./../img/icons/search_white_24dp.svg");
+}
+
+#librarySearchOptionsView {
+  position: relative;
+  background-color: #1c1c1c;
+  border: 1px solid #424242;
+  margin: 16px 16px 24px 16px;
+  padding: 16px 16px 16px 16px;
+}
+#librarySearchOptionsView #librarySearchCloseButton {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+#librarySearchOptionsView label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+}
+#librarySearchOptionsView .inputLine {
+  margin-top: 16px;
+  display: flex;
+}
+#librarySearchOptionsView .inputLine #librarySearchInput {
+  border: 1px solid #282828;
+  height: 36px;
+  line-height: 36px;
+  padding-left: 8px;
+  padding-right: 8px;
+  background-color: #ccc;
+  color: #181818;
+  flex: 1 1;
+  width: 100%;
+}
+#librarySearchOptionsView .inputLine #librarySearchOkButton {
+  margin-left: 12px;
+}
+#librarySearchOptionsView .controlsLine {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+}
+#librarySearchOptionsView .controlsLine #searchAlbumCheckbox {
+  margin-left: 16px;
+}
+#librarySearchOptionsView .controlsLine #searchTrackCheckbox {
+  margin-left: 16px;
+}
+.isDisabled #libraryAlbumOptionsView {
   pointer-events: none;
+}
+
+.librarySearchTrackItem {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  padding: 0px 12px 0 12px;
+  margin-bottom: 24px;
+  cursor: default;
+}
+@media (max-width: 480px) {
+  .librarySearchTrackItem {
+    width: 100%;
+    padding: 0 8px 0 8px;
+    margin-bottom: 18px;
+  }
+}
+.librarySearchTrackItem .content {
+  width: calc(100% - 48px);
+}
+.librarySearchTrackItem .song, .librarySearchTrackItem .artist, .librarySearchTrackItem .album {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.librarySearchTrackItem .song {
+  font-weight: bold;
+}
+.librarySearchTrackItem .artist, .librarySearchTrackItem .album {
+  color: #999;
+}
+.librarySearchTrackItem .moreButton {
+  margin-left: auto;
 }
 
 #albumView {

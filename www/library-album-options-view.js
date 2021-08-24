@@ -11,32 +11,50 @@ import ModalPointerUtil from './modal-pointer-util.js';
  * Row of controls along the top of the lib view.
  * Manages dropdown toggle buttons and their dropdowns.
  */
-export default class LibraryOptionsView {
+export default class LibraryAlbumOptionsView {
 
-  $buttonsHolder = $('#libraryOptionsButtons');
+  $el;
+  $buttonsHolder;
+  $bitrateButton;
+  $sortButton;
+  $groupButton;
 
-  $bitrateButton = $('#libraryBitrateButton');
-  bitrateDropdown = new Dropdown($('#libraryBitrateDropdown'), true);
-
-  $sortButton = $('#librarySortButton');
-  sortDropdown = new Dropdown($('#librarySortDropdown'));
-
-  $groupButton = $('#libraryGroupButton');
-  groupDropdown = new Dropdown($('#libraryGroupDropdown'));
-
-  dropdowns = [this.sortDropdown, this.bitrateDropdown, this.groupDropdown];
-
+  bitrateDropdown;
+  sortDropdown;
+  groupDropdown;
+  dropdowns;
   pointerUtil;
 
   constructor($el) {
     this.$el = $el;
+
+    this.$buttonsHolder = this.$el.find('#libraryOptionsButtons');
+    this.$bitrateButton = this.$el.find('#libraryBitrateButton');
+    this.$sortButton = this.$el.find('#librarySortButton');
+    this.$groupButton = this.$el.find('#libraryGroupButton');
+
+    this.bitrateDropdown = new Dropdown($('#libraryBitrateDropdown'), true);
+    this.sortDropdown = new Dropdown($('#librarySortDropdown'));
+    this.groupDropdown = new Dropdown($('#libraryGroupDropdown'));
+    this.dropdowns = [this.sortDropdown, this.bitrateDropdown, this.groupDropdown];
+
+    this.pointerUtil = new ModalPointerUtil(this.$el, () => this.hideDropdowns());
+
     this.$sortButton.on('click tap', e => this.toggleDropdown(this.sortDropdown));
     this.$bitrateButton.on('click tap', e => this.toggleDropdown(this.bitrateDropdown));
     this.$groupButton.on('click tap', e => this.toggleDropdown(this.groupDropdown));
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
-    this.pointerUtil = new ModalPointerUtil(this.$el, () => this.hideDropdowns());
 
-    Util.addAppListener(this, 'library-view-populated', this.onLibraryViewPopulated);
+    // todo this is probably no longer needed after adding group-by-bitrate; delete stuff
+    ViewUtil.setDisplayed(this.$bitrateButton, false);
+  }
+
+  show() {
+    ViewUtil.setDisplayed(this.$el, "flex");
+  }
+
+  hide() {
+    ViewUtil.setDisplayed(this.$el, false);
   }
 
   toggleDropdown(dropdown) {
@@ -116,13 +134,13 @@ export default class LibraryOptionsView {
   handleSortSelect(value) {
     this.hideDropdowns();
     Settings.librarySortType = value;
-    setTimeout(() => $(document).trigger('library-settings-changed'), 16);
+    setTimeout(() => $(document).trigger('library-albums-sort-changed'), 16);
   }
 
   handleGroupSelect(value) {
     this.hideDropdowns();
     Settings.libraryGroupType = value;
-    setTimeout(() => $(document).trigger('library-settings-changed'), 16);
+    setTimeout(() => $(document).trigger('library-albums-group-changed'), 16);
   }
 
   handleBitrateSelect(value) {
@@ -160,14 +178,6 @@ export default class LibraryOptionsView {
     }
     Settings.commitLibraryBitratesArray();
     this.bitrateDropdown.selectItems(Settings.libraryBitratesArray);
-    $(document).trigger('library-settings-changed');
-  }
-
-  onLibraryViewPopulated(numItems) {
-    if (numItems == 0 && Model.library.albums.length > 0) {
-      this.$bitrateButton.addClass('badge');
-    } else {
-      this.$bitrateButton.removeClass('badge');
-    }
+    $(document).trigger('library-albums-options-changed'); // todo no longer correct
   }
 }

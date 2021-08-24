@@ -50,6 +50,7 @@
       line-height: $ht;
       padding:0 16px 0 34px;
       cursor: pointer;
+      white-space: nowrap;
       &:hover {
         background-color: $color-listitem-over;
       }
@@ -107,6 +108,12 @@
   .isDisabled {
     cursor:default;
   }
+}
+
+// modifies .checkbox
+.checkboxSmaller {
+  width: 30px;
+  height: 30px;
 }
 
 .spinner {

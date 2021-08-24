@@ -32,7 +32,7 @@ export default class ContextMenu {
    * Subclass should override and super.
    *
    * @param $holder is the holder which contains the button which triggers the context menu
-   * @param $button is the button which triggers the context menu
+   * @param $button
    * @param rest are any other params the subclass may need (eg, some data)
    */
   show($holder, $button, ...rest) {
