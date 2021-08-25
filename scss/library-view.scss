@@ -30,7 +30,7 @@ $marginUnitMobile: 6px;
   margin-left:8px;
   font-size: $font-size-smaller;
   padding-top:3px;
-  color:$color-text-least;
+  color:var(--col-text-least);
 }
 
 #librarySpinner {
@@ -94,8 +94,8 @@ $marginUnitMobile: 6px;
   padding-left:28px;
   padding-right:12px;
   height:$icon-button-side;
-  border-top: 1px solid $color-listitem;
-  // border-left: 1px solid $color-listitem;
+  border-top: 1px solid var(--col-listitem);
+  // border-left: 1px solid var(--col-listitem);
   margin-bottom: 8px;
 
   cursor:pointer;
@@ -128,7 +128,7 @@ $marginUnitMobile: 6px;
     margin-left: 10px;
     padding-top:4px;
     font-size: $font-size-smaller;
-    color: $color-text-least;
+    color: var(--col-text-least);
   }
 }
 
@@ -147,7 +147,7 @@ $marginUnitMobile: 6px;
 .libraryItem {
   position:relative;
 	width: calc(16.666% - #{$marginUnit * 2}); // 6 cols from 1501px to maxwidth
-	background:$color-listitem;
+	background:var(--col-listitem);
   cursor:pointer;
 
 	padding: 12px;
@@ -232,7 +232,7 @@ $marginUnitMobile: 6px;
   position:absolute;
   line-height:20px;
   font-size:12px;
-  background-color:$color-listitem;
+  background-color:var(--col-listitem);
   padding-left:6px;
   padding-right:4px;
   padding-bottom:2px;
@@ -264,7 +264,7 @@ $marginUnitMobile: 6px;
     position:absolute;
     width:100%;
     height:100%;
-    background-color: $color-listitem;
+    background-color: var(--col-listitem);
     opacity: 0;
   }
   &.isSelected {
@@ -299,9 +299,9 @@ $marginUnitMobile: 6px;
       top: 4px;
       width: 5px;
       height: 5px;
-      background-color: $color-text;
+      background-color: var(--col-text);
       border-radius: 5px;
-      border:2px solid $color-bg;
+      border:2px solid var(--col-bg);
     }
   }
 }
@@ -325,7 +325,7 @@ $marginUnitMobile: 6px;
 .librarySearchDivider {
   margin: 0 12px 0 12px;
   height:$icon-button-side;
-  border-left: 1px solid $color-listitem;
+  border-left: 1px solid var(--col-listitem);
   @include mobile {
     margin: 0 6px 0 6px;
   }
@@ -341,8 +341,8 @@ $marginUnitMobile: 6px;
 
 #librarySearchOptionsView {
   position:relative;
-  background-color: $color-listitem-less;
-  border:1px solid $color-listitem-selected-over;
+  background-color: var(--col-listitem-less);
+  border:1px solid var(--col-listitem-selected-over);
   margin: $space-unit $space-unit ($space-unit * 1.5) $space-unit;
   padding: $space-unit $space-unit $space-unit $space-unit;
 
@@ -363,13 +363,13 @@ $marginUnitMobile: 6px;
     margin-top: 16px;
     display:flex;
     #librarySearchInput {
-      border:1px solid $color-listitem;
+      border:1px solid var(--col-listitem);
       height: $icon-button-side;
       line-height: $icon-button-side;
       padding-left:8px;
       padding-right:8px;
-      background-color: $color-text;
-      color:$color-bg;
+      background-color: var(--col-text);
+      color:var(--col-bg);
 
       // not sure why this works
       flex:1 1;
@@ -433,7 +433,7 @@ $marginUnitMobile: 6px;
     font-weight: bold;
   }
   .artist, .album {
-    color:$color-text-less;
+    color:var(--col-text-less);
   }
 
 

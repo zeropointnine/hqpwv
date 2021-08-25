@@ -39,6 +39,19 @@
   src: local(""), url("../fonts/noto-serif-sc-v8-latin-regular.woff2") format("woff2"), url("../fonts/noto-serif-sc-v8-latin-regular.woff") format("woff");
   /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
+:root {
+  --col-bg: #181818;
+  --col-listitem-less: #1c1c1c;
+  --col-listitem: #282828;
+  --col-listitem-over: #323232;
+  --col-listitem-selected: #383838;
+  --col-listitem-selected-over: #424242;
+  --col-text: #ccc;
+  --col-text-less: #999;
+  --col-text-least: #666;
+  --col-accent: #ff2200;
+}
+
 .icon {
   display: inline-block;
   width: 36px;
@@ -57,6 +70,7 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  filter: brightness(0%);
 }
 
 * {
@@ -65,8 +79,8 @@
   box-sizing: border-box;
   font-family: "Noto Sans TC", sans-serif;
   font-size: 16px;
-  color: #ccc;
-  scrollbar-color: #424242 #1c1c1c;
+  color: var(--col-text);
+  scrollbar-color: var(--col-listitem-selected-over) var(--col-listitem-less);
   -webkit-tap-highlight-color: transparent;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -77,7 +91,7 @@
   -webkit-user-drag: none;
 }
 * :focus {
-  outline: 1px dotted #ccc;
+  outline: 1px dotted var(--col-text);
 }
 @media (max-width: 480px) {
   * {
@@ -91,7 +105,7 @@ body {
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: hidden;
-  background-color: #181818;
+  background-color: var(--col-bg);
 }
 
 ul {
@@ -122,11 +136,11 @@ input::-moz-focus-inner {
 }
 
 .colorAccent {
-  color: #ff2200;
+  color: var(--col-accent);
 }
 
 .colorTextLess {
-  color: #999;
+  color: var(--col-text-less);
 }
 
 .fontSizeSmaller {
@@ -144,7 +158,7 @@ input::-moz-focus-inner {
   height: 100%;
   overflow-y: scroll;
   padding: 16px;
-  background-color: #181818;
+  background-color: var(--col-bg);
   transition: opacity 333ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 .subview:focus {
@@ -166,7 +180,7 @@ input::-moz-focus-inner {
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
-  color: #666;
+  color: var(--col-text-least);
 }
 
 @keyframes thumbPulse {
@@ -185,7 +199,7 @@ input::-moz-focus-inner {
   width: 36px;
   height: 36px;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--col-listitem);
   position: relative;
 }
 .iconButton:before {
@@ -200,6 +214,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  filter: brightness(0%);
 }
 .iconButton:after {
   content: " ";
@@ -210,11 +225,11 @@ input::-moz-focus-inner {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: #1c1c1c;
+  background-color: var(--col-listitem-less);
   transition: opacity 400ms ease-out;
 }
 .iconButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--col-listitem-over);
 }
 
 .iconButton.isDisabled {
@@ -231,19 +246,19 @@ input::-moz-focus-inner {
   opacity: 0.25;
 }
 .toggleButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--col-listitem-over);
 }
 .toggleButton:hover:before {
   opacity: 0.7;
 }
 .toggleButton.isSelected {
-  background-color: #383838;
+  background-color: var(--col-listitem-selected);
 }
 .toggleButton.isSelected:before {
   opacity: 0.7;
 }
 .toggleButton.isSelected:hover {
-  background-color: #424242;
+  background-color: var(--col-listitem-selected-over);
 }
 
 .moreButton:before {
@@ -276,16 +291,16 @@ input::-moz-focus-inner {
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--col-listitem);
   cursor: pointer;
 }
 .textButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--col-listitem-over);
 }
 
 .textButton.isDisabled {
   pointer-events: none;
-  color: #666;
+  color: var(--col-text-least);
 }
 
 .buttonBlink:after {
@@ -298,8 +313,8 @@ input::-moz-focus-inner {
   z-index: 10001;
   visibility: hidden;
   top: 0;
-  background: #181818;
-  border: 1px solid #282828;
+  background: var(--col-bg);
+  border: 1px solid var(--col-listitem);
 }
 .contextMenu .contextItem {
   padding-left: 16px;
@@ -309,7 +324,7 @@ input::-moz-focus-inner {
   cursor: pointer;
 }
 .contextMenu .contextItem:hover {
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 
 .dropdown {
@@ -319,18 +334,18 @@ input::-moz-focus-inner {
   z-index: 9999;
   display: none;
   color: red;
-  border: 1px solid #282828;
+  border: 1px solid var(--col-listitem);
 }
 .dropdown .dropdownTitle {
   height: 36px;
   padding-left: 12px;
   padding-right: 12px;
-  color: #ccc;
+  color: var(--col-text);
   font-size: 13px;
   font-weight: bold;
   text-transform: uppercase;
   line-height: 36px;
-  background-color: #181818;
+  background-color: var(--col-bg);
 }
 .dropdown .dropdownItems {
   position: absolute;
@@ -338,7 +353,7 @@ input::-moz-focus-inner {
   left: 0;
   top: 36px;
   width: 100%;
-  background: #181818;
+  background: var(--col-bg);
 }
 .dropdown .dropdownItems .dropdownItem {
   line-height: 36px;
@@ -347,13 +362,13 @@ input::-moz-focus-inner {
   white-space: nowrap;
 }
 .dropdown .dropdownItems .dropdownItem:hover {
-  background-color: #323232;
+  background-color: var(--col-listitem-over);
 }
 .dropdown .dropdownItems .dropdownItem.isSelected {
   cursor: default;
 }
 .dropdown .dropdownItems .dropdownItem.isSelected:hover {
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 .dropdown .dropdownItems .dropdownItem.isSelected:before {
   display: block;
@@ -372,14 +387,14 @@ input::-moz-focus-inner {
   cursor: pointer;
 }
 .dropdown .dropdownItems .dropdownItem.isMulti.isSelected:hover {
-  background-color: #323232;
+  background-color: var(--col-listitem-over);
 }
 
 .checkbox {
   display: inline-block;
   width: 36px;
   height: 36px;
-  border: 2px solid #424242;
+  border: 2px solid var(--col-listitem-selected-over);
   margin-right: 6px;
   cursor: pointer;
 }
@@ -389,7 +404,7 @@ input::-moz-focus-inner {
   margin: 2px;
   width: calc(100% - 4px);
   height: calc(100% - 4px);
-  background-color: #424242;
+  background-color: var(--col-listitem-selected-over);
 }
 .checkbox .isDisabled {
   cursor: default;
@@ -439,7 +454,7 @@ input::-moz-focus-inner {
 
 #mainArea {
   position: relative;
-  background-color: #181818;
+  background-color: var(--col-bg);
   flex: 1;
   overflow: clip;
 }
@@ -448,10 +463,10 @@ input::-moz-focus-inner {
   position: relative;
   flex: 0 0 auto;
   padding: 8px 12px 8px 12px;
-  border-bottom: 1px solid #282828;
+  border-bottom: 1px solid var(--col-listitem);
   display: flex;
   align-items: center;
-  background-color: #181818;
+  background-color: var(--col-bg);
   transition: margin-top 100ms ease-out;
 }
 #topBar.isAnimating {
@@ -478,7 +493,7 @@ input::-moz-focus-inner {
 #appLogoInner span {
   font-size: 74px;
   font-weight: 900;
-  color: #282828;
+  color: var(--col-listitem);
 }
 #appLogoInner span.q {
   margin-left: -6px;
@@ -517,7 +532,7 @@ input::-moz-focus-inner {
 #appTitle {
   font-size: 18px;
   font-weight: bold;
-  color: #666;
+  color: var(--col-text-least);
   flex: 1;
   visibility: hidden;
 }
@@ -535,7 +550,7 @@ input::-moz-focus-inner {
   opacity: 0.66;
 }
 #settingsButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--col-listitem-over);
 }
 
 .settingsView #settingsButton,
@@ -551,7 +566,7 @@ input::-moz-focus-inner {
   opacity: 0.66;
 }
 #hqpSettingsButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--col-listitem-over);
 }
 
 .settingsView #hqpSettingsButton,
@@ -626,16 +641,16 @@ input::-moz-focus-inner {
   left: 50%;
   margin-left: -350px;
   top: 35px;
-  background-color: #181818;
-  border: 2px solid #282828;
+  background-color: var(--col-bg);
+  border: 2px solid var(--col-listitem);
 }
 #generalDialogOuter #generalDialog #generalDialogTitle {
-  color: #ff2200;
+  color: var(--col-accent);
   font-size: 16px;
   font-weight: bold;
   padding: 16px;
-  border-bottom: 2px solid #282828;
-  background-color: #1c1c1c;
+  border-bottom: 2px solid var(--col-listitem);
+  background-color: var(--col-listitem-less);
 }
 #generalDialogOuter #generalDialog #generalDialogMessage {
   padding: 16px 16px 0 16px;
@@ -655,7 +670,7 @@ input::-moz-focus-inner {
   background-color: rgba(0, 0, 0, 0.5);
 }
 #generalDialogOuter.isFatal #generalDialog #generalDialogTitle {
-  color: #ff2200;
+  color: var(--col-accent);
 }
 
 @media (max-width: 768px) {
@@ -677,7 +692,7 @@ input::-moz-focus-inner {
   flex: 0 0 auto;
   height: auto;
   padding: 12px 0 12px 0;
-  background-color: #181818;
+  background-color: var(--col-bg);
   z-index: 10001;
 }
 
@@ -864,7 +879,7 @@ input::-moz-focus-inner {
 
 .isStopped #playingTrackCurrentTime,
 .isStopped #playingTrackLength {
-  color: #999;
+  color: var(--col-text-less);
 }
 
 #volumeToggleButton {
@@ -873,7 +888,7 @@ input::-moz-focus-inner {
   top: 12px;
 }
 #volumeToggleButton.isSelected {
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 #volumeToggleButton:before {
   background-image: url("./../img/icons/volume_up_white_24dp.svg");
@@ -904,7 +919,7 @@ input::-moz-focus-inner {
   width: 68px;
   display: flex;
   flex-direction: column;
-  background-color: #1c1c1c;
+  background-color: var(--col-listitem-less);
   padding: 8px 8px 0 8px;
   transition: top 166ms ease-out;
 }
@@ -915,7 +930,7 @@ input::-moz-focus-inner {
   text-align: center;
   font-size: 14px;
   font-weight: bold;
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 
 .volumePanelButton {
@@ -928,7 +943,7 @@ input::-moz-focus-inner {
 .volumePanelButtonSpacer {
   width: 52px;
   height: 8px;
-  background: #282828;
+  background: var(--col-listitem);
 }
 
 #playProgressView {
@@ -937,7 +952,7 @@ input::-moz-focus-inner {
   height: 20px;
   margin-left: 12px;
   margin-right: 12px;
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 @media (max-width: 480px) {
   #playProgressView {
@@ -964,7 +979,7 @@ input::-moz-focus-inner {
   height: 100%;
   margin-left: -10px;
   cursor: pointer;
-  background-color: #ff2200;
+  background-color: var(--col-accent);
   transition: left 0s linear;
 }
 #playProgressThumb.isAnimating {
@@ -1000,7 +1015,7 @@ input::-moz-focus-inner {
   height: 84px;
   right: 60px;
   top: 6px;
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 @media (max-width: 480px) {
   #playbarStroke {
@@ -1020,7 +1035,7 @@ input::-moz-focus-inner {
 }
 
 .playlistView #showPlaylistButton {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: var(--col-listitem-selected);
 }
 
 #playlistNumberAt {
@@ -1037,7 +1052,7 @@ input::-moz-focus-inner {
   left: 11px;
   height: 1px;
   width: 14px;
-  background-color: #ccc;
+  background-color: var(--col-text);
 }
 
 #playlistNumberTotal {
@@ -1067,7 +1082,7 @@ input::-moz-focus-inner {
   width: 100%;
   height: 1px;
   top: 0px;
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 
 #toast {
@@ -1083,8 +1098,8 @@ input::-moz-focus-inner {
   left: 0;
   width: 100%;
   height: 36px;
-  background: #181818;
-  border-top: 1px solid #282828;
+  background: var(--col-bg);
+  border-top: 1px solid var(--col-listitem);
   padding: 0 16px 0 16px;
   font-size: 14px;
   text-align: center;
@@ -1137,7 +1152,7 @@ input::-moz-focus-inner {
 #snack #snackInner #snackLine1 {
   margin-left: 44px;
   margin-right: 38px;
-  color: #ff2200;
+  color: var(--col-accent);
   font-weight: bold;
 }
 #snack #snackInner #snackLine2 {
@@ -1147,20 +1162,20 @@ input::-moz-focus-inner {
 
 .playHisNonItem {
   padding-top: 16px;
-  color: #999;
+  color: var(--col-text-less);
 }
 
 .playHisItem {
   display: flex;
   align-items: center;
-  background-color: #1c1c1c;
+  background-color: var(--col-listitem-less);
   padding: 10px 12px 10px 12px;
   margin-top: 4px;
   margin-bottom: 4px;
   cursor: pointer;
 }
 .playHisItem:hover {
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 @media (max-width: 480px) {
   .playHisItem {
@@ -1186,9 +1201,9 @@ input::-moz-focus-inner {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   margin-bottom: 0px;
-  border-top: 1px solid #282828;
-  border-left: 1px solid #282828;
-  border-right: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
+  border-left: 1px solid var(--col-listitem);
+  border-right: 1px solid var(--col-listitem);
 }
 @media (max-width: 480px) {
   .playHisItem.groupFirst {
@@ -1200,8 +1215,8 @@ input::-moz-focus-inner {
 .playHisItem.groupMiddle {
   margin-top: 0px;
   margin-bottom: 0px;
-  border-left: 1px solid #282828;
-  border-right: 1px solid #282828;
+  border-left: 1px solid var(--col-listitem);
+  border-right: 1px solid var(--col-listitem);
 }
 
 .playHisItem.groupLast {
@@ -1209,9 +1224,9 @@ input::-moz-focus-inner {
   border-bottom-right-radius: 0px;
   margin-top: 0px;
   margin-bottom: 16px;
-  border-left: 1px solid #282828;
-  border-right: 1px solid #282828;
-  border-bottom: 1px solid #282828;
+  border-left: 1px solid var(--col-listitem);
+  border-right: 1px solid var(--col-listitem);
+  border-bottom: 1px solid var(--col-listitem);
 }
 @media (max-width: 480px) {
   .playHisItem.groupLast {
@@ -1222,7 +1237,7 @@ input::-moz-focus-inner {
 
 .playHisItem.single {
   margin-bottom: 16px;
-  border: 1px solid #282828;
+  border: 1px solid var(--col-listitem);
 }
 
 #playlistView {
@@ -1232,7 +1247,7 @@ input::-moz-focus-inner {
   transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 #playlistView.animIn {
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
 }
 
 #playlistMainView {
@@ -1268,12 +1283,13 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  filter: brightness(0%);
   left: 4px;
   width: 36px;
   background-image: url("./../img/icons/repeat_white_24dp.svg");
 }
 #playlistRepeatButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--col-listitem-over);
 }
 #playlistRepeatButton.isAll:before {
   background-image: url("./../img/icons/repeat_on_white_24dp.svg");
@@ -1290,10 +1306,10 @@ input::-moz-focus-inner {
 
 #playlistClearButton {
   background-color: transparent;
-  color: #999;
+  color: var(--col-text-less);
 }
 #playlistClearButton:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--col-listitem);
 }
 
 #playlistLoadButton,
@@ -1301,17 +1317,17 @@ input::-moz-focus-inner {
 #playlistHistoryButton {
   margin-left: 8px;
   background-color: transparent;
-  color: #999;
+  color: var(--col-text-less);
 }
 #playlistLoadButton:hover,
 #playlistSaveButton:hover,
 #playlistHistoryButton:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--col-listitem);
 }
 #playlistLoadButton.isDisabled,
 #playlistSaveButton.isDisabled,
 #playlistHistoryButton.isDisabled {
-  color: #666;
+  color: var(--col-text-least);
 }
 
 #playlistList {
@@ -1326,8 +1342,8 @@ input::-moz-focus-inner {
 #playlistSaver .inner {
   position: relative;
   padding: 16px;
-  background-color: #1c1c1c;
-  border: 1px solid #424242;
+  background-color: var(--col-listitem-less);
+  border: 1px solid var(--col-listitem-selected-over);
 }
 #playlistSaver label {
   display: block;
@@ -1340,13 +1356,13 @@ input::-moz-focus-inner {
   display: flex;
 }
 #playlistSaver .inputLine #playlistSaveInput {
-  border: 1px solid #282828;
+  border: 1px solid var(--col-listitem);
   height: 36px;
   line-height: 36px;
   padding-left: 8px;
   padding-right: 8px;
-  background-color: #ccc;
-  color: #181818;
+  background-color: var(--col-text);
+  color: var(--col-bg);
   flex: 1 1;
   width: 100%;
 }
@@ -1365,7 +1381,7 @@ input::-moz-focus-inner {
 }
 .playlistItem:before {
   width: 0;
-  background: #999;
+  background: var(--col-text-less);
   content: " ";
   position: absolute;
   left: 0;
@@ -1378,14 +1394,14 @@ input::-moz-focus-inner {
 .playlistItem .left {
   width: 48px;
   text-align: center;
-  color: #666;
+  color: var(--col-text-least);
 }
 .playlistItem .right {
   margin-left: 6px;
 }
 .playlistItem .duration {
   font-size: 14px;
-  color: #666;
+  color: var(--col-text-least);
 }
 
 .isPaused .playlistItem.selected:before {
@@ -1405,7 +1421,7 @@ input::-moz-focus-inner {
 
 .playlistItemViews {
   font-size: 14px;
-  color: #666;
+  color: var(--col-text-least);
   margin-right: 6px;
 }
 
@@ -1416,7 +1432,7 @@ input::-moz-focus-inner {
   cursor: default;
 }
 .playlistAlbumLine:hover {
-  background-color: #1c1c1c;
+  background-color: var(--col-listitem-less);
 }
 .playlistAlbumLine .playlistAlbumButton {
   display: flex;
@@ -1425,7 +1441,7 @@ input::-moz-focus-inner {
   cursor: pointer;
 }
 .playlistAlbumLine .playlistAlbumButton:hover {
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 .playlistAlbumLine .playlistAlbumButton img {
   width: 48px;
@@ -1440,7 +1456,7 @@ input::-moz-focus-inner {
   margin-left: auto;
   font-size: 14px;
   line-height: 18px;
-  color: #666;
+  color: var(--col-text-least);
   text-align: right;
   align-self: start;
 }
@@ -1461,12 +1477,12 @@ input::-moz-focus-inner {
   cursor: default;
 }
 .historyItem:hover {
-  background-color: #1c1c1c;
+  background-color: var(--col-listitem-less);
 }
 .historyItem .left {
   min-width: 18px;
   text-align: right;
-  color: #666;
+  color: var(--col-text-least);
 }
 .historyItem .right {
   margin-left: 16px;
@@ -1481,12 +1497,12 @@ input::-moz-focus-inner {
 }
 
 .historyItemAgo {
-  color: #999;
+  color: var(--col-text-less);
   font-size: 14px;
 }
 
 #trackListItemContextAlbum {
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
 }
 
 #loadPlaylistView {
@@ -1537,6 +1553,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  filter: brightness(0%);
   background-position: 8px center;
   background-image: url("./../img/icons/featured_play_list_white_24dp.svg");
 }
@@ -1544,7 +1561,7 @@ input::-moz-focus-inner {
   display: inline-block;
   margin-left: 6px;
   font-size: 14px;
-  color: #999;
+  color: var(--col-text-less);
   line-height: 36px;
   padding-top: 2px;
 }
@@ -1554,23 +1571,23 @@ input::-moz-focus-inner {
 
 .loadNonItem {
   cursor: default;
-  color: #999;
-  background-color: #181818;
+  color: var(--col-text-less);
+  background-color: var(--col-bg);
 }
 .loadNonItem:hover {
-  background-color: #181818;
+  background-color: var(--col-bg);
 }
 
 .loadFyiItem {
   font-size: 14px;
-  color: #999;
+  color: var(--col-text-less);
 }
 .loadFyiItem:before {
   background-image: url("./../img/icons/info_white_24dp.svg");
 }
 
 #loadContextAlbum {
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
 }
 
 #libraryView {
@@ -1598,7 +1615,7 @@ input::-moz-focus-inner {
   margin-left: 8px;
   font-size: 14px;
   padding-top: 3px;
-  color: #666;
+  color: var(--col-text-least);
 }
 
 #librarySpinner {
@@ -1650,7 +1667,7 @@ input::-moz-focus-inner {
   padding-left: 28px;
   padding-right: 12px;
   height: 36px;
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
   margin-bottom: 8px;
   cursor: pointer;
 }
@@ -1666,6 +1683,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  filter: brightness(0%);
   background-position: 6px center;
   background-image: url("./../img/icons/expand_less_white_24dp.svg");
 }
@@ -1692,7 +1710,7 @@ input::-moz-focus-inner {
   margin-left: 10px;
   padding-top: 4px;
   font-size: 14px;
-  color: #666;
+  color: var(--col-text-least);
 }
 
 .libraryGroup {
@@ -1707,7 +1725,7 @@ input::-moz-focus-inner {
 .libraryItem {
   position: relative;
   width: calc(16.666% - 16px);
-  background: #282828;
+  background: var(--col-listitem);
   cursor: pointer;
   padding: 12px;
   margin-left: 8px;
@@ -1782,7 +1800,7 @@ input::-moz-focus-inner {
   position: absolute;
   line-height: 20px;
   font-size: 12px;
-  background-color: #282828;
+  background-color: var(--col-listitem);
   padding-left: 6px;
   padding-right: 4px;
   padding-bottom: 2px;
@@ -1815,7 +1833,7 @@ input::-moz-focus-inner {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: #282828;
+  background-color: var(--col-listitem);
   opacity: 0;
 }
 #libraryOptionsButtons.isSelected:before {
@@ -1842,9 +1860,9 @@ input::-moz-focus-inner {
   top: 4px;
   width: 5px;
   height: 5px;
-  background-color: #ccc;
+  background-color: var(--col-text);
   border-radius: 5px;
-  border: 2px solid #181818;
+  border: 2px solid var(--col-bg);
 }
 
 #libraryGroupDropdown,
@@ -1866,7 +1884,7 @@ input::-moz-focus-inner {
 .librarySearchDivider {
   margin: 0 12px 0 12px;
   height: 36px;
-  border-left: 1px solid #282828;
+  border-left: 1px solid var(--col-listitem);
 }
 @media (max-width: 480px) {
   .librarySearchDivider {
@@ -1880,8 +1898,8 @@ input::-moz-focus-inner {
 
 #librarySearchOptionsView {
   position: relative;
-  background-color: #1c1c1c;
-  border: 1px solid #424242;
+  background-color: var(--col-listitem-less);
+  border: 1px solid var(--col-listitem-selected-over);
   margin: 16px 16px 24px 16px;
   padding: 16px 16px 16px 16px;
 }
@@ -1901,13 +1919,13 @@ input::-moz-focus-inner {
   display: flex;
 }
 #librarySearchOptionsView .inputLine #librarySearchInput {
-  border: 1px solid #282828;
+  border: 1px solid var(--col-listitem);
   height: 36px;
   line-height: 36px;
   padding-left: 8px;
   padding-right: 8px;
-  background-color: #ccc;
-  color: #181818;
+  background-color: var(--col-text);
+  color: var(--col-bg);
   flex: 1 1;
   width: 100%;
 }
@@ -1956,7 +1974,7 @@ input::-moz-focus-inner {
   font-weight: bold;
 }
 .librarySearchTrackItem .artist, .librarySearchTrackItem .album {
-  color: #999;
+  color: var(--col-text-less);
 }
 .librarySearchTrackItem .moreButton {
   margin-left: auto;
@@ -1967,7 +1985,7 @@ input::-moz-focus-inner {
   transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1), opacity 400ms ease-out;
 }
 #albumView.animIn {
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
 }
 
 #albumCloseButton {
@@ -1989,7 +2007,7 @@ input::-moz-focus-inner {
 .albumViewPictureOuter {
   width: 50%;
   max-height: 75vh;
-  background: #1c1c1c;
+  background: var(--col-listitem-less);
   transition: opacity 400ms ease-in;
 }
 .albumViewPictureOuter #albumViewPicture {
@@ -2022,7 +2040,7 @@ input::-moz-focus-inner {
 #albumViewTexts #albumViewTextsInner #albumViewPath {
   margin-top: 16px;
   font-size: 12px;
-  color: #666;
+  color: var(--col-text-least);
 }
 #albumViewTexts #albumViewTextsInner #albumViewButtons {
   margin-top: 24px;
@@ -2097,12 +2115,12 @@ input::-moz-focus-inner {
   position: relative;
   align-items: center;
   padding: 12px 8px 12px 16px;
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
 }
 .albumItem:before {
   position: absolute;
   width: 0;
-  background: #999;
+  background: var(--col-text-less);
   content: " ";
   left: 0;
   height: 100%;
@@ -2192,7 +2210,7 @@ input::-moz-focus-inner {
   -o-user-select: text;
 }
 .albumItemMain .albumItemDuration {
-  color: #999;
+  color: var(--col-text-less);
   -moz-user-select: text;
   -webkit-user-select: text;
   -ms-user-select: text;
@@ -2209,7 +2227,7 @@ input::-moz-focus-inner {
 
 .albumItemViews {
   font-size: 14px;
-  color: #666;
+  color: var(--col-text-least);
   margin-right: 4px;
 }
 
@@ -2249,7 +2267,7 @@ input::-moz-focus-inner {
   display: block;
   margin-top: 6px;
   font-size: 14px;
-  color: #999;
+  color: var(--col-text-less);
 }
 
 #settingsHotkeys table {
@@ -2260,7 +2278,7 @@ input::-moz-focus-inner {
   text-align: right;
   width: 100px;
   padding-right: 10px;
-  border-right: 1px solid #ff2200;
+  border-right: 1px solid var(--col-accent);
 }
 #settingsHotkeys .c2 {
   padding-left: 8px;
@@ -2269,7 +2287,7 @@ input::-moz-focus-inner {
 select {
   appearance: none;
   -webkit-appearance: none;
-  background-color: #282828;
+  background-color: var(--col-listitem);
   border: none;
   height: 36px;
   padding: 0 8px 0 8px;
@@ -2340,7 +2358,7 @@ select * {
   height: 1px;
   margin-top: 32px;
   margin-bottom: 24px;
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 
 #hqpPresetsView .presetLabel {
@@ -2380,7 +2398,7 @@ select * {
   margin-left: 8px;
   font-size: 14px;
   line-height: 36px;
-  color: #999;
+  color: var(--col-text-less);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -2401,7 +2419,7 @@ select * {
   margin-top: 2px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #666;
+  color: var(--col-text-least);
 }
 @media (max-width: 480px) {
   #outputBitrate {
@@ -2412,14 +2430,14 @@ select * {
 }
 
 #outputBitrateValue {
-  color: #ccc;
+  color: var(--col-text);
 }
 
 #hqpFiltersInfo {
   margin-left: 75px;
   margin-top: 20px;
   font-size: 14px;
-  color: #666;
+  color: var(--col-text-least);
 }
 @media (max-width: 480px) {
   #hqpFiltersInfo {
@@ -2432,7 +2450,7 @@ select * {
   height: 1px;
   margin-top: 28px;
   margin-bottom: 4px;
-  background-color: #282828;
+  background-color: var(--col-listitem);
 }
 
 #settingsExperimentalLine {
@@ -2457,7 +2475,7 @@ select * {
 
 #hqpPresetRulesView {
   display: none;
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--col-listitem);
   padding-top: 24px;
 }
 

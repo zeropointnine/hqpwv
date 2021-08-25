@@ -19,7 +19,7 @@
   display:block;
   margin-top:6px;
   font-size: $font-size-smaller;
-  color:$color-text-less;
+  color:var(--col-text-less);
 }
 
 #settingsHotkeys {
@@ -31,7 +31,7 @@
     text-align:right;
     width:100px;
     padding-right:10px;
-    border-right:1px solid $color-accent;
+    border-right:1px solid var(--col-accent);
   }
   .c2 {
     padding-left:8px;
@@ -44,7 +44,7 @@ $indent-left-mobile: 45px;
 select {
   appearance: none; // removes browser's default dropdown arrow
   -webkit-appearance:none;
-  background-color: $color-listitem;
+  background-color: var(--col-listitem);
   border: none;
   height:36px;
   padding: 0 8px 0 8px;
@@ -109,7 +109,7 @@ select * {
   height:1px;
   margin-top:32px;
   margin-bottom:24px;
-  background-color:$color-listitem;
+  background-color:var(--col-listitem);
 }
 
 #hqpPresetsView {
@@ -149,7 +149,7 @@ select * {
       margin-left:8px;
       font-size:$font-size-smaller;
       line-height: $icon-button-side;
-      color:$color-text-less;
+      color:var(--col-text-less);
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
@@ -166,7 +166,7 @@ select * {
   margin-top:2px;
   margin-bottom:20px;
   font-size:$font-size-smaller;
-  color:$color-text-least;
+  color:var(--col-text-least);
   @include mobile {
     margin-left:$indent-left-mobile + 8px;
     margin-top:0px;
@@ -174,14 +174,14 @@ select * {
   }
 }
 #outputBitrateValue {
-  color:$color-text;
+  color:var(--col-text);
 }
 
 #hqpFiltersInfo {
   margin-left: $indent-left;
   margin-top:20px;
   font-size:$font-size-smaller;
-  color:$color-text-least;
+  color:var(--col-text-least);
   @include mobile {
     margin-left:$indent-left-mobile;
   }
@@ -194,7 +194,7 @@ select * {
   height:1px;
   margin-top:28px;
   margin-bottom:4px;
-  background-color:$color-listitem;
+  background-color:var(--col-listitem);
 }
 
 #settingsExperimentalLine {
@@ -222,7 +222,7 @@ select * {
 
 #hqpPresetRulesView {
   display: none;
-  border-top:1px solid $color-listitem;
+  border-top:1px solid var(--col-listitem);
   padding-top:24px;
 }
 

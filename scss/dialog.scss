@@ -14,16 +14,16 @@
     left: 50%;
     margin-left: -350px;
     top: 35px;
-    background-color: $color-bg;
-    border: 2px solid $color-listitem;
+    background-color: var(--col-bg);
+    border: 2px solid var(--col-listitem);
 
     #generalDialogTitle {
-      color: $color-accent;
+      color: var(--col-accent);
       font-size: 16px;
       font-weight: bold;
       padding: $space-unit;
-      border-bottom: 2px solid $color-listitem;
-      background-color: $color-listitem-less;
+      border-bottom: 2px solid var(--col-listitem);
+      background-color: var(--col-listitem-less);
     }
 
     #generalDialogMessage {
@@ -48,7 +48,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   #generalDialog {
     #generalDialogTitle {
-      color: $color-accent;
+      color: var(--col-accent);
     }
   }
 }

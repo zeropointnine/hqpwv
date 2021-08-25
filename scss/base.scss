@@ -1,27 +1,23 @@
 // Base definitions and shared definitions
 
 
-// SASS values
+// SASS values, css variables
+
+:root {
+  --col-bg: #181818;
+  --col-listitem-less: #1c1c1c;
+  --col-listitem: #282828;
+  --col-listitem-over: #323232;
+  --col-listitem-selected: #383838;
+  --col-listitem-selected-over: #424242;
+  --col-text: #ccc;
+  --col-text-less: #999;
+  --col-text-least: #666;
+  --col-accent: #ff2200;
+}
 
 $mobile-max-width: 480px;
 $tablet-max-width: 768px;
-
-$color-bg: #181818; // 24 0.094
-$color-listitem-less: #1c1c1c; // 28 0.11
-$color-listitem: #282828; // 40 0.15
-$color-listitem-over: #323232; // 50 0.20
-$color-listitem-selected: #383838; // 56 0.22
-$color-listitem-selected-over: #424242; // 66 0.26
-
-$color-text: #ccc;
-$color-text-less: #999;
-$color-text-least: #666;
-
-$color-accent: #ff2200;
-
-$color-button-bg: rgba(255,255,255,0.15); // 0x28
-$color-button-over: rgba(255,255,255,0.20); // 0x32
-$color-button-selected: rgba(255,255,255,0.22); // 0x48
 
 $space-unit: 16px;
 $space-unit-mobile: 12px;
@@ -80,6 +76,8 @@ $app-standard-duration: 400ms;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+
+  filter:brightness(0%);
 }
 
 // Plain icon to be used in whatever way
@@ -102,10 +100,10 @@ $app-standard-duration: 400ms;
 	
 	font-family: 'Noto Sans TC', sans-serif;
 	font-size: $font-size-normal;
-	color: $color-text;
+	color: var(--col-text);
 
   // does nothing for chrome, safari
-  scrollbar-color: $color-listitem-selected-over $color-listitem-less;
+  scrollbar-color: var(--col-listitem-selected-over) var(--col-listitem-less);
 
   // Mobile Chrome: Prevent light blue pressed state on tappable things
   -webkit-tap-highlight-color: transparent;
@@ -114,7 +112,7 @@ $app-standard-duration: 400ms;
   @include userSelect(none);
   @include userDrag(none);
 
-  :focus { outline: 1px dotted $color-text; }
+  :focus { outline: 1px dotted var(--col-text); }
 
   @include mobile {
     font-size:$font-size-normal-mobile;
@@ -127,7 +125,7 @@ body {
   flex-direction:column;
 	overflow-x: hidden;
   overflow-y: hidden;
-	background-color: $color-bg;
+	background-color: var(--col-bg);
 }
 
 ul {

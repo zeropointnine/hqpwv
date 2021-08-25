@@ -8,10 +8,10 @@
 }
 
 .colorAccent {
-  color: $color-accent;
+  color: var(--col-accent);
 }
 .colorTextLess {
-  color: $color-text-less;
+  color: var(--col-text-less);
 }
 
 .fontSizeSmaller {
@@ -28,7 +28,7 @@
   height:100%;
   overflow-y: scroll;
   padding:$space-unit;
-  background-color:$color-bg;
+  background-color:var(--col-bg);
   transition: opacity 333ms $app-standard-ease;
 
   &:focus {
@@ -51,7 +51,7 @@
   font-size:$font-size-smaller;
   font-weight:bold;
   text-transform: uppercase;
-  color:$color-text-least;
+  color:var(--col-text-least);
 }
 
 @keyframes thumbPulse {

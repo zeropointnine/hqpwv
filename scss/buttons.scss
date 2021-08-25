@@ -8,7 +8,7 @@
   width: $icon-button-side;
   height: $icon-button-side;
   cursor:pointer;
-  background-color: $color-button-bg;
+  background-color: var(--col-listitem);
   position: relative;
 
   // Background image in pseudo-element
@@ -16,7 +16,7 @@
     @include iconBefore;
   }
 
-  &:after { // test
+  &:after { // test!
     content: ' ';
     display: block;
     position: absolute;
@@ -25,11 +25,11 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color:$color-listitem-less;
+    background-color:var(--col-listitem-less);
     transition: opacity $app-standard-duration ease-out;
   }
   &:hover {
-    background-color: $color-button-over;
+    background-color: var(--col-listitem-over);
   }
 }
 .iconButton.isDisabled {
@@ -46,15 +46,15 @@
     &:before {
       opacity:0.7;
     }
-    background-color: $color-button-over;
+    background-color: var(--col-listitem-over);
   }
   &.isSelected {
-    background-color: $color-listitem-selected;
+    background-color: var(--col-listitem-selected);
     &:before {
       opacity:0.7;
     }
     &:hover {
-      background-color: $color-listitem-selected-over;
+      background-color: var(--col-listitem-selected-over);
     }
   }
 }
@@ -95,16 +95,16 @@
   font-weight: bold;
   text-transform: uppercase;
   line-height:36px;
-  background-color: $color-button-bg;
+  background-color: var(--col-listitem);
   cursor:pointer;
 
   &:hover {
-    background-color: $color-button-over;
+    background-color: var(--col-listitem-over);
   }
 }
 .textButton.isDisabled {
   pointer-events:none;
-  color: $color-text-least;
+  color: var(--col-text-least);
 }
 
 .buttonBlink {

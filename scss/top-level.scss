@@ -7,7 +7,7 @@
 
 #mainArea {
   position:relative;
-  background-color:$color-bg;
+  background-color:var(--col-bg);
   flex: 1;
   overflow:clip; // todo make sure this works out
 }
@@ -18,10 +18,10 @@
   position:relative;
   flex: 0 0 auto;
   padding: 8px 12px 8px 12px;
-  border-bottom: 1px solid $color-listitem;
+  border-bottom: 1px solid var(--col-listitem);
   display:flex;
   align-items: center;
-  background-color:$color-bg;
+  background-color:var(--col-bg);
   transition: margin-top 100ms ease-out;
   &.isAnimating {
     transition: margin-top $app-standard-duration ease-out;
@@ -44,7 +44,7 @@
   span {
     font-size:74px;
     font-weight:900;
-    color:$color-listitem;
+    color:var(--col-listitem);
   }
   span.q {
     margin-left:-6px;
@@ -82,7 +82,7 @@
 #appTitle {
   font-size:18px;
   font-weight: bold;
-  color:$color-text-least;
+  color:var(--col-text-least);
   flex: 1;
   visibility: hidden;
   @include mobile {
@@ -97,7 +97,7 @@
   }
   background-color: transparent;
   &:hover {
-    background-color: $color-button-over;
+    background-color: var(--col-listitem-over);
   }
 }
 .settingsView #settingsButton,
@@ -112,7 +112,7 @@
   }
   background-color: transparent;
   &:hover {
-    background-color: $color-button-over;
+    background-color: var(--col-listitem-over);
   }
 }
 .settingsView #hqpSettingsButton,
