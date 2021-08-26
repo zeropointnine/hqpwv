@@ -15,6 +15,7 @@ class Settings {
   _librarySortType;
   _libraryBitratesArray;
   _libraryCollapsedGroups;
+  _colorTheme;
   _presetsArray;
   _currentRule;
   _thresholdRule;
@@ -52,6 +53,8 @@ class Settings {
       cl('warning', s, exc);
       this._libraryBitratesArray = ['all'];
     }
+
+    this._colorTheme = this.storage.getItem('colorTheme') || 'dark';
 
     s = this.storage.getItem('presetsArray');
     try {
@@ -159,6 +162,15 @@ class Settings {
   commitLibraryCollapsedGroups() {
     const s = JSON.stringify(this._libraryCollapsedGroups);
     this.storage.setItem('libraryCollapsedGroups', s);
+  }
+
+  get colorTheme() {
+    return this._colorTheme;
+  }
+
+  set colorTheme(s) {
+    this._colorTheme = s;
+    this.storage.setItem('colorTheme', s);
   }
 
   get presetsArray() {

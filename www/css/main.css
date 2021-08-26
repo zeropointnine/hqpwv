@@ -46,10 +46,24 @@
   --col-listitem-over: #323232;
   --col-listitem-selected: #383838;
   --col-listitem-selected-over: #424242;
-  --col-text: #ccc;
-  --col-text-less: #999;
-  --col-text-least: #666;
+  --col-text-least: #666666;
+  --col-text-less: #999999;
+  --col-text: #cccccc;
   --col-accent: #ff2200;
+  --icon-brightness: 100%;
+}
+:root.lightTheme {
+  --col-bg: #f0f0f0;
+  --col-listitem-less: #e9e9e9;
+  --col-listitem: #dcdcdc;
+  --col-listitem-over: #d0d0d0;
+  --col-listitem-selected: #c0c0c0;
+  --col-listitem-selected-over: #b0b0b0;
+  --col-text: #202020;
+  --col-text-less: #505050;
+  --col-text-least: #808080;
+  --col-accent: #ff2200;
+  --icon-brightness: 0%;
 }
 
 .icon {
@@ -70,7 +84,7 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
-  filter: brightness(0%);
+  filter: brightness(var(--icon-brightness));
 }
 
 * {
@@ -214,7 +228,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
-  filter: brightness(0%);
+  filter: brightness(var(--icon-brightness));
 }
 .iconButton:after {
   content: " ";
@@ -371,17 +385,24 @@ input::-moz-focus-inner {
   background-color: var(--col-listitem);
 }
 .dropdown .dropdownItems .dropdownItem.isSelected:before {
+  content: " ";
   display: block;
   position: absolute;
-  content: "";
+  opacity: 0.7;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  filter: brightness(var(--icon-brightness));
+  top: unset;
   left: 6px;
   width: 24px;
   height: 36px;
   background-image: url("./../img/icons/check_white_24dp.svg");
-  background-repeat: no-repeat;
   background-position: left center;
-  background-size: 24px 24px;
-  opacity: 0.7;
 }
 .dropdown .dropdownItems .dropdownItem.isMulti.isSelected {
   cursor: pointer;
@@ -394,7 +415,7 @@ input::-moz-focus-inner {
   display: inline-block;
   width: 36px;
   height: 36px;
-  border: 2px solid var(--col-listitem-selected-over);
+  border: 2px solid var(--col-text-least);
   margin-right: 6px;
   cursor: pointer;
 }
@@ -404,7 +425,7 @@ input::-moz-focus-inner {
   margin: 2px;
   width: calc(100% - 4px);
   height: calc(100% - 4px);
-  background-color: var(--col-listitem-selected-over);
+  background-color: var(--col-text-least);
 }
 .checkbox .isDisabled {
   cursor: default;
@@ -445,6 +466,10 @@ input::-moz-focus-inner {
     rotate: 360deg;
   }
 }
+html {
+  visibility: hidden;
+}
+
 #page {
   display: flex;
   flex-direction: column;
@@ -463,7 +488,7 @@ input::-moz-focus-inner {
   position: relative;
   flex: 0 0 auto;
   padding: 8px 12px 8px 12px;
-  border-bottom: 1px solid var(--col-listitem);
+  border-bottom: 2px solid var(--col-listitem);
   display: flex;
   align-items: center;
   background-color: var(--col-bg);
@@ -540,6 +565,10 @@ input::-moz-focus-inner {
   #appTitle {
     font-size: 16px;
   }
+}
+
+.lightTheme #appTitle {
+  color: var(--col-listitem-selected);
 }
 
 #settingsButton {
@@ -1077,6 +1106,10 @@ input::-moz-focus-inner {
   }
 }
 
+.lightTheme #bottomScrim {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0) 100%);
+}
+
 #bottomStroke {
   position: absolute;
   width: 100%;
@@ -1099,7 +1132,7 @@ input::-moz-focus-inner {
   width: 100%;
   height: 36px;
   background: var(--col-bg);
-  border-top: 1px solid var(--col-listitem);
+  border-top: 2px solid var(--col-listitem);
   padding: 0 16px 0 16px;
   font-size: 14px;
   text-align: center;
@@ -1129,7 +1162,7 @@ input::-moz-focus-inner {
   width: 100%;
   height: 55px;
   background: #282828;
-  border-top: 1px solid #444;
+  border-top: 2px solid #444;
   line-height: 22px;
   padding: 4px 16px 0 16px;
   transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
@@ -1283,7 +1316,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
-  filter: brightness(0%);
+  filter: brightness(var(--icon-brightness));
   left: 4px;
   width: 36px;
   background-image: url("./../img/icons/repeat_white_24dp.svg");
@@ -1355,18 +1388,26 @@ input::-moz-focus-inner {
 #playlistSaver .inputLine {
   display: flex;
 }
-#playlistSaver .inputLine #playlistSaveInput {
-  border: 1px solid var(--col-listitem);
+
+#playlistSaveInput {
   height: 36px;
   line-height: 36px;
   padding-left: 8px;
   padding-right: 8px;
+  border: 1px solid var(--col-listitem);
   background-color: var(--col-text);
   color: var(--col-bg);
   flex: 1 1;
   width: 100%;
 }
-#playlistSaver .inputLine #playlistSaveOkayButton {
+
+.lightTheme #playlistSaveInput {
+  border: 1px solid var(--col-listitem);
+  background-color: var(--col-bg);
+  color: var(--col-text);
+}
+
+#playlistSaveOkayButton {
   margin-left: 12px;
 }
 
@@ -1553,7 +1594,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
-  filter: brightness(0%);
+  filter: brightness(var(--icon-brightness));
   background-position: 8px center;
   background-image: url("./../img/icons/featured_play_list_white_24dp.svg");
 }
@@ -1683,7 +1724,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
-  filter: brightness(0%);
+  filter: brightness(var(--icon-brightness));
   background-position: 6px center;
   background-image: url("./../img/icons/expand_less_white_24dp.svg");
 }
@@ -1727,7 +1768,7 @@ input::-moz-focus-inner {
   width: calc(16.666% - 16px);
   background: var(--col-listitem);
   cursor: pointer;
-  padding: 12px;
+  padding: 12px 12px 11px 12px;
   margin-left: 8px;
   margin-right: 8px;
   margin-bottom: 16px;
@@ -1769,7 +1810,7 @@ input::-moz-focus-inner {
 .libraryItemPicture {
   position: relative;
   width: 100%;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .libraryItemPicture:after {
   content: "";
@@ -1884,7 +1925,7 @@ input::-moz-focus-inner {
 .librarySearchDivider {
   margin: 0 12px 0 12px;
   height: 36px;
-  border-left: 1px solid var(--col-listitem);
+  border-left: 2px solid var(--col-listitem);
 }
 @media (max-width: 480px) {
   .librarySearchDivider {
@@ -1903,46 +1944,59 @@ input::-moz-focus-inner {
   margin: 16px 16px 24px 16px;
   padding: 16px 16px 16px 16px;
 }
-#librarySearchOptionsView #librarySearchCloseButton {
+
+#librarySearchCloseButton {
   position: absolute;
   right: 6px;
   top: 6px;
 }
-#librarySearchOptionsView label {
+
+label {
   display: block;
   text-transform: uppercase;
   font-size: 14px;
   font-weight: bold;
 }
-#librarySearchOptionsView .inputLine {
+
+.inputLine {
   margin-top: 16px;
   display: flex;
 }
-#librarySearchOptionsView .inputLine #librarySearchInput {
+
+#librarySearchInput {
   border: 1px solid var(--col-listitem);
+  background-color: var(--col-text);
+  color: var(--col-bg);
   height: 36px;
   line-height: 36px;
   padding-left: 8px;
   padding-right: 8px;
-  background-color: var(--col-text);
-  color: var(--col-bg);
   flex: 1 1;
   width: 100%;
 }
-#librarySearchOptionsView .inputLine #librarySearchOkButton {
+
+.lightTheme #librarySearchInput {
+  border: 1px solid var(--col-listitem);
+  background-color: var(--col-bg);
+  color: var(--col-text);
+}
+
+#librarySearchOkButton {
   margin-left: 12px;
 }
-#librarySearchOptionsView .controlsLine {
+
+.controlsLine {
   margin-top: 16px;
   display: flex;
   align-items: center;
 }
-#librarySearchOptionsView .controlsLine #searchAlbumCheckbox {
+.controlsLine #searchAlbumCheckbox {
   margin-left: 16px;
 }
-#librarySearchOptionsView .controlsLine #searchTrackCheckbox {
+.controlsLine #searchTrackCheckbox {
   margin-left: 16px;
 }
+
 .isDisabled #libraryAlbumOptionsView {
   pointer-events: none;
 }
@@ -2254,31 +2308,56 @@ input::-moz-focus-inner {
   margin-bottom: 8px;
 }
 
-.settingsMeta {
+.settingsTheme {
   margin-top: 32px;
-  display: flex;
 }
-.settingsMeta .settingsMetaInner {
-  margin-left: 6px;
-  margin-top: 8px;
+.settingsTheme .line {
+  margin-top: 12px;
+  margin-left: 44px;
+  display: flex;
+  align-item: center;
+}
+.settingsTheme .line span {
+  padding-top: 2px;
+  margin-left: 4px;
+}
+.settingsTheme .line #settingsThemeLightCheckbox {
+  margin-left: 12px;
 }
 
-#metaDownload {
-  display: block;
+.settingsMeta {
+  margin-top: 32px;
+}
+.settingsMeta .description {
+  margin-left: 44px;
+  font-size: 14px;
   margin-top: 6px;
+}
+.settingsMeta #metaDownload {
+  margin-left: 44px;
+  display: block;
+  margin-top: 4px;
   font-size: 14px;
   color: var(--col-text-less);
 }
+.settingsMeta .line {
+  display: flex;
+  align-items: center;
+  margin-left: 44px;
+  margin-top: 12px;
+}
+.settingsMeta .line span {
+  margin-left: 6px;
+}
 
 #settingsHotkeys table {
-  padding: 0;
-  margin: 0;
+  border-spacing: 0 0;
 }
 #settingsHotkeys .c1 {
   text-align: right;
   width: 100px;
   padding-right: 10px;
-  border-right: 1px solid var(--col-accent);
+  border-right: 2px solid var(--col-accent);
 }
 #settingsHotkeys .c2 {
   padding-left: 8px;
@@ -2328,6 +2407,12 @@ select * {
 }
 .settingsSelectOuter select[name=modeSelect] > option {
   font-weight: normal;
+}
+
+#hqpVersion {
+  margin-left: 44px;
+  font-size: 14px;
+  color: var(--col-text-less);
 }
 
 .hqpSettingsInner {

@@ -150,7 +150,7 @@ $marginUnitMobile: 6px;
 	background:var(--col-listitem);
   cursor:pointer;
 
-	padding: 12px;
+	padding: 12px 12px 11px 12px;
 	margin-left: $marginUnit;
 	margin-right: $marginUnit;
 	margin-bottom: $marginUnit * 2;
@@ -200,7 +200,7 @@ $marginUnitMobile: 6px;
 .libraryItemPicture {
 	position:relative;
   width:100%;
-	margin-bottom: 4px;
+	margin-bottom: 6px;
 
   // force square aspect ratio
   &:after {
@@ -325,7 +325,7 @@ $marginUnitMobile: 6px;
 .librarySearchDivider {
   margin: 0 12px 0 12px;
   height:$icon-button-side;
-  border-left: 1px solid var(--col-listitem);
+  border-left: 2px solid var(--col-listitem);
   @include mobile {
     margin: 0 6px 0 6px;
   }
@@ -345,56 +345,61 @@ $marginUnitMobile: 6px;
   border:1px solid var(--col-listitem-selected-over);
   margin: $space-unit $space-unit ($space-unit * 1.5) $space-unit;
   padding: $space-unit $space-unit $space-unit $space-unit;
+}
 
-  #librarySearchCloseButton {
-    position:absolute;
-    right:6px;
-    top:6px;
+#librarySearchCloseButton {
+  position:absolute;
+  right:6px;
+  top:6px;
+}
+
+label {
+  display:block;
+  text-transform: uppercase;
+  font-size: $font-size-smaller;
+  font-weight: bold;
+}
+
+.inputLine {
+  margin-top: 16px;
+  display:flex;
+}
+
+#librarySearchInput {
+  border:1px solid var(--col-listitem);
+  background-color: var(--col-text);
+  color:var(--col-bg);
+
+  height: $icon-button-side;
+  line-height: $icon-button-side;
+  padding-left:8px;
+  padding-right:8px;
+
+  // not sure why this works
+  flex:1 1;
+  width:100%;
+}
+.lightTheme #librarySearchInput {
+  border:1px solid var(--col-listitem);
+  background-color: var(--col-bg);
+  color:var(--col-text);
+}
+
+#librarySearchOkButton {
+  margin-left:12px;
+}
+
+.controlsLine {
+  margin-top: 16px;
+  display:flex;
+  align-items:center;
+
+  #searchArtistCheckbox { }
+  #searchAlbumCheckbox {
+    margin-left:16px;
   }
-
-  label {
-    display:block;
-    text-transform: uppercase;
-    font-size: $font-size-smaller;
-    font-weight: bold;
-  }
-
-  .inputLine {
-    margin-top: 16px;
-    display:flex;
-    #librarySearchInput {
-      border:1px solid var(--col-listitem);
-      height: $icon-button-side;
-      line-height: $icon-button-side;
-      padding-left:8px;
-      padding-right:8px;
-      background-color: var(--col-text);
-      color:var(--col-bg);
-
-      // not sure why this works
-      flex:1 1;
-      width:100%;
-    }
-    #librarySearchOkButton {
-      margin-left:12px;
-    }
-  }
-
-  .controlsLine {
-    margin-top: 16px;
-    display:flex;
-    align-items:center;
-
-    #searchArtistCheckbox { }
-    #searchAlbumCheckbox {
-      margin-left:16px;
-    }
-    #searchTrackCheckbox {
-      margin-left:16px;
-    }
-
-    @include mobile {
-    }
+  #searchTrackCheckbox {
+    margin-left:16px;
   }
 }
 

@@ -1,3 +1,7 @@
+html {
+  visibility: hidden; // until color theme is applied
+}
+
 #page {
   display: flex;
   flex-direction: column;
@@ -18,7 +22,7 @@
   position:relative;
   flex: 0 0 auto;
   padding: 8px 12px 8px 12px;
-  border-bottom: 1px solid var(--col-listitem);
+  border-bottom: 2px solid var(--col-listitem);
   display:flex;
   align-items: center;
   background-color:var(--col-bg);
@@ -88,6 +92,9 @@
   @include mobile {
     font-size:16px;
   }
+}
+.lightTheme #appTitle {
+  color:var(--col-listitem-selected);
 }
 
 #settingsButton {

@@ -55,6 +55,9 @@ export default class App {
 
 	constructor() {
 
+    AppUtil.updateColorTheme();
+    ViewUtil.setVisible($('html'), true);
+
     $(window).on('resize', this.onWindowResize);
     this.doWindowResize();
 

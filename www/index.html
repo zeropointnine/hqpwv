@@ -337,18 +337,31 @@
 						</table>
 					</div>
 
-					<div class="settingsMeta">
-						<div id="settingsMetaCheckbox" class="checkbox ruleCheckbox" data-settings-value="meta"></div>
-						<div class="settingsMetaInner">
-							<span>HQPWV metadata</span><br>
-							<div class="fontSizeSmaller" style="margin-top:6px;">Updates and displays play count, liked tracks, history, and custom playlists.</div>
-							<a id="metaDownload" href="#">Download backup file</a>
+					<div class="settingsTheme">
+						<div>Color theme:</div>
+						<div class="line">
+							<div id="settingsThemeDarkCheckbox" class="checkbox checkboxSmaller ruleCheckbox" data-settings-value="meta"></div>
+							<span>Dark</span>
+							<div id="settingsThemeLightCheckbox" class="checkbox checkboxSmaller ruleCheckbox" data-settings-value="meta"></div>
+							<span>Light</span>
 						</div>
+					</div>
+
+					<div class="settingsMeta">
+						<span>HQPWV metadata:</span>
+							<div class="description">
+								Maintains and displays play count, liked tracks, history, and custom playlists.
+							</div>
+							<a id="metaDownload" href="#">Download backup file</a>
+							<div class="line">
+								<div id="settingsMetaCheckbox" class="checkbox checkboxSmaller ruleCheckbox" data-settings-value="meta"></div>
+								<span>Enabled</span>
+							</div>
 					</div>
 
 					<div id="settingsInfoView" style="margin-top:32px; ">
 						<div class="settingsSubheading" style="margin-bottom:4px;">Your HQPlayer version:</div>
-						<div id="hqpVersion" class="colorTextLess fontSizeSmaller" style="margin-left:24px">&nbsp;<br>&nbsp;</div>
+						<div id="hqpVersion">&nbsp;<br>&nbsp;</div>
 					</div>
 				</div>
 

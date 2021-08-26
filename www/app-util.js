@@ -1,6 +1,7 @@
 import Commands from './commands.js';
 import Model from './model.js';
 import Service from './service.js';
+import Settings from './settings.js';
 import ToastView from './toast-view.js';
 
 /**
@@ -90,4 +91,17 @@ export default class AppUtil {
     return s;
   }
 
+  static updateColorTheme() {
+    const $html = $('html');
+    switch (Settings.colorTheme) {
+      case 'dark':
+        $html.removeClass('lightTheme');
+        break;
+      case 'light':
+        $html.addClass('lightTheme');
+        break;
+      default:
+        cl('warning bad val', Settings.colorTheme)
+    }
+  }
 }

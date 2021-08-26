@@ -1,13 +1,14 @@
-import Subview from'./subview.js';
-import Values from './values.js';
-import ViewUtil from './view-util.js';
-import Util from './util.js';
+import AppUtil from './app-util.js';
 import Commands from './commands.js';
+import MetaUtil from'./meta-util.js';
 import Model from './model.js';
 import Service from './service.js';
-import SettingsInfoView from './settings-info-view.js';
 import Settings from'./settings.js';
-import MetaUtil from'./meta-util.js';
+import SettingsInfoView from './settings-info-view.js';
+import Subview from'./subview.js';
+import Util from './util.js';
+import Values from './values.js';
+import ViewUtil from './view-util.js';
 
 /**
  * Setting view, with image init facility and general app info.
@@ -15,15 +16,21 @@ import MetaUtil from'./meta-util.js';
 export default class SettingsView extends Subview {
 
   $closeButton = $('#settingsCloseButton');
+  $themeDarkCheckbox;
+  $themeLightCheckbox;
   $metaCheckbox;
   infoView;
 
   constructor() {
     super($("#settingsView"));
     this.$metaCheckbox = this.$el.find('#settingsMetaCheckbox');
+    this.$themeDarkCheckbox = this.$el.find('#settingsThemeDarkCheckbox');
+    this.$themeLightCheckbox = this.$el.find('#settingsThemeLightCheckbox');
     this.$closeButton.on('click tap', (e) => $(document).trigger('settings-view-close'));
     this.infoView = new SettingsInfoView(this.$el.find("#settingsInfoView"));
 
+    this.$themeDarkCheckbox.on('click tap', this.onThemeCheckbox);
+    this.$themeLightCheckbox.on('click tap', this.onThemeCheckbox);
     this.$metaCheckbox.on('click tap', this.onMetaCheckbox);
     this.$el.find('#metaDownload').attr('href', Values.META_DOWNLOAD_LINK);
 
@@ -36,6 +43,8 @@ export default class SettingsView extends Subview {
     const $anchor = this.$el.find("#settingsProjectAnchor");
     $anchor.text(Values.PROJECT_URL);
     $anchor.attr('href', Values.PROJECT_URL);
+
+    this.updateThemeCheckbox();
 
     this.updateMetaCheckbox();
 
@@ -52,6 +61,16 @@ export default class SettingsView extends Subview {
     $(document).trigger('enable-user-input');
   }
 
+  updateThemeCheckbox() {
+    if (Settings.colorTheme == 'dark') {
+      this.$themeLightCheckbox.removeClass('isChecked');
+      this.$themeDarkCheckbox.addClass('isChecked');
+    } else {
+      this.$themeDarkCheckbox.removeClass('isChecked');
+      this.$themeLightCheckbox.addClass('isChecked');
+    }
+  }
+
   updateMetaCheckbox() {
     if (Settings.isMetaEnabled) {
       this.$metaCheckbox.addClass('isChecked');
@@ -59,6 +78,14 @@ export default class SettingsView extends Subview {
       this.$metaCheckbox.removeClass('isChecked');
     }
   }
+
+  onThemeCheckbox = (e) => {
+    Settings.colorTheme = (e.currentTarget.id == 'settingsThemeDarkCheckbox') ? 'dark' : 'light';
+    cl('xxx', e.currentTarget, e.currentTarget.id, Settings.colorTheme)
+     this.updateThemeCheckbox();
+    // And update the theme
+    AppUtil.updateColorTheme();
+  };
 
   onMetaCheckbox = () => {
     Settings.isMetaEnabled = !Settings.isMetaEnabled;

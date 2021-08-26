@@ -187,27 +187,35 @@ $border-radius-mobile:0px;
     font-weight: bold;
     margin-bottom: 16px;
   }
-
   .inputLine {
     display:flex;
-    #playlistSaveInput {
-      border:1px solid var(--col-listitem);
-      height: $icon-button-side;
-      line-height: $icon-button-side;
-      padding-left:8px;
-      padding-right:8px;
-      background-color: var(--col-text);
-      color:var(--col-bg);
-
-      // not sure why this works
-      flex:1 1;
-      width:100%;
-    }
-    #playlistSaveOkayButton {
-      margin-left:12px;
-    }
   }
 }
+
+#playlistSaveInput {
+  height: $icon-button-side;
+  line-height: $icon-button-side;
+  padding-left:8px;
+  padding-right:8px;
+
+  border:1px solid var(--col-listitem);
+  background-color: var(--col-text);
+  color:var(--col-bg);
+
+  // not sure why this works
+  flex:1 1;
+  width:100%;
+}
+.lightTheme #playlistSaveInput {
+    border:1px solid var(--col-listitem);
+    background-color: var(--col-bg);
+    color:var(--col-text);
+}
+
+#playlistSaveOkayButton {
+  margin-left:12px;
+}
+
 #playlistSaveCloseButton {
   position:absolute;
   right:6px;

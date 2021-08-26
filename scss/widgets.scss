@@ -62,17 +62,13 @@
           background-color:var(--col-listitem);
         }
         &:before {
-          display: block;
-          position: absolute;
-          content: '';
+          @include iconBefore;
+          top:unset; // if 0, ends up at top of list, no idea
           left: 6px;
           width: 24px;
           height: $ht;
           background-image: url('./../img/icons/check_white_24dp.svg');
-          background-repeat: no-repeat;
           background-position: left center;
-          background-size: 24px 24px;
-          opacity: 0.7;
         }
       }
     }
@@ -91,7 +87,7 @@
   display:inline-block;
   width:$icon-button-side;
   height:$icon-button-side;
-  border:2px solid var(--col-listitem-selected-over);
+  border:2px solid var(--col-text-least);
   margin-right:6px;
 
   cursor:pointer;
@@ -103,7 +99,7 @@
       margin:2px;
       width: calc(100% - 4px);
       height: calc(100% - 4px);
-      background-color: var(--col-listitem-selected-over);
+      background-color: var(--col-text-least);
     }
   }
 

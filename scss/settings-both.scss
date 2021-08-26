@@ -6,32 +6,58 @@
   margin-bottom: 8px;
 }
 
-.settingsMeta {
+.settingsTheme {
   margin-top:32px;
-  display:flex;
-  .settingsMetaInner {
-    margin-left:6px;
-    margin-top:8px;
+  .line {
+    margin-top:12px;
+    margin-left:44px;
+    display:flex;
+    align-item:center;
+    span {
+      padding-top:2px; // ugh
+      margin-left:4px;
+    }
+    #settingsThemeLightCheckbox {
+      margin-left:12px;
+    }
   }
 }
 
-#metaDownload {
-  display:block;
-  margin-top:6px;
-  font-size: $font-size-smaller;
-  color:var(--col-text-less);
+.settingsMeta {
+  margin-top:32px;
+  .description {
+    margin-left:44px;
+    font-size:$font-size-smaller;
+    margin-top:6px;
+  }
+  #metaDownload {
+    margin-left:44px;
+    display:block;
+    margin-top:4px;
+    font-size: $font-size-smaller;
+    color:var(--col-text-less);
+  }
+  .line {
+    display:flex;
+    align-items:center;
+    margin-left:44px;
+    margin-top:12px;
+    span {
+      margin-left:6px;
+    }
+  }
 }
+
 
 #settingsHotkeys {
   table {
-    padding:0;
-    margin:0;
+    border-spacing: 0 0;
   }
   .c1 {
     text-align:right;
     width:100px;
     padding-right:10px;
-    border-right:1px solid var(--col-accent);
+    border-right:2px solid var(--col-accent);
   }
   .c2 {
     padding-left:8px;
@@ -81,6 +107,12 @@ select * {
       font-weight: normal;
     }
   }
+}
+
+#hqpVersion {
+  margin-left:44px;
+  font-size: $font-size-smaller;
+  color: var(--col-text-less);
 }
 
 // ---

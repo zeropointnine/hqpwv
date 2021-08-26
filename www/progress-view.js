@@ -52,11 +52,9 @@ export default class ProgressView {
       const delta = this.seconds - lastSeconds;
       const shouldAnimate = (delta >= 0) && (delta < 2.2) && Model.status.isPlaying && !this.isDragging;
       if (shouldAnimate && !this.$thumb.hasClass('isAnimating')) {
-        cl('add anim class')
         this.$thumb.addClass('isAnimating');
         this.$thumb[0].offsetHeight; // force reflow
       } else if (!shouldAnimate && this.$thumb.hasClass('isAnimating')) {
-        cl('remove anim class')
         this.$thumb.removeClass('isAnimating');
       }
       this.$thumb.css('left', (this.ratio * 100) + "%");
