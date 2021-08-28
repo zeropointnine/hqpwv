@@ -112,7 +112,7 @@ const saveFile = () => {
     log.x('  ' + PATH);
     return false;
   }
-  log.x('- saved metadata');
+  log.i('saved metadata');
   return true;
 };
 

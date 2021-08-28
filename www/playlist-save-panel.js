@@ -27,7 +27,7 @@ export default class PlaylistSavePanel {
 
     this.$closeButton.on('click tap', () => this.hide());
     this.$input.on('input', () => this.updateSaveButton());
-    this.$input.on('keyup', e => { if (e.keyCode == 13) this.$saveButton.click(); });
+    this.$input.on('keyup', this.onInputKeyUp);
     this.$saveButton.on('click tap', this.onSaveButton);
   }
 
@@ -60,6 +60,14 @@ export default class PlaylistSavePanel {
     str = str.trim();
     return str;
   }
+
+  onInputKeyUp = (e) => {
+    if (e.keyCode == 13) {
+      this.$saveButton.click();
+    } else if (e.keyCode == 27) {
+      this.hide();
+    }
+  };
 
   onSaveButton = () => {
     const filename = this.getSanitizedText(this.$input[0].value);

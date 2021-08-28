@@ -62,11 +62,7 @@ export default class AlbumView extends Subview {
 
     if (this.$libraryItemImage) {
       this.animateInOverlay(this.onShowComplete);
-      this.animateInThis(); // must be invoked 2nd :/
-
-      // xxx
-      window.test = this.$libraryItemImage;
-
+      this.animateInThis(); // must come second!
     } else {
       this.animateInThis(true);
     }
@@ -354,15 +350,16 @@ export default class AlbumView extends Subview {
     // Adjust for object-fit: cover
     const naturalW = this.$libraryItemImage[0].naturalWidth;
     const naturalH = this.$libraryItemImage[0].naturalHeight;
+    const naturalAr = (naturalW & naturalH) ? naturalW / naturalH : 1;
 
     let overlayX, overlayY, overlayW, overlayH;
-    if (naturalW / naturalH > imgW / imgH) {
-      overlayW = imgW * (naturalW / naturalH);
+    if (naturalAr > imgW / imgH) {
+      overlayW = imgW * (naturalAr);
       overlayH = imgH;
       overlayY = imgY;
       overlayX = imgX - (overlayW - imgW) / 2;
     } else {
-      overlayH = imgH * (naturalH / naturalW);
+      overlayH = imgH * (1 / naturalAr);
       overlayW = imgW;
       overlayX = imgX;
       overlayY = imgY - (overlayH - imgH) / 2;
@@ -384,7 +381,7 @@ export default class AlbumView extends Subview {
     // Adjust for object-fit: _contain_ this time
     const naturalW = this.$libraryItemImage[0].naturalWidth;
     const naturalH = this.$libraryItemImage[0].naturalHeight;
-    const naturalAr = naturalW / naturalH;
+    const naturalAr = (naturalW && naturalH) ? naturalW / naturalH : 1;
 
     let overlayX, overlayY, overlayW, overlayH;
     if (naturalAr > boxW / boxH) {

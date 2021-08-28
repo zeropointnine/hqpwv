@@ -68,6 +68,7 @@ export default class LibraryView extends Subview {
     ViewUtil.setDisplayed(this.$albumViewItemCount, true);
     this.albumOptionsView.show();
     this.albumsView.show();
+    ViewUtil.setFocus(this.$el);
   }
 
   showSearchView() {
@@ -76,9 +77,6 @@ export default class LibraryView extends Subview {
     ViewUtil.setDisplayed(this.$albumViewItemCount, false);
     this.searchView.show();
     this.searchOptionsView.show();
-    // update form controls to match search view values
-    this.searchOptionsView.$input[0].value = this.searchView.lowercaseSearchTerm;
-    this.searchOptionsView.updateOkButton();
   }
 
   onModelLibraryUpdated() {

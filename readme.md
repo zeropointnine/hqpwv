@@ -6,8 +6,8 @@ Requires HQPlayer 4 Desktop.
 
 For <em>end-user installation instructions</em>, [click here](https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md)  
   
-[![Demo video](https://i.vimeocdn.com/video/1198463153?mw=1200&mh=751)](https://vimeo.com/579213725 "Demo video")  
-Demo video  
+[![Demo video](https://i.vimeocdn.com/video/1226369138?mw=1200&mh=750)](https://vimeo.com/593569610 "Demo video")
+Demo video
 
 # Development setup  
   
@@ -22,7 +22,7 @@ Demo video
 4. Make sure [HQPlayer 4 Desktop](https://www.signalyst.com/consumer.html) is running.
 
 5. Start the server:
-`node server.js`
+`node server/server.js`
   
 6. Browse to the locally served webpage as directed.
   

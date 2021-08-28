@@ -81,7 +81,6 @@ export default class SettingsView extends Subview {
 
   onThemeCheckbox = (e) => {
     Settings.colorTheme = (e.currentTarget.id == 'settingsThemeDarkCheckbox') ? 'dark' : 'light';
-    cl('xxx', e.currentTarget, e.currentTarget.id, Settings.colorTheme)
      this.updateThemeCheckbox();
     // And update the theme
     AppUtil.updateColorTheme();

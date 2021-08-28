@@ -89,7 +89,10 @@
   height:$icon-button-side;
   border:2px solid var(--col-text-least);
   margin-right:6px;
-
+  &:focus {
+    border: 3px solid var(--col-text-least);
+    outline-offset:1px;
+  }
   cursor:pointer;
 
   &.isChecked {

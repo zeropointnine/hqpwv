@@ -8,11 +8,11 @@ echo '************************************************'
 
 pkg ../package.json
 
-mv hqpwv-node16-macos hqpwv-server-0-9-1-macos
-mv hqpwv-node14-win.exe hqpwv-server-0-9-1-win.exe
+mv hqpwv-node16-macos hqpwv-server-0-9-2-macos
+mv hqpwv-node14-win.exe hqpwv-server-0-9-2-win.exe
 
-zip hqpwv-server-0-9-1-macos.zip hqpwv-server-0-9-1-macos 
-zip hqpwv-server-0-9-1-win.exe.zip hqpwv-server-0-9-1-win.exe
+zip hqpwv-server-0-9-2-macos.zip hqpwv-server-0-9-2-macos 
+zip hqpwv-server-0-9-2-win.exe.zip hqpwv-server-0-9-2-win.exe
 
-# rm hqpwv-node16-macos hqpwv-server-0-9-1-macos
-# rm hqpwv-node14-win.exe hqpwv-server-0-9-1-win.exe
+# rm hqpwv-node16-macos hqpwv-server-0-9-2-macos
+# rm hqpwv-node14-win.exe hqpwv-server-0-9-2-win.exe

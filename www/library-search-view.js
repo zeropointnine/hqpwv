@@ -33,9 +33,6 @@ export default class LibrarySearchView extends LibraryContentView {
   }
   
   setSearchTypeAndValue(type, value) {
-    if (this.searchType == type && this.searchValue == value) {
-      return;
-    }
     this.searchType = type;
     this.searchValue = value;
     this.makeGroups();

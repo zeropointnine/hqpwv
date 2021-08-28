@@ -36,6 +36,12 @@ $leftRightEase: ease-in-out;
     height:$icon-button-side;
   }
 }
+.isTouch .playHisItem {
+  &:hover {
+    background-color:var(--col-listitem-less);
+  }
+}
+
 
 $margin1: 0px;
 $margin2: 16px;
@@ -84,7 +90,7 @@ $border-radius-mobile:0px;
 #playlistView {
   margin:0;
   padding:0;
-  overflow:clip;
+  overflow:hidden;
   transition: top $app-standard-duration $app-standard-ease;
 
   &.animIn {
@@ -173,7 +179,7 @@ $border-radius-mobile:0px;
 #playlistSaver {
   position:relative;
   transition: height $app-standard-duration $app-standard-ease;
-  overflow: clip;
+  overflow: hidden;
   .inner {
     position:relative;
     padding: 16px;
@@ -205,11 +211,13 @@ $border-radius-mobile:0px;
   // not sure why this works
   flex:1 1;
   width:100%;
+
+  @include userSelect(auto);
 }
 .lightTheme #playlistSaveInput {
-    border:1px solid var(--col-listitem);
-    background-color: var(--col-bg);
-    color:var(--col-text);
+  border:1px solid var(--col-listitem);
+  background-color: var(--col-bg);
+  color:var(--col-text);
 }
 
 #playlistSaveOkayButton {

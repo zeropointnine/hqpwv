@@ -20,7 +20,6 @@ export default class LibrarySearchOptionsView {
     this.$el = $el;
     this.$closeButton = $el.find('#librarySearchCloseButton');
     this.$input = $el.find('#librarySearchInput');
-    this.$input[0].value = '';
     this.$okButton = $el.find('#librarySearchOkButton');
     this.$checkboxArtist = $el.find('#searchArtistCheckbox');
     this.$checkboxAlbum = $el.find('#searchAlbumCheckbox');
@@ -31,6 +30,10 @@ export default class LibrarySearchOptionsView {
     this.$checkboxArtist.on('click tap', this.onCheckbox);
     this.$checkboxAlbum.on('click tap', this.onCheckbox);
     this.$checkboxTrack.on('click tap', this.onCheckbox);
+    this.$checkboxArtist.on('keydown', this.onCheckboxKeydown);
+    this.$checkboxAlbum.on('keydown', this.onCheckboxKeydown);
+    this.$checkboxTrack.on('keydown', this.onCheckboxKeydown);
+
 
     this.hide();
   }
@@ -39,15 +42,10 @@ export default class LibrarySearchOptionsView {
     ViewUtil.setDisplayed(this.$el, true);
 
     this.searchType = Settings.librarySearchType;
-    this.$input.focus();
     this.$input.on('input', this.onInputInput);
     this.$input.on('keyup', this.onInputKeyUp);
-
-    // no idea
-    setTimeout(() => {
-      this.$input[0].value = Settings.librarySearchValue;
-      this.updateOkButton();
-    }, 100);
+    this.$input.focus();
+    this.updateOkButton();
   }
 
   hide() {
@@ -106,12 +104,7 @@ export default class LibrarySearchOptionsView {
         this.$okButton.click();
       }
     } else if (e.keyCode == 27) {
-      if (this.$input[0].value) {
-        this.$input[0].value = '';
-        this.updateOkButton();
-      } else {
-        $(document).trigger('app-do-escape');
-      }
+      $(document).trigger('app-do-escape');
     }
   };
 
@@ -125,6 +118,7 @@ export default class LibrarySearchOptionsView {
   };
 
   onCheckbox = (e) => {
+    $(e.currentTarget).blur();
     let value;
     switch (e.currentTarget) {
       case this.$checkboxArtist[0]:
@@ -146,4 +140,10 @@ export default class LibrarySearchOptionsView {
       $(document).trigger('library-search', [this._searchType, text]);
     }
   };
+
+  onCheckboxKeydown = (e) => {
+    if (e.keyCode == 13 || e.keyCode == 32) {
+      this.onCheckbox(e);
+    }
+  }
 }

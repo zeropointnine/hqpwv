@@ -235,3 +235,6 @@ Util.areUriAndPathEquivalent = (uri, path) => {
   path = path.replace('file://', '');
   return (uri == path);
 };
+
+// Pretty good test for touch devices
+Util.isTouch =  !!("ontouchstart" in window) || window.navigator.msMaxTouchPoints > 0;

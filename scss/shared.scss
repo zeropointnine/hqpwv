@@ -29,7 +29,7 @@
   overflow-y: scroll;
   padding:$space-unit;
   background-color:var(--col-bg);
-  transition: opacity 333ms $app-standard-ease;
+  transition: opacity $app-standard-duration $app-standard-ease;
 
   &:focus {
     outline: none

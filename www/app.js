@@ -54,7 +54,9 @@ export default class App {
   subviewZ = 100;
 
 	constructor() {
-
+    if (Util.isTouch) {
+      $('html').addClass('isTouch');
+    }
     AppUtil.updateColorTheme();
     ViewUtil.setVisible($('html'), true);
 
@@ -203,10 +205,7 @@ export default class App {
     if ($(document.body).css('pointer-events') == 'none') {
       return;
     }
-    this.doTopSubviewEscape();
-  }
 
-  doTopSubviewEscape() {
     const subview = this.getTopSubview();
     switch (subview) {
       case this.albumView:
@@ -378,7 +377,7 @@ export default class App {
     });
     return array.map(item => item.subview );
   }
-  
+
   // ---
   // handlers, various
 
@@ -418,7 +417,8 @@ export default class App {
     this.lastKeyTime = new Date().getTime();
 
     const short = 100;
-    const long = 450; // should match or exceed css value for $app-standard-duration
+    // should match or exceed $app-standard-duration
+    const long = 450;
 
     switch (e.key) {
       case 'Escape':
@@ -437,7 +437,12 @@ export default class App {
         }
         this.minKeyDuration = long;
         break;
-
+      case 'f':
+        if (this.getTopSubview() == this.libraryView) {
+          e.preventDefault();
+          this.libraryView.showSearchView();
+        }
+        break;
       case 's':
         this.playbarView.$stopButton.click();
         this.minKeyDuration = long;

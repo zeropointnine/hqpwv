@@ -16,6 +16,7 @@ export default class ProgressView {
 
   ratio = 0;
   seconds = -1;
+  updateVisState;
 
   constructor() {
     this.$el = $('#playProgressView');
@@ -39,18 +40,20 @@ export default class ProgressView {
    * @param seconds - when -1, will always update css property, non-animated
    */
   update(ratio, seconds) {
-    const lastRatio = this.ratio;
-    const lastSeconds = this.seconds;
-
     ratio = Math.min(ratio, 1);
     ratio = Math.max(ratio, 0);
     this.ratio = ratio;
+    const lastSeconds = this.seconds;
     this.seconds = seconds;
+    const lastUpdateVisState = this.updateVisState;
+    this.updateVisState = document.visibilityState;
 
-    const shouldSetCss = (lastRatio != this.ratio || seconds == -1);
+    const shouldSetCss = (lastSeconds != seconds || seconds == -1);
     if (shouldSetCss) {
       const delta = this.seconds - lastSeconds;
-      const shouldAnimate = (delta >= 0) && (delta < 2.2) && Model.status.isPlaying && !this.isDragging;
+      const shouldAnimate = (delta >= 0) && (delta < 2.2)
+          && Model.status.isPlaying && !this.isDragging
+          && (this.updateVisState == 'visible' && lastUpdateVisState == 'visible');
       if (shouldAnimate && !this.$thumb.hasClass('isAnimating')) {
         this.$thumb.addClass('isAnimating');
         this.$thumb[0].offsetHeight; // force reflow

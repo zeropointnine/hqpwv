@@ -150,7 +150,7 @@ export default class PlaybarView {
   }
 
   _updateThumb() {
-    const seconds = (Model.status.seconds == -1) ? 0 : Model.status.seconds;
+    const seconds = (Model.status.position == -1) ? 0 : Model.status.position;
     const totalSeconds = (Model.status.totalSeconds == -1) ? 0 : Model.status.totalSeconds;
     let ratio = seconds / totalSeconds;
     if (isNaN(ratio)) {

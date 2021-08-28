@@ -3,6 +3,7 @@ import DataUtil from './data-util.js';
 import LibraryGroupUtil from './library-group-util.js';
 import Model from './model.js';
 import Settings from './settings.js';
+import ViewUtil from './view-util.js';
 
 /**
  * 'Abstract' base class for the two swappable content views of LibraryView.
@@ -49,9 +50,7 @@ export default class LibraryContentView {
    * Removes all children, plus cleanup.
    */
   clear() {
-    if (this.intersectionObs) {
-      this.intersectionObs.disconnect();
-    }
+    this.intersectionObs.disconnect();
     this.$el.empty();
   }
 
@@ -112,7 +111,7 @@ export default class LibraryContentView {
 
   makeLibraryIsEmptyItem() {
     let s;
-    s = `<div id="libraryNoneItem">`;
+    s = `<div id="libraryNoneItem" class="libraryItem">`;
     s += `<span class="colorAccent">Library is empty.</span><br><br>`;
     s += `<span class="colorTextLess">Add music to your HQPlayer library<br>`;
     s += `<em>(HQPlayer > File > Library...)</em><br>`;
@@ -122,18 +121,22 @@ export default class LibraryContentView {
   }
 
   makeLibraryViewIsEmptyItem() {
-    const s = `<div id="libraryNoneItem">No items</div>`;
+    const s = `<div class="libraryItem" id="libraryNoneItem">No items</div>`;
     return $(s);
   }
 
+  /**
+   * Has special logic to fade in visible images on first batch only.
+   */
   onIntersection = (entries, self) => {
+
     for (const entry of entries) {
       const $img = $(entry.target);
-      if (entry.isIntersecting) {
+      if (!entry.isIntersecting) {
+        $img.removeAttr('src');
+      } else {
         const src = $img.attr('data-src');
         $img.attr('src', src);
-      } else {
-        $img.removeAttr('src');
       }
     }
   };

@@ -105,7 +105,7 @@ export default class LoadPlaylistView  extends Subview {
 
   makeHqpListItem(hqpPlaylistItem, index) {
     let s = '';
-    s += `<div class="playHisItem loadItem" data-index="${index}" style="padding-right:12px; overflow:clip;">`;
+    s += `<div class="playHisItem loadItem" data-index="${index}" style="padding-right:12px; overflow:hidden;">`;
     s += `<span>${hqpPlaylistItem['@_album']}</span>`;
     s += `</div>`;
     return $(s);

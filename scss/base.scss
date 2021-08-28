@@ -127,7 +127,7 @@ $app-standard-duration: 400ms;
   @include userSelect(none);
   @include userDrag(none);
 
-  :focus { outline: 1px dotted var(--col-text); }
+  :focus { outline: none; }
 
   @include mobile {
     font-size:$font-size-normal-mobile;
@@ -155,9 +155,6 @@ li:before {
 
 // reset input text box
 input,
-input[type="button"],
-input[type="reset"],
-input[type="submit"],
 html input[disabled],
 input::-moz-focus-inner {
   all: unset;

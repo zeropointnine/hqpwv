@@ -13,7 +13,7 @@ html {
   position:relative;
   background-color:var(--col-bg);
   flex: 1;
-  overflow:clip; // todo make sure this works out
+  overflow:hidden;
 }
 
 // ---
