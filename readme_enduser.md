@@ -4,9 +4,9 @@
 HQPWV is a local webserver that allows you to remotely control <a href="https://www.signalyst.com/consumer.html" target="_blank">HQPlayer</a> from any device on your network using a web browser.
 
 HQPlayer 4 (Desktop or Embedded) is required.
-  
-[![Demo video](https://i.vimeocdn.com/video/1198463153?mw=1200&mh=751)](https://vimeo.com/579213725 "Demo video")  
-Demo video (early alpha)
+
+[![Demo video](https://i.vimeocdn.com/video/1226369138?mw=1200&mh=750)](https://vimeo.com/593569610 "Demo video")
+Demo video
 
 # Requirements    
 1. <a href="https://www.signalyst.com/consumer.html" target="_blank">HQPlayer 4</a>
