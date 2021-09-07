@@ -3,21 +3,19 @@
 
 HQPWV is a local webserver that allows you to remotely control <a href="https://www.signalyst.com/consumer.html" target="_blank">HQPlayer</a> from any device on your network using a web browser.
 
-HQPlayer 4 (Desktop or Embedded) is required.
-
 [![Demo video](https://i.vimeocdn.com/video/1226369138?mw=1200&mh=750)](https://vimeo.com/593569610 "Demo video")
 Demo video
 
 # Requirements    
 1. <a href="https://www.signalyst.com/consumer.html" target="_blank">HQPlayer 4</a>
-2. MacOS or Windows 64-bit
+2. MacOS, Windows (64-bit), or Linux (64-bit)
 3. A modern desktop or mobile browser, connected to your local network
    (If using desktop or mobile Safari, it must be a recent version, circa April 2021)
   
 # Setup  
-1. Get the latest MacOS or Windows (unsigned) executable [here](https://github.com/zeropointnine/hqpwv/releases). Instructions for running unsigned binaries on MacOS can be found [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac). If running an unsigned executable is not an option, consider downloading the source code and run the application using Node.js.
+1. Get the latest (unsigned) MacOS, Windows, or Linux executable [here](https://github.com/zeropointnine/hqpwv/releases). Instructions for running unsigned binaries on MacOS can be found [here](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac). If running an unsigned executable is not an option, consider downloading the source code and run the application using Node.js.
 2. Make sure HQPlayer is running, and that your library is populated. Verify that the "Allow control from network" button is checked.
-3. Run `hqpwv-server`. Running it from the same computer as HQPlayer is recommended (It can be run on a different computer than HQPlayer, but configuration issues may arise due to firewalls blocking ports, etc).
+3. Run `hqpwv-server`. Running it from the same computer as HQPlayer itself is recommended, but not required.
 4. If all goes well, the console output should give you a webpage url to navigate to (eg, something like`http://192.168.X.XXX:8000`).
 5. Navigate to the url from any desktop or mobile browser that's on the same network as HQPlayer and HQPWV.
   
@@ -29,7 +27,7 @@ TODO
 - Consider signing executables for major and minor releases.
 - Support random playback.
 - Pagination system for extra-large user libraries?
-- ~~Support (or validate use with) HQPlayer Embedded.~~ should be good
+- ~~Support (or validate use with) HQPlayer Embedded.~~ added
 - ~~Filter (search) controls to the library view.~~ added
 - ~~Saved playlists.~~ added
 - ~~Add 'metadata layer' to track number of plays and likes.~~ added

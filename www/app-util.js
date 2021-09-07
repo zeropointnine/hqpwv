@@ -86,10 +86,18 @@ export default class AppUtil {
         infLine = `#EXTINF:180,Artist - Song`; // har
       }
       s += infLine + '\r\n';
-      s += uri + '\r\n';
+      // uris from hqp use html entities!
+      const decodedUri = AppUtil.htmlDecode(uri);
+      s += decodedUri + '\r\n';
     }
     return s;
   }
+
+  static htmlDecode(s) {
+    const doc = AppUtil.htmlDecodeDomParser.parseFromString(s, "text/html");
+    return doc.documentElement.textContent;
+  }
+  static htmlDecodeDomParser = new DOMParser();
 
   static updateColorTheme() {
     const $html = $('html');

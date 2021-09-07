@@ -33,18 +33,14 @@ const getIsEnabled = () => {
 const getPlaylists = () => {
   let files = fs.readdirSync(PATH);
   files = files.filter(file => file.endsWith('.m3u8'));
-  files = files.map(file => PATH + path.sep + file);
-  files.sort((a, b) => {
-    const s1 = a.toLowerCase();
-    const s2 = b.toLowerCase();
-    if (s1 > s2) {
-      return 1;
-    } else if (s2 > s1) {
-      return -1;
-    } else {
-      return 0;
+  files = files.map(filename => {
+    return {
+      name: PATH + path.sep + filename,
+      time: fs.statSync(PATH + '/' + filename).mtime.getTime()
     }
   });
+  files.sort((a, b) => b.time - a.time);
+  files = files.map(o => o['name']);
   return files;
 };
 

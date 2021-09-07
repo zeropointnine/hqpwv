@@ -1,6 +1,6 @@
 # Makes executables, renames and zips them.
 # Must be cd'ed to dist dir.
-# Do not use underscores in filenames, just dashes.
+# Do not use underscores in filenames, just dashes (because MacOS).
 
 echo '************************************************'
 echo '*** Edit filenames in script before running! ***'
