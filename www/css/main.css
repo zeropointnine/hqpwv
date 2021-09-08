@@ -475,6 +475,7 @@ input::-moz-focus-inner {
   background-position: center;
   background-image: url("./../img/icons/hourglass_empty_white_24dp.svg");
   animation: spinner 2s infinite;
+  filter: brightness(var(--icon-brightness));
 }
 
 @keyframes spinner {
@@ -1355,6 +1356,10 @@ html {
   background-image: url("./../img/icons/repeat_one_on_white_24dp.svg");
 }
 
+#playlistList {
+  margin-top: 16px;
+}
+
 .playlistButtons {
   margin-top: 12px;
   margin-bottom: 0;
@@ -1381,14 +1386,29 @@ html {
 #playlistHistoryButton:hover {
   background-color: var(--col-listitem);
 }
-#playlistLoadButton.isDisabled,
-#playlistSaveButton.isDisabled,
-#playlistHistoryButton.isDisabled {
+
+#playlistLoadButton.isDisabled {
   color: var(--col-text-least);
 }
 
-#playlistList {
-  margin-top: 16px;
+#playlistSaveButton {
+  display: none;
+}
+#playlistSaveButton.isDisabled {
+  color: var(--col-text-least);
+  pointer-events: none;
+}
+
+.isMetaEnabled #playlistSaveButton {
+  display: block;
+}
+
+#playlistHistoryButton {
+  display: none;
+}
+
+.isMetaEnabled #playlistHistoryButton {
+  display: block;
 }
 
 #playlistSaver {
@@ -1483,10 +1503,14 @@ html {
 }
 
 .playlistItemMeta {
+  display: none;
   height: 36px;
   margin-left: 12px;
-  display: flex;
   align-items: center;
+}
+
+.isMetaEnabled .playlistItemMeta {
+  display: flex;
 }
 
 .playlistItemViews {
@@ -1588,8 +1612,13 @@ html {
 }
 
 .loadListCustomSubheader {
+  display: none;
   margin-top: 18px;
   margin-bottom: 12px;
+}
+
+.isMetaEnabled .loadListCustomSubheader {
+  display: block;
 }
 
 .loadListHqpSubheader {
@@ -1597,7 +1626,15 @@ html {
   margin-bottom: 12px;
 }
 
-#loadCustomList,
+#loadCustomList {
+  display: none;
+  margin-top: 18px;
+}
+
+.isMetaEnabled #loadCustomList {
+  display: block;
+}
+
 #loadHqpList {
   margin-top: 18px;
 }
@@ -1913,11 +1950,11 @@ html {
   }
 }
 
-.libraryItem.isFavorite .libraryItemFavorite {
+.isMetaEnabled .libraryItem.isFavorite .libraryItemFavorite {
   display: block;
 }
-.libraryItem.isFavorite .libraryItemText1,
-.libraryItem.isFavorite .libraryItemText2 {
+.isMetaEnabled .libraryItem.isFavorite .libraryItemText1,
+.isMetaEnabled .libraryItem.isFavorite .libraryItemText2 {
   margin-right: 26px;
 }
 
@@ -2232,6 +2269,7 @@ label {
 }
 
 #albumFavoriteButton {
+  display: none;
   margin-left: 12px;
   border-radius: 6px;
 }
@@ -2242,6 +2280,10 @@ label {
 #albumFavoriteButton.isSelected:before {
   opacity: 0.7;
   background-image: url("./../img/icons/favorite_white_24dp.svg");
+}
+
+.isMetaEnabled #albumFavoriteButton {
+  display: block;
 }
 
 .albumItem {
@@ -2323,10 +2365,14 @@ label {
 }
 
 .albumItemMeta {
+  display: none;
   height: 36px;
   margin-left: 12px;
-  display: flex;
   align-items: center;
+}
+
+.isMetaEnabled .albumItemMeta {
+  display: flex;
 }
 
 .albumItemViews {

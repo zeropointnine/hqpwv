@@ -142,6 +142,12 @@ $border-radius-mobile:0px;
 
 #playlistCloseButton { }
 
+#playlistList {
+  margin-top:16px;
+}
+
+// --
+
 .playlistButtons {
   margin-top:12px;
   margin-bottom:0; // nb
@@ -165,13 +171,30 @@ $border-radius-mobile:0px;
     background-color:var(--col-listitem);
   }
   color:var(--col-text-less);
+}
+
+#playlistLoadButton {
   &.isDisabled {
     color:var(--col-text-least);
   }
 }
 
-#playlistList {
-  margin-top:16px;
+#playlistSaveButton {
+  display:none;
+  &.isDisabled {
+    color:var(--col-text-least);
+    pointer-events:none;
+  }
+}
+.isMetaEnabled #playlistSaveButton {
+  display:block;
+}
+
+#playlistHistoryButton {
+  display:none;
+}
+.isMetaEnabled #playlistHistoryButton {
+  display:block;
 }
 
 // ---
@@ -286,11 +309,15 @@ $border-radius-mobile:0px;
 }
 
 .playlistItemMeta {
+  display:none;
   height:$icon-button-side; // w/o this, is too tall, not sure why
   margin-left:12px;
-  display:flex;
   align-items:center;
 }
+.isMetaEnabled .playlistItemMeta {
+  display:flex;
+}
+
 .playlistItemViews {
   font-size: $font-size-smaller;
   color:var(--col-text-least);
@@ -398,8 +425,12 @@ $border-radius-mobile:0px;
 #loadCloseButton { }
 
 .loadListCustomSubheader {
+  display:none;
   margin-top: 18px;
   margin-bottom: 12px;
+}
+.isMetaEnabled .loadListCustomSubheader {
+  display:block;
 }
 
 .loadListHqpSubheader {
@@ -407,7 +438,14 @@ $border-radius-mobile:0px;
   margin-bottom: 12px;
 }
 
-#loadCustomList,
+#loadCustomList {
+  display:none;
+  margin-top:18px;
+}
+.isMetaEnabled #loadCustomList {
+  display:block;
+}
+
 #loadHqpList {
   margin-top:18px;
 }

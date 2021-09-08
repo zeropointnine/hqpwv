@@ -132,6 +132,7 @@
     background-position: center;
     background-image: url('./../img/icons/hourglass_empty_white_24dp.svg');
     animation: spinner 2s infinite;
+    filter:brightness(var(--icon-brightness));
   }
 }
 

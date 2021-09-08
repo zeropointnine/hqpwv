@@ -217,14 +217,9 @@ export default class AlbumView extends Subview {
     $("#albumViewStats").html(AlbumUtil.makeAlbumStatsText(this.album));
     $("#albumViewPath").html(this.album['@_path']);
 
-    if (!MetaUtil.isEnabled) {
-      ViewUtil.setDisplayed(this.$albumFavoriteButton, false);
-    } else {
-      ViewUtil.setDisplayed(this.$albumFavoriteButton, true);
-      MetaUtil.isAlbumFavoriteFor(this.album['@_hash'])
-          ? this.$albumFavoriteButton.addClass('isSelected')
-          : this.$albumFavoriteButton.removeClass('isSelected')
-    }
+    MetaUtil.isAlbumFavoriteFor(this.album['@_hash'])
+        ? this.$albumFavoriteButton.addClass('isSelected')
+        : this.$albumFavoriteButton.removeClass('isSelected')
   }
 
 	makeListItem(index, item) {
@@ -235,16 +230,14 @@ export default class AlbumView extends Subview {
     s += `<div class="albumItem" data-index="${index}">`;
 		s += `<div class="albumItemLeft">${index+1}</div>`;
 		s += `<div class="albumItemMain">${song}${duration}</div>`;
-    if (MetaUtil.isEnabled) {
-      const hash = item['@_hash'];
-      const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
-      const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
-      const numViews = MetaUtil.getNumViewsFor(hash);
-      s += `<div class="albumItemMeta">`;
-      s += `<div class="albumItemViews">${numViews || ''}</div>`;
-      s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
-      s += `</div>`;
-    }
+    const hash = item['@_hash'];
+    const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
+    const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
+    const numViews = MetaUtil.getNumViewsFor(hash);
+    s += `<div class="albumItemMeta">`;
+    s += `<div class="albumItemViews">${numViews || ''}</div>`;
+    s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
+    s += `</div>`;
 		s += `<div class="albumItemContext"><div class="iconButton moreButton" data-index="${index}"></div></div>`;
 		s += `</div>`;
 		return $(s);

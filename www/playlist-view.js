@@ -52,8 +52,6 @@ export default class PlaylistView extends Subview {
 
     Util.addAppListener(this, 'model-playlist-updated', this.populate);
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
-    Util.addAppListener(this, 'settings-meta-changed', this.updateMetaButtons);
-    Util.addAppListener(this, 'meta-load-result', this.updateMetaButtons);
 	}
 
   onShow() {
@@ -64,7 +62,7 @@ export default class PlaylistView extends Subview {
     $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
     $(document).on('new-track', this.onNewTrack);
 
-    this.updateMetaButtons();
+    this.updateSaveButton();
     this.showSavePanel(false);
 
     Service.queueCommandFront(Commands.state());
@@ -86,6 +84,7 @@ export default class PlaylistView extends Subview {
 
     // Populate list items
     this.playlist = Model.playlist;
+    this.updateSaveButton();
     this.trackItems$ = [];
 		this.$list.empty();
 
@@ -120,7 +119,6 @@ export default class PlaylistView extends Subview {
     }
 
     this.updateSelectedItem();
-    this.updateMetaButtons();
 	}
 
 	updateSelectedItem = () => {
@@ -171,7 +169,16 @@ export default class PlaylistView extends Subview {
     }
   };
 
-	onItemClick(event) {
+  updateSaveButton() {
+    const b = (this.playlist && this.playlist.array.length > 0);
+    if (b) {
+      this.$saveButton.removeClass('isDisabled')
+    } else {
+      this.$saveButton.addClass('isDisabled');
+    }
+  }
+
+  onItemClick(event) {
 		const index = parseInt($(event.currentTarget).attr("data-index"));
 		Service.queueCommandFrontAndGetStatus(
         Commands.selectTrack(index + 1)); // rem, 1-indexed
@@ -249,30 +256,6 @@ export default class PlaylistView extends Subview {
       this.savePanel.show();
     } else {
       this.savePanel.hide();
-    }
-  }
-
-  updateMetaButtons() {
-    // buttons' visibility
-    ViewUtil.setDisplayed(this.$loadButton, Settings.isMetaEnabled);
-    ViewUtil.setDisplayed(this.$saveButton, Settings.isMetaEnabled && !Values.areOnDifferentMachines);
-    ViewUtil.setDisplayed(this.$historyButton, Settings.isMetaEnabled);
-    // load and history button enabledness
-    const loadAndHistoryEnabled = (Settings.isMetaEnabled && MetaUtil.isEnabled);
-    if (loadAndHistoryEnabled) {
-      this.$loadButton.removeClass('isDisabled');
-      this.$historyButton.removeClass('isDisabled');
-    } else {
-      this.$loadButton.addClass('isDisabled');
-      this.$historyButton.addClass('isDisabled');
-    }
-    // save button enabledness
-    const saveEnabled = (Settings.isMetaEnabled && MetaUtil.isEnabled)
-        && (this.playlist && this.playlist.array.length > 0);
-    if (saveEnabled) {
-      this.$saveButton.removeClass('isDisabled');
-    } else {
-      this.$saveButton.addClass('isDisabled');
     }
   }
 }

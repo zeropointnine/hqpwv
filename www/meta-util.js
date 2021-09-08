@@ -22,8 +22,9 @@ class MetaUtil {
   isFailed;
   isReady;
 
-  _tracks;
-  _history;
+  _tracks = {};
+  _albums = {};
+  _history = [];
   
   constructor() {}
 
@@ -48,11 +49,7 @@ class MetaUtil {
           this.doFail();
           return;
         }
-        // success
-        this.isLoading = false;
-        this.isFailed = false;
-        this.isReady = true;
-        $(document).trigger('meta-load-result', true);
+        this.doSuccess();
       });
     });
   }
@@ -61,6 +58,14 @@ class MetaUtil {
     this.isLoading = false;
     this.isFailed = true;
     ToastView.show(`<span class="colorAccent">Server metadata init failed; some features will be disabled.</span>`, 5000);
+    $(document).trigger('meta-load-result', false);
+  }
+
+  doSuccess() {
+    this.isLoading = false;
+    this.isFailed = false;
+    this.isReady = true;
+    $(document).trigger('meta-load-result', true);
   }
 
   fetchInfo(resultCallback) {

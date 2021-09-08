@@ -70,6 +70,7 @@ export default class App {
     Util.addAppListener(this, 'model-playlist-updated', this.updateMostStateClasses);
     Util.addAppListener(this, 'model-status-updated', this.updateMostStateClasses);
     Util.addAppListener(this, 'settings-meta-changed', this.onSettingsMetaChanged);
+    Util.addAppListener(this, 'meta-load-result', this.onMetaLoadResult);
     Util.addAppListener(this, 'proxy-errors', this.showHqpDisconnectedSnack);
     Util.addAppListener(this, 'server-errors', this.showServerErrorsSnack);
     Util.addAppListener(this, 'service-response-handled', this.onServiceResponseHandled);
@@ -125,6 +126,7 @@ export default class App {
       }
       const duration = new Date().getTime() - startTime;
       cl(`init - async calls ${duration}ms`);
+      this.updateMetaEnabledClass();
       this.libraryView.showFirstTime();
     };
 
@@ -320,6 +322,15 @@ export default class App {
     this.updatePageHolderSubviewClass(subview);
   }
 
+  updateMetaEnabledClass() {
+    const b = (MetaUtil.isEnabled && Model.library.albums.length > 0);
+    if (b) {
+      this.$pageHolder.addClass("isMetaEnabled");
+    } else {
+      this.$pageHolder.removeClass("isMetaEnabled");
+    }
+  }
+
   /**
    * Upon hiding a view, focus on the topmost view that just got exposed.
    * (Cursor-scrolling convenience)
@@ -489,6 +500,11 @@ export default class App {
     if (Settings.isMetaEnabled && !MetaUtil.isReady && !MetaUtil.isFailed && !MetaUtil.isLoading) {
       MetaUtil.init();
     }
+    this.updateMetaEnabledClass();
+  }
+
+  onMetaLoadResult() {
+    this.updateMetaEnabledClass();
   }
 
   /** Triggers custom resize event 100ms after last window resize event. */

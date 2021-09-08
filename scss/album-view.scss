@@ -142,7 +142,9 @@
 #albumQueueButton {
   margin-left:12px;
 }
+
 #albumFavoriteButton {
+  display:none;
   margin-left:12px;
   border-radius: 6px;
   &:before {
@@ -155,6 +157,9 @@
       background-image: url('./../img/icons/favorite_white_24dp.svg');
     }
   }
+}
+.isMetaEnabled #albumFavoriteButton {
+  display:block;
 }
 
 // ---
@@ -228,11 +233,15 @@
   }
 }
 .albumItemMeta {
+  display:none;
   height:$icon-button-side; // w/o this, is too tall, not sure why
   margin-left:12px;
-  display:flex;
   align-items:center;
 }
+.isMetaEnabled .albumItemMeta {
+  display:flex;
+}
+
 .albumItemViews {
   font-size: $font-size-smaller;
   color:var(--col-text-least);

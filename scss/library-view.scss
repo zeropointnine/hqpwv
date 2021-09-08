@@ -255,6 +255,7 @@ $marginUnitMobile: 6px;
 .libraryItem:hover .libraryItemBits {
   opacity:1;
 }
+
 .libraryItemFavorite {
   display:none;
   position:absolute;
@@ -269,8 +270,7 @@ $marginUnitMobile: 6px;
     bottom: 15px;
   }
 }
-
-.libraryItem.isFavorite {
+.isMetaEnabled .libraryItem.isFavorite {
   .libraryItemFavorite {
     display: block;
   }

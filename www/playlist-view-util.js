@@ -5,8 +5,7 @@ import AlbumUtil from './album-util.js';
 import MetaUtil from './meta-util.js'
 
 /**
- * Helper functions for playlist view.
- * Static class.
+ * Static helper functions for playlist view.
  */
 export default class PlaylistViewUtil {
 
@@ -34,7 +33,7 @@ export default class PlaylistViewUtil {
     s += `<div class="playHisItem playlistItem ${groupingClass}" data-index="${index}">`;
     s += `  <div class="left">${index+1}</div>`;
     s += `  <div class="main">${PlaylistViewUtil.makeLabel(item, hasAlbum)}</div>`;
-    if (MetaUtil.isEnabled && Model.library.albums.length > 0) {
+    if (Model.library.albums.length > 0) {
       const hash = Model.library.getHashForPlaylistItem(item);
       if (hash) {
         const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
