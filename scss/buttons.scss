@@ -59,6 +59,31 @@
   }
 }
 
+// decorates iconButton
+.favoriteButton {
+  background-color: transparent;
+  &:before {
+    opacity:0.25;
+    background-image: url('./../img/icons/favorite_border_white_24dp.svg');
+  }
+  &:hover {
+    &:before {
+      opacity:0.7;
+    }
+    background-color: transparent;
+  }
+  &.isSelected {
+    background-color:transparent;
+    &:before {
+      opacity:0.7;
+      background-image: url('./../img/icons/favorite_white_24dp.svg');
+    }
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
 .moreButton {
   &:before {
     background-image: url('./../img/icons/more_horiz_white_24dp.svg');

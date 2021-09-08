@@ -144,6 +144,8 @@ $marginUnitMobile: 6px;
   }
 }
 
+// ---
+
 .libraryItem {
   position:relative;
 	width: calc(16.666% - #{$marginUnit * 2}); // 6 cols from 1501px to maxwidth
@@ -202,7 +204,6 @@ $marginUnitMobile: 6px;
   }
 }
 
-
 .libraryItemPicture {
 	position:relative;
   width:100%;
@@ -253,6 +254,30 @@ $marginUnitMobile: 6px;
 }
 .libraryItem:hover .libraryItemBits {
   opacity:1;
+}
+.libraryItemFavorite {
+  display:none;
+  position:absolute;
+  width:24px;
+  height:24px;
+  bottom:19px;
+  right:10px;
+  background-image: url('./../img/icons/favorite_white_24dp.svg');
+  opacity:0.35;
+  filter:brightness(var(--icon-brightness));
+  @include mobile {
+    bottom: 15px;
+  }
+}
+
+.libraryItem.isFavorite {
+  .libraryItemFavorite {
+    display: block;
+  }
+  .libraryItemText1,
+  .libraryItemText2 {
+    margin-right:26px;
+  }
 }
 
 // ---

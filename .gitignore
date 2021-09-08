@@ -2,7 +2,7 @@
 .idea/
 dist/hqpwv-server-*
 node_modules/
-www/css/
+www/css/main.css.map
 
 hqpwv-metadata.json
 hqpwv-playlists/

@@ -1,12 +1,13 @@
 import AlbumUtil from './album-util.js';
 import DataUtil from './data-util.js';
 import LibraryGroupUtil from './library-group-util.js';
+import MetaUtil from './meta-util.js';
 import Model from './model.js';
 import Settings from './settings.js';
 import ViewUtil from './view-util.js';
 
 /**
- * 'Abstract' base class for the two swappable content views of LibraryView.
+ * 'Abstract' base class for the two content views of LibraryView.
  *
  * Has albums array. And groups/labels arrays (which would be dependent on albums).
  *
@@ -26,6 +27,8 @@ export default class LibraryContentView {
     this.$el = $el;
     const config = { root: $('#libraryView')[0], rootMargin: (window.screen.height * 0.66) + 'px', threshold: 0  };
     this.intersectionObs = new IntersectionObserver(this.onIntersection, config);
+    $(document).on('album-favorite-changed', this.onAlbumFavoriteChanged);
+
   }
 
   /**
@@ -180,6 +183,18 @@ export default class LibraryContentView {
     }
   };
 
+  onAlbumFavoriteChanged = (event, hash, isFavorite) => {
+    const selector = `[data-hash="${hash}"]`;
+    const $item = this.$el.find(selector);
+    if ($item.length > 0) {
+      if (isFavorite) {
+        $item.addClass('isFavorite');
+      } else {
+        $item.removeClass('isFavorite');
+      }
+    }
+  };
+
   /**
    * Standard rect-shaped list item for an album,
    * used for most of the library view lists.
@@ -190,14 +205,16 @@ export default class LibraryContentView {
     const artist = album['@_artist'];
     const albumText = album['@_album'];
     const bits = AlbumUtil.getBitrateText(album);
+    const isFavoriteClass = MetaUtil.isAlbumFavoriteFor(hash) ? 'isFavorite' : '';
 
-    let s = `<div class="libraryItem" data-hash="${hash}">`; /* tabindex="0" */
+    let s = `<div class="libraryItem ${isFavoriteClass}" data-hash="${hash}">`; /* tabindex="0" */
     s +=      `<div class="libraryItemPicture"><img data-src=${imgPath} /></div>`;
     s +=      `<div class="libraryItemText1">${artist}</div>`;
     s +=      `<div class="libraryItemText2">${albumText}</div>`;
     if (bits) {
       s +=    `<div class="libraryItemBits">${bits}</div>`;
     }
+    s +=      `<div class="libraryItemFavorite"></div>`;
     s +=    `</div>`; // todo fault
     const $item = $(s);
     return $item;

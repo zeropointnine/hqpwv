@@ -67,6 +67,7 @@
     }
     #albumViewButtons {
       margin-top:24px;
+      display:flex;
     }
   }
 }
@@ -101,6 +102,7 @@
       }
       #albumViewButtons {
         margin-top:20px;
+        justify-content: center;
       }
     }
   }
@@ -136,9 +138,23 @@
 }
 
 #albumPlayNowButton {
-  margin-right:12px;
 }
 #albumQueueButton {
+  margin-left:12px;
+}
+#albumFavoriteButton {
+  margin-left:12px;
+  border-radius: 6px;
+  &:before {
+    opacity:0.25;
+    background-image: url('./../img/icons/favorite_border_white_24dp.svg');
+  }
+  &.isSelected {
+    &:before {
+      opacity:0.7;
+      background-image: url('./../img/icons/favorite_white_24dp.svg');
+    }
+  }
 }
 
 // ---
@@ -188,43 +204,16 @@
 }
 
 
-// decorates iconButton
-.favoriteButton {
-  background-color: transparent;
-  &:before {
-    opacity:0.25;
-    background-image: url('./../img/icons/favorite_border_white_24dp.svg');
-  }
-  &:hover {
-    &:before {
-      opacity:0.7;
-    }
-    background-color: transparent;
-  }
-  &.isSelected {
-    background-color:transparent;
-    &:before {
-      opacity:0.7;
-      background-image: url('./../img/icons/favorite_white_24dp.svg');
-    }
-    &:hover {
-      background-color: transparent;
-    }
-  }
-}
-
-
 // Selectability-related:
-
 #albumViewTexts * {
   @include userSelect(text);
 }
-#albumPlayNowButton {
+#albumPlayNowButton,
+#albumQueueButton,
+#albumFavoriteButton {
   @include userSelect(none);
 }
-#albumQueueButton {
-  @include userSelect(none);
-}
+
 
 .albumItemLeft {
 	margin-right:12px;

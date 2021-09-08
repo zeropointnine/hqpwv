@@ -272,6 +272,30 @@ input::-moz-focus-inner {
   background-color: var(--col-listitem-selected-over);
 }
 
+.favoriteButton {
+  background-color: transparent;
+}
+.favoriteButton:before {
+  opacity: 0.25;
+  background-image: url("./../img/icons/favorite_border_white_24dp.svg");
+}
+.favoriteButton:hover {
+  background-color: transparent;
+}
+.favoriteButton:hover:before {
+  opacity: 0.7;
+}
+.favoriteButton.isSelected {
+  background-color: transparent;
+}
+.favoriteButton.isSelected:before {
+  opacity: 0.7;
+  background-image: url("./../img/icons/favorite_white_24dp.svg");
+}
+.favoriteButton.isSelected:hover {
+  background-color: transparent;
+}
+
 .moreButton:before {
   background-image: url("./../img/icons/more_horiz_white_24dp.svg");
 }
@@ -1872,6 +1896,31 @@ html {
   opacity: 1;
 }
 
+.libraryItemFavorite {
+  display: none;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  bottom: 19px;
+  right: 10px;
+  background-image: url("./../img/icons/favorite_white_24dp.svg");
+  opacity: 0.35;
+  filter: brightness(var(--icon-brightness));
+}
+@media (max-width: 480px) {
+  .libraryItemFavorite {
+    bottom: 15px;
+  }
+}
+
+.libraryItem.isFavorite .libraryItemFavorite {
+  display: block;
+}
+.libraryItem.isFavorite .libraryItemText1,
+.libraryItem.isFavorite .libraryItemText2 {
+  margin-right: 26px;
+}
+
 #libraryAlbumOptionsView {
   display: flex;
 }
@@ -2114,6 +2163,7 @@ label {
 }
 #albumViewTexts #albumViewTextsInner #albumViewButtons {
   margin-top: 24px;
+  display: flex;
 }
 
 @media (max-width: 768px) {
@@ -2148,6 +2198,7 @@ label {
   }
   #albumViewTexts #albumViewTextsInner #albumViewButtons {
     margin-top: 20px;
+    justify-content: center;
   }
 }
 @media (max-width: 480px) {
@@ -2176,8 +2227,21 @@ label {
     margin-top: 18px;
   }
 }
-#albumPlayNowButton {
-  margin-right: 12px;
+#albumQueueButton {
+  margin-left: 12px;
+}
+
+#albumFavoriteButton {
+  margin-left: 12px;
+  border-radius: 6px;
+}
+#albumFavoriteButton:before {
+  opacity: 0.25;
+  background-image: url("./../img/icons/favorite_border_white_24dp.svg");
+}
+#albumFavoriteButton.isSelected:before {
+  opacity: 0.7;
+  background-image: url("./../img/icons/favorite_white_24dp.svg");
 }
 
 .albumItem {
@@ -2214,30 +2278,6 @@ label {
   animation: thumbPulse 1.33s infinite;
 }
 
-.favoriteButton {
-  background-color: transparent;
-}
-.favoriteButton:before {
-  opacity: 0.25;
-  background-image: url("./../img/icons/favorite_border_white_24dp.svg");
-}
-.favoriteButton:hover {
-  background-color: transparent;
-}
-.favoriteButton:hover:before {
-  opacity: 0.7;
-}
-.favoriteButton.isSelected {
-  background-color: transparent;
-}
-.favoriteButton.isSelected:before {
-  opacity: 0.7;
-  background-image: url("./../img/icons/favorite_white_24dp.svg");
-}
-.favoriteButton.isSelected:hover {
-  background-color: transparent;
-}
-
 #albumViewTexts * {
   -moz-user-select: text;
   -webkit-user-select: text;
@@ -2246,15 +2286,9 @@ label {
   -o-user-select: text;
 }
 
-#albumPlayNowButton {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -o-user-select: none;
-}
-
-#albumQueueButton {
+#albumPlayNowButton,
+#albumQueueButton,
+#albumFavoriteButton {
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;

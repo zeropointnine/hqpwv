@@ -1,19 +1,20 @@
 // Base definitions and shared definitions
 
 
-// SASS values, css variables
+// Color theme css variables
 
 :root {
-  --col-bg:                     #181818;
-  --col-listitem-less:          #1c1c1c;
-  --col-listitem:               #282828;
-  --col-listitem-over:          #323232;
-  --col-listitem-selected:      #383838;
-  --col-listitem-selected-over: #424242;
-  --col-text-least:             #666666;
-  --col-text-less:              #999999;
-  --col-text:                   #cccccc;
-  --col-accent:                 #ff2200;
+  // default is dark theme
+  --col-bg:                       #181818;
+  --col-listitem-less:            #1c1c1c;
+  --col-listitem:                 #282828;
+  --col-listitem-over:            #323232;
+  --col-listitem-selected:        #383838;
+  --col-listitem-selected-over:   #424242;
+  --col-text-least:               #666666;
+  --col-text-less:                #999999;
+  --col-text:                     #cccccc;
+  --col-accent:                   #ff2200;
   --icon-brightness: 100%;
 
   &.lightTheme {
@@ -30,6 +31,8 @@
     --icon-brightness: 0%;
   }
 }
+
+// SASS values
 
 $mobile-max-width: 480px;
 $tablet-max-width: 768px;

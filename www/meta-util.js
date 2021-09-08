@@ -85,12 +85,13 @@ class MetaUtil {
         resultCallback(false);
         return;
       }
-      if (!data['tracks'] || !data['history']) {
+      if (!data['tracks'] || !data['albums'] || !data['history']) {
         cl('warning missing required property', data);
         resultCallback(false);
         return;
       }
       this._tracks = data['tracks'];
+      this._albums = data['albums'];
       this._history = data['history'];
       resultCallback(true);
     };
@@ -112,11 +113,15 @@ class MetaUtil {
     return this._tracks;
   }
 
+  get albums() {
+    return this._albums;
+  }
+
   get history() {
     return this._history;
   }
 
-  isFavoriteFor(hash) {
+  isTrackFavoriteFor(hash) {
     if (!this._tracks[hash]) {
       return false;
     }
@@ -125,10 +130,19 @@ class MetaUtil {
     return (value === true || value === 'true');
   }
 
+  isAlbumFavoriteFor(hash) {
+    if (!this._albums[hash]) {
+      return false;
+    }
+    const o = this._albums[hash];
+    const value = o['favorite'];
+    return (value === true || value === 'true');
+  }
+
   /**
    * Sets track favorite boolean, and tells server to do likewise.
    */
-  setFavoriteFor(hash, isFavorite) {
+  setTrackFavoriteFor(hash, isFavorite) {
     if (!hash) {
       return false;
     }
@@ -139,10 +153,10 @@ class MetaUtil {
     }
     o['favorite'] = isFavorite;
 
-    this.setFavoriteOnServer(hash, isFavorite);
+    this.setTrackFavoriteOnServer(hash, isFavorite);
   }
 
-  setFavoriteOnServer(hash, isFavorite) {
+  setTrackFavoriteOnServer(hash, isFavorite) {
     if (!hash) {
       cl('warning no hash');
       return;
@@ -150,6 +164,36 @@ class MetaUtil {
     const onSuccess = (data, textStatus, jqXHR) => { /*cl(data);*/ };
     const onError = (e) => cl('warning update track favorite failed', e);
     const url = `${Values.META_ENDPOINT}?updateTrackFavorite&hash=${hash}&value=${isFavorite}`;
+    $.ajax( { url: url, error: onError, success: onSuccess } );
+  }
+
+  /**
+   * Sets album favorite boolean, and tells server to do likewise.
+   */
+  setAlbumFavoriteFor(hash, isFavorite) {
+    if (!hash) {
+      return false;
+    }
+    let o = this._albums[hash];
+    if (!o) {
+      this._albums[hash] = {};
+      o = this._albums[hash];
+    }
+    o['favorite'] = isFavorite;
+
+    this.setAlbumFavoriteOnServer(hash, isFavorite);
+
+    $(document).trigger('album-favorite-changed', [hash, isFavorite]);
+  }
+
+  setAlbumFavoriteOnServer(hash, isFavorite) {
+    if (!hash) {
+      cl('warning no hash');
+      return;
+    }
+    const onSuccess = (data, textStatus, jqXHR) => { /*cl(data);*/ };
+    const onError = (e) => cl('warning update album favorite failed', e);
+    const url = `${Values.META_ENDPOINT}?updateAlbumFavorite&hash=${hash}&value=${isFavorite}`;
     $.ajax( { url: url, error: onError, success: onSuccess } );
   }
 

@@ -9,8 +9,7 @@ import ViewUtil from './view-util.js';
 const groupTypetoIconClass = { 'path': 'folderIcon', 'bitrate': 'waveIcon', 'genre': 'genreIcon' };
 
 /**
- * "Pipeline":
- *
+ * Model 'pipeline':
  * `sortedAlbums` requires `albums` and `sortType`
  * `groups` requires `sortedAlbums` and `groupType`
  * dom views require `groups`

@@ -16,8 +16,9 @@ Demo video
 2. Make sure Node.js is installed. Then enter:
 `npm install`. 
   
-3. Make sure `sass` is installed. Then compile the css:
-`sass scss/main.scss www/css/main.css`  
+3. To modify the css, make sure `sass` is installed. Then compile with:
+`sass scss/main.scss www/css/main.css`
+If simply trying to run the project, this step can be skipped, as the compiled css is included in the repository.
   
 4. Make sure [HQPlayer 4](https://www.signalyst.com/consumer.html) is running.
 

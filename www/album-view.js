@@ -19,9 +19,10 @@ export default class AlbumView extends Subview {
 
   $pictureHolder;
   $picture;
-  $list;
   $overlayImage;
   $libraryItemImage;
+  $albumFavoriteButton;
+  $list;
   listItems$;
   contextMenu;
 
@@ -33,15 +34,17 @@ export default class AlbumView extends Subview {
 
   constructor() {
     super($("#albumView"));
-    this.$pictureHolder = $(".albumViewPictureOuter");
-    this.$picture = $("#albumViewPicture");
-    this.$list = this.$el.find("#albumList");
+    this.$pictureHolder = this.$el.find('.albumViewPictureOuter');
+    this.$picture = this.$el.find('#albumViewPicture');
+    this.$albumFavoriteButton = this.$el.find('#albumFavoriteButton');
+    this.$list = this.$el.find('#albumList');
     this.$overlayImage = $('#albumOverlayImage');
 
     this.contextMenu = new AlbumContextMenu($("#albumContextMenu"));
 
     $("#albumPlayNowButton").on("click tap", this.onPlayNowButton);
     $("#albumQueueButton").on("click tap", this.onQueueButton);
+    this.$albumFavoriteButton.on('click tap', this.onAlbumFavoriteButton);
     $("#albumCloseButton").on("click tap", () => $(document).trigger('album-view-close-button', this.album, true));
     this.$picture.on('click tap', () => $(document).trigger('album-picture-click', this.$picture));
   }
@@ -213,6 +216,15 @@ export default class AlbumView extends Subview {
     $("#albumViewArtist").html(this.album['@_artist']);
     $("#albumViewStats").html(AlbumUtil.makeAlbumStatsText(this.album));
     $("#albumViewPath").html(this.album['@_path']);
+
+    if (!MetaUtil.isEnabled) {
+      ViewUtil.setDisplayed(this.$albumFavoriteButton, false);
+    } else {
+      ViewUtil.setDisplayed(this.$albumFavoriteButton, true);
+      MetaUtil.isAlbumFavoriteFor(this.album['@_hash'])
+          ? this.$albumFavoriteButton.addClass('isSelected')
+          : this.$albumFavoriteButton.removeClass('isSelected')
+    }
   }
 
 	makeListItem(index, item) {
@@ -225,7 +237,7 @@ export default class AlbumView extends Subview {
 		s += `<div class="albumItemMain">${song}${duration}</div>`;
     if (MetaUtil.isEnabled) {
       const hash = item['@_hash'];
-      const isFavorite = MetaUtil.isFavoriteFor(hash);
+      const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
       const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
       const numViews = MetaUtil.getNumViewsFor(hash);
       s += `<div class="albumItemMeta">`;
@@ -279,6 +291,20 @@ export default class AlbumView extends Subview {
     AppUtil.doPlaylistAdds(commands);
 	};
 
+  onAlbumFavoriteButton = (event) => {
+    const hash = this.album['@_hash'];
+    const oldValue = MetaUtil.isAlbumFavoriteFor(hash);
+    const newValue = !oldValue;
+    // update button
+    if (newValue) {
+      this.$albumFavoriteButton.addClass('isSelected');
+    } else {
+      this.$albumFavoriteButton.removeClass('isSelected');
+    }
+    // update model
+    MetaUtil.setAlbumFavoriteFor(hash, newValue);
+  }
+
 	onItemClick(event) {
 		const index = $(event.currentTarget).attr("data-index");
 		const item = this.tracks[index];
@@ -298,7 +324,7 @@ export default class AlbumView extends Subview {
     const index = parseInt($button.attr("data-index"));
     const track = this.tracks[index];
     const hash = track['@_hash'];
-    const oldValue = MetaUtil.isFavoriteFor(hash);
+    const oldValue = MetaUtil.isTrackFavoriteFor(hash);
     const newValue = !oldValue;
     // update button
     if (newValue) {
@@ -307,7 +333,7 @@ export default class AlbumView extends Subview {
       $button.removeClass('isSelected');
     }
     // update model
-    MetaUtil.setFavoriteFor(hash, newValue);
+    MetaUtil.setTrackFavoriteFor(hash, newValue);
   }
 
   onMetaTrackIncremented = (e, hash, numViews) => {

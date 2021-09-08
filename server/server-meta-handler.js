@@ -30,8 +30,7 @@ const doGet = (request, response) => {
   if (request.query['getDownload'] !== undefined) {
     response.setHeader('Content-Type', 'text/json');
     response.setHeader('Content-disposition', 'attachment;filename=hqpwv-metadata.json');
-    const o = meta.getShallowCopyEmptyHistory();
-    response.send(o);
+    response.send(meta.getData());
     return;
   }
 
@@ -47,6 +46,16 @@ const doGet = (request, response) => {
       return;
     }
     const result = meta.updateTrackFavorite(hash, value);
+    response.send( { result: result } );
+    return;
+  }
+
+  if (request.query['updateAlbumFavorite'] !== undefined) {
+    if (!hash || !value) {
+      response.status(400).json( {error: 'missing_required_sub_param'} );
+      return;
+    }
+    const result = meta.updateAlbumFavorite(hash, value);
     response.send( { result: result } );
     return;
   }

@@ -37,7 +37,7 @@ export default class PlaylistViewUtil {
     if (MetaUtil.isEnabled && Model.library.albums.length > 0) {
       const hash = Model.library.getHashForPlaylistItem(item);
       if (hash) {
-        const isFavorite = MetaUtil.isFavoriteFor(hash);
+        const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
         const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
         const numViews = MetaUtil.getNumViewsFor(hash);
         s += `<div class="playlistItemMeta">`;
@@ -154,7 +154,7 @@ export default class PlaylistViewUtil {
       cl('warning no hash for ', item['@_uri']);
       return;
     }
-    const oldValue = MetaUtil.isFavoriteFor(hash);
+    const oldValue = MetaUtil.isTrackFavoriteFor(hash);
     const newValue = !oldValue;
     // update button
     if (newValue) {
@@ -163,7 +163,7 @@ export default class PlaylistViewUtil {
       $button.removeClass('isSelected');
     }
     // update model
-    MetaUtil.setFavoriteFor(hash, newValue);
+    MetaUtil.setTrackFavoriteFor(hash, newValue);
   }
 
 }

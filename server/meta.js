@@ -77,6 +77,16 @@ const loadData = () => {
   }
   log.x('- loaded metadata');
   log.x('  ' + PATH);
+  // Also ensure the expected properties exist:
+  if (!o['tracks']) {
+    o['tracks'] = {};
+  }
+  if (!o['albums']) {
+    o['albums'] = {};
+  }
+  if (!o['history']) {
+    o['history'] = [];
+  }
   data = o;
   return true;
 };
@@ -84,6 +94,7 @@ const loadData = () => {
 makeData = () => {
   const o = {
     tracks: {},
+    albums: {},
     history: []
   };
   return o;
@@ -126,16 +137,12 @@ const getTracks = () => {
   return data['tracks'];
 };
 
+const getAlbums = () => {
+  return data['albums'];
+}
+
 const getHistory = () => {
   return data['history'];
-};
-
-const getShallowCopyEmptyHistory = () => {
-  const o = {
-    'tracks': data['tracks'],
-    'history': []
-  };
-  return o;
 };
 
 const updateTrackFavorite = (hash, isFavorite) => {
@@ -147,6 +154,17 @@ const updateTrackFavorite = (hash, isFavorite) => {
   track['favorite'] = isFavorite;
   activityTouch();
   return track['favorite'];
+};
+
+const updateAlbumFavorite = (hash, isFavorite) => {
+  let album = data['albums'][hash];
+  if (!album) {
+    album = {};
+    data['albums'][hash] = album;
+  }
+  album['favorite'] = isFavorite;
+  activityTouch();
+  return album['favorite'];
 };
 
 const updateTrackViews = (hash, numViews) => {
@@ -193,7 +211,7 @@ const addToHistory = (hash) => {
 };
 
 /**
- * Removes track entries which are not in library.
+ * Removes track and album entries which are not in library.
  */
 const clean = (resultCallback) => {
   // todo
@@ -239,9 +257,10 @@ module.exports = {
   saveFile: saveFile,
   getData: getData,
   getTracks: getTracks,
+  getAlbums: getAlbums,
   getHistory: getHistory,
-  getShallowCopyEmptyHistory: getShallowCopyEmptyHistory,
   updateTrackFavorite: updateTrackFavorite,
+  updateAlbumFavorite: updateAlbumFavorite,
   incrementTrackViews: incrementTrackViews,
   updateTrackViews: updateTrackViews,
   clean: clean
