@@ -1,11 +1,12 @@
 import AlbumUtil from './album-util.js';
 import LibraryContentView from './library-content-view.js';
 import LibraryDataUtil from './library-data-util.js';
+import MetaUtil from './meta-util.js';
 import Model from './model.js';
 import Settings from './settings.js';
+import TrackListItemContextMenu from './track-list-item-context-menu.js';
 import ViewUtil from './view-util.js';
 import Util from './util.js';
-import TrackListItemContextMenu from './track-list-item-context-menu.js';
 
 /**
  * One of the two main library 'content views'.
@@ -21,7 +22,6 @@ export default class LibrarySearchView extends LibraryContentView {
     super($el);
     this.hide();
     Util.addAppListener(this, 'library-search', this.onSearch);
-    Util.addAppListener(this, 'library-albums-view-will-populate', this.onAlbumsWillPopulate);
     this.sortType = 'default';
   }
 
@@ -37,6 +37,11 @@ export default class LibrarySearchView extends LibraryContentView {
     this.searchValue = value;
     this.makeGroups();
     this.makeDom();
+    $(document).trigger('library-search-view-populated');
+  }
+
+  getSearchType() {
+    return this.searchType;
   }
 
   makeGroups() {
@@ -51,6 +56,12 @@ export default class LibrarySearchView extends LibraryContentView {
       case 'track':
         o = this.makeTracksGroup();
         break;
+      case 'albumFavorites':
+        o = this.makeAlbumFavoritesGroup();
+        break;
+      case 'trackFavorites':
+        o = this.makeTrackFavoritesGroup();
+        break;
       default:
         cl('warning logic');
         o = {labels: [], groups: []};
@@ -60,6 +71,7 @@ export default class LibrarySearchView extends LibraryContentView {
     this.groups = o['groups'];
   }
 
+  // override
   makeDom() {
     $(document).trigger('library-search-view-will-populate');
     super.makeDom();
@@ -81,12 +93,16 @@ export default class LibrarySearchView extends LibraryContentView {
     switch (this.searchType) {
       case 'artist':
       case 'album':
+      case 'albumFavorites':
         return LibraryContentView.makeAlbumListItem(data);
         break;
       case 'track':
+      case 'trackFavorites':
         return this.makeTrackListItem(data, index);
         break;
     }
+    cl('warning logic');
+    return null;
   }
 
   show() {
@@ -98,11 +114,22 @@ export default class LibrarySearchView extends LibraryContentView {
     ViewUtil.setDisplayed(this.$el, false);
   }
 
+  getItemCount() {
+    let count = 0;
+    for (const group of this.groups) {
+      count += group.length;
+    }
+    return count;
+  }
+
   /**
    * Returns groups of albums of artists
    * whose names include the search term.
    */
   makeArtistGroups() {
+    if (!this.searchValue) {
+      return { labels: [], groups: []}
+    }
     const artists = {};
     for (const album of this.albums) {
       const artist = album['@_artist'].toLowerCase();
@@ -135,6 +162,9 @@ export default class LibrarySearchView extends LibraryContentView {
    * whose album names include the search term.
    */
   makeAlbumsGroup() {
+    if (!this.searchValue) {
+      return { labels: [], groups: []}
+    }
     const group = [];
     for (const album of this.albums) {
       const name = album['@_album'];
@@ -146,10 +176,30 @@ export default class LibrarySearchView extends LibraryContentView {
   }
 
   /**
+   * Returns array of one group whose albums are favorited.
+   */
+  makeAlbumFavoritesGroup() {
+    const group = [];
+    for (const album of this.albums) {
+      const hash = album['@_hash'];
+      if (MetaUtil.isAlbumFavoriteFor(hash)) {
+        group.push(album);
+        if (group.length >= 500) {
+          return { labels: [], groups: [group] };
+        }
+      }
+    }
+    return { labels: [], groups: [group] };
+  }
+
+  /**
    * Returns list of tracks whose names include the search term.
    * Basically.
    */
   makeTracksGroup() {
+    if (!this.searchValue) {
+      return { labels: [], groups: []}
+    }
     const group = [];
     for (const album of this.albums) {
       const tracks = AlbumUtil.getTracksOf(album);
@@ -161,11 +211,30 @@ export default class LibrarySearchView extends LibraryContentView {
           group.push(o);
         }
         if (group.length >= 500) {
-          break;
+          return { labels: [], groups: [group] };
         }
       }
-      if (group.length >= 500) {
-        break;
+    }
+    return { labels: [], groups: [group] };
+  }
+
+  /**
+   * Returns list of favorited tracks.
+   */
+  makeTrackFavoritesGroup() {
+    const group = [];
+    for (const album of this.albums) {
+      const tracks = AlbumUtil.getTracksOf(album);
+      for (const track of tracks) {
+        const hash = track['@_hash'];
+        if (MetaUtil.isTrackFavoriteFor(hash)) {
+          // note special format in this case
+          const o = { track: track, album: album };
+          group.push(o);
+        }
+        if (group.length >= 500) {
+          return { labels: [], groups: [group] };
+        }
       }
     }
     return { labels: [], groups: [group] };
@@ -202,7 +271,7 @@ export default class LibrarySearchView extends LibraryContentView {
   onSearch(type, value) {
     // 'Commit' the values to settings at this point
     Settings.librarySearchType = type;
-    Settings.librarySearchValue = value;
+    Settings.librarySearchValue = value || '';
     // Note how data and dom only ever gets generated thru here.
     this.setSearchTypeAndValue(type, value);
   }
@@ -224,8 +293,4 @@ export default class LibrarySearchView extends LibraryContentView {
     }
     TrackListItemContextMenu.show($('#libraryView'), $button, o);
   };
-
-  onAlbumsWillPopulate = () => {
-    this.clear();
-  }
 }

@@ -94,7 +94,7 @@
   font-family: "Noto Sans TC", sans-serif;
   font-size: 16px;
   color: var(--col-text);
-  scrollbar-color: var(--col-listitem-selected-over) var(--col-listitem-less);
+  scrollbar-color: var(--col-text-less) var(--col-listitem-over);
   -webkit-tap-highlight-color: transparent;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -144,6 +144,13 @@ input::-moz-focus-inner {
   -moz-transition: none !important;
   -o-transition: none !important;
   transition: none !important;
+}
+
+label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .colorAccent {
@@ -316,16 +323,15 @@ input::-moz-focus-inner {
 }
 
 .textButton {
-  display: inline-block;
   border-radius: 6px;
-  vertical-align: top;
   height: 36px;
+  padding-top: 8px;
   padding-left: 12px;
   padding-right: 12px;
   font-size: 13px;
   font-weight: bold;
   text-transform: uppercase;
-  line-height: 36px;
+  text-align: center;
   background-color: var(--col-listitem);
   cursor: pointer;
 }
@@ -463,6 +469,44 @@ input::-moz-focus-inner {
 .checkboxSmaller {
   width: 30px;
   height: 30px;
+}
+
+.tabBar {
+  display: flex;
+}
+
+.tabButton {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  height: 36px;
+  padding-top: 5px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--col-text-least);
+  border-bottom: 1px solid var(--col-listitem-selected);
+  border-left: 1px solid var(--col-listitem-bg);
+  border-right: 1px solid var(--col-listitem-bg);
+  border-top: 1px solid var(--col-listitem-bg);
+  cursor: pointer;
+}
+.tabButton.isSelected {
+  color: var(--col-text);
+  border-bottom: 1px solid var(--col-bg);
+  border-left: 1px solid var(--col-listitem-selected);
+  border-right: 1px solid var(--col-listitem-selected);
+  border-top: 1px solid var(--col-listitem-selected);
+  pointer-events: none;
+}
+.tabButton:hover {
+  color: var(--col-text-less);
+}
+
+.tabBarSpacer {
+  flex: 1;
+  border-bottom: 1px solid var(--col-listitem-selected);
 }
 
 .spinner:before {
@@ -1819,7 +1863,7 @@ html {
 }
 .libraryGroupLabel .count {
   margin-left: 10px;
-  padding-top: 4px;
+  padding-top: 2px;
   font-size: 14px;
   color: var(--col-text-least);
 }
@@ -1965,10 +2009,12 @@ html {
 #libraryAlbumOptionsView {
   display: flex;
   position: relative;
+  margin-left: auto;
 }
 
 #libraryOptionsButtons {
   position: relative;
+  display: flex;
   height: 36px;
 }
 #libraryOptionsButtons:before {
@@ -2028,29 +2074,57 @@ html {
   background-image: url("./../img/icons/search_white_24dp.svg");
 }
 
-#librarySearchOptionsView {
-  position: relative;
-  background-color: var(--col-listitem-less);
-  border: 1px solid var(--col-listitem-selected-over);
-  margin: 16px 16px 24px 16px;
-  padding: 16px 16px 16px 16px;
-}
-
 #librarySearchCloseButton {
+  display: none;
   position: absolute;
-  right: 6px;
-  top: 6px;
+  right: 16px;
 }
 
-label {
-  display: block;
-  text-transform: uppercase;
-  font-size: 14px;
-  font-weight: bold;
+#librarySearchPanel {
+  display: none;
+  position: relative;
+  margin: 8px 16px 24px 16px;
+}
+
+#artistsTabButton:before {
+  content: "Artists";
+}
+
+#albumsTabButton:before {
+  content: "Album titles";
+}
+
+#tracksTabButton:before {
+  content: "Track titles";
+}
+
+@media (max-width: 480px) {
+  #artistsTabButton:before {
+    content: "Artists";
+  }
+
+  #albumsTabButton:before {
+    content: "Albums";
+  }
+
+  #tracksTabButton:before {
+    content: "Tracks";
+  }
+}
+#searchPanelContent {
+  padding: 16px;
+  border-left: 1px solid var(--col-listitem-selected);
+  border-right: 1px solid var(--col-listitem-selected);
+  border-bottom: 1px solid var(--col-listitem-selected);
+  opacity: 0.66;
+  pointer-events: none;
+}
+#searchPanelContent.isEnabled {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .inputLine {
-  margin-top: 16px;
   display: flex;
 }
 
@@ -2070,6 +2144,10 @@ label {
   user-select: auto;
   -o-user-select: auto;
 }
+#librarySearchInput:disabled {
+  pointer-events: none;
+  opacity: 0.66;
+}
 
 .lightTheme #librarySearchInput {
   border: 1px solid var(--col-listitem);
@@ -2081,22 +2159,45 @@ label {
   margin-left: 12px;
 }
 
-.controlsLine {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-}
-.controlsLine #searchAlbumCheckbox {
-  margin-left: 16px;
-}
-.controlsLine #searchTrackCheckbox {
-  margin-left: 16px;
-}
-
 .isDisabled #libraryAlbumOptionsView {
   pointer-events: none;
 }
 
+.searchFavoritesLine {
+  display: flex;
+  margin-top: 12px;
+}
+
+#albumFavoritesButton,
+#trackFavoritesButton {
+  padding-top: 7px;
+  color: var(--col-text-least);
+  background-color: transparent;
+  margin-right: 12px;
+  border: 1px solid var(--col-listitem-over);
+}
+#albumFavoritesButton.isSelected,
+#trackFavoritesButton.isSelected {
+  color: var(--col-text);
+}
+
+#albumFavoritesButton:before {
+  content: "Favorites albums";
+}
+
+#trackFavoritesButton:before {
+  content: "Favorites tracks";
+}
+
+@media (max-width: 480px) {
+  #albumFavoritesButton:before {
+    content: "Fav. albums";
+  }
+
+  #trackFavoritesButton:before {
+    content: "Fav. tracks";
+  }
+}
 .librarySearchTrackItem {
   display: flex;
   align-items: center;
@@ -2545,6 +2646,7 @@ select * {
   }
 }
 #hqpPresetsView .savePresetLine {
+  display: flex;
   margin-left: 75px;
 }
 @media (max-width: 480px) {

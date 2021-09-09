@@ -121,6 +121,50 @@
   height: 30px;
 }
 
+// ---
+// tab bar
+
+.tabBar {
+  display:flex;
+}
+
+.tabButton {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  height: 36px;
+  padding-top:5px;
+  padding-left:12px;
+  padding-right:12px;
+  font-size:13px;
+  font-weight: bold;
+  text-transform: uppercase;
+
+  color:var(--col-text-least);
+  border-bottom: 1px solid var(--col-listitem-selected);
+  border-left: 1px solid var(--col-listitem-bg);
+  border-right: 1px solid var(--col-listitem-bg);
+  border-top: 1px solid var(--col-listitem-bg);
+  cursor:pointer;
+  &.isSelected {
+    color:var(--col-text);
+    border-bottom: 1px solid var(--col-bg);
+    border-left: 1px solid var(--col-listitem-selected);
+    border-right: 1px solid var(--col-listitem-selected);
+    border-top: 1px solid var(--col-listitem-selected);
+    pointer-events:none;
+  }
+  &:hover {
+    color:var(--col-text-less);
+  }
+}
+
+.tabBarSpacer {
+  flex: 1;
+  border-bottom: 1px solid var(--col-listitem-selected);
+}
+
+// ---
+
 .spinner {
   &:before {
     content: ' ';

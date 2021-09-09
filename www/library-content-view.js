@@ -96,6 +96,7 @@ export default class LibraryContentView {
       this.addItemsToGroupDiv($group, group);
       this.$el.append($group);
     }
+
   }
 
   addItemsToGroupDiv($group, group) {

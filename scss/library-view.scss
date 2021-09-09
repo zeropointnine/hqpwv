@@ -126,7 +126,7 @@ $marginUnitMobile: 6px;
 
   .count {
     margin-left: 10px;
-    padding-top:4px;
+    padding-top: 2px;
     font-size: $font-size-smaller;
     color: var(--col-text-least);
   }
@@ -286,10 +286,12 @@ $marginUnitMobile: 6px;
 #libraryAlbumOptionsView {
   display:flex;
   position:relative;
+  margin-left:auto;
 }
 
 #libraryOptionsButtons {
   position:relative;
+  display:flex;
   height:$icon-button-side;
   &:before {
     content: ' ';
@@ -357,31 +359,57 @@ $marginUnitMobile: 6px;
   }
 }
 
+#librarySearchCloseButton {
+  display:none;
+  position:absolute;
+  right:16px;
+}
+
 // ---
 
-#librarySearchOptionsView {
+#librarySearchPanel {
+  display:none;
   position:relative;
-  background-color: var(--col-listitem-less);
-  border:1px solid var(--col-listitem-selected-over);
-  margin: $space-unit $space-unit ($space-unit * 1.5) $space-unit;
-  padding: $space-unit $space-unit $space-unit $space-unit;
+  margin: ($space-unit / 2) ($space-unit * 1) ($space-unit * 1.5) $space-unit;
 }
 
-#librarySearchCloseButton {
-  position:absolute;
-  right:6px;
-  top:6px;
+#artistsTabButton:before {
+  content: 'Artists'
+}
+#albumsTabButton:before {
+  content: 'Album titles'
+}
+#tracksTabButton:before {
+  content: 'Track titles'
+}
+@include mobile {
+  #artistsTabButton:before {
+    content: 'Artists'
+  }
+  #albumsTabButton:before {
+    content: 'Albums'
+  }
+  #tracksTabButton:before {
+    content: 'Tracks'
+  }
 }
 
-label {
-  display:block;
-  text-transform: uppercase;
-  font-size: $font-size-smaller;
-  font-weight: bold;
+#searchPanelContent {
+  padding: 16px;
+  border-left: 1px solid var(--col-listitem-selected);
+  border-right: 1px solid var(--col-listitem-selected);
+  border-bottom: 1px solid var(--col-listitem-selected);
+
+  opacity: 0.66;
+  pointer-events: none;
+
+  &.isEnabled {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .inputLine {
-  margin-top: 16px;
   display:flex;
 }
 
@@ -400,6 +428,11 @@ label {
   width:100%;
 
   @include userSelect(auto);
+
+  &:disabled {
+    pointer-events:none;
+    opacity:0.66;
+  }
 }
 .lightTheme #librarySearchInput {
   border:1px solid var(--col-listitem);
@@ -411,24 +444,42 @@ label {
   margin-left:12px;
 }
 
-.controlsLine {
-  margin-top: 16px;
-  display:flex;
-  align-items:center;
-
-  #searchArtistCheckbox { }
-  #searchAlbumCheckbox {
-    margin-left:16px;
-  }
-  #searchTrackCheckbox {
-    margin-left:16px;
-  }
-}
-
 .isDisabled #libraryAlbumOptionsView {
   pointer-events: none;
 }
 
+.searchFavoritesLine {
+  display:flex;
+  margin-top:12px;
+  // justify-content: end;
+}
+
+#albumFavoritesButton,
+#trackFavoritesButton {
+  padding-top:7px; // ugh
+  color: var(--col-text-least);
+  background-color:transparent;
+  margin-right:12px;
+  border: 1px solid var(--col-listitem-over);
+  &.isSelected {
+    color:var(--col-text);
+  }
+}
+
+#albumFavoritesButton:before {
+  content: 'Favorites albums';
+}
+#trackFavoritesButton:before {
+  content: 'Favorites tracks';
+}
+@include mobile {
+  #albumFavoritesButton:before {
+    content: 'Fav. albums';
+  }
+  #trackFavoritesButton:before {
+    content: 'Fav. tracks';
+  }
+}
 // ---
 
 // rem, container is flex wrap

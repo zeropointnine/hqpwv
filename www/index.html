@@ -42,59 +42,63 @@
 
 						<div id="libraryHeaderView">
 							<div style="position:absolute">
-								<span class="viewTitle">Library</span>
+								<span id="libraryTitle" class="viewTitle">Library</span>
 								<span id="libraryNumbers"></span>
 							</div>
-							<div style="margin-left:auto; display:flex;">
-								<div id="libraryAlbumOptionsView">
-									<div id="librarySortDropdown" class="dropdown">
-										<div class="dropdownTitle">Sort by</div>
-										<div class="dropdownItems">
-											<div class="dropdownItem" data-value="artist">Artist</div>
-											<div class="dropdownItem" data-value="album">Album</div>
-											<div class="dropdownItem" data-value="random">Random</div>
-										</div>
+							<div id="libraryAlbumOptionsView" style="margin-left:auto; display:flex;">
+								<div id="librarySortDropdown" class="dropdown">
+									<div class="dropdownTitle">Sort by</div>
+									<div class="dropdownItems">
+										<div class="dropdownItem" data-value="artist">Artist</div>
+										<div class="dropdownItem" data-value="album">Album</div>
+										<div class="dropdownItem" data-value="random">Random</div>
 									</div>
-									<div id="libraryGroupDropdown" class="dropdown">
-										<div class="dropdownTitle">Group by</div>
-										<div class="dropdownItems">
-											<div class="dropdownItem" data-value="none">None (default)</div>
-											<div class="dropdownItem" data-value="genre">Genre</div>
-											<div class="dropdownItem" data-value="path">Subdirectory</div>
-											<div class="dropdownItem" data-value="bitrate">Samplerate</div>
-										</div>
+								</div>
+								<div id="libraryGroupDropdown" class="dropdown">
+									<div class="dropdownTitle">Group by</div>
+									<div class="dropdownItems">
+										<div class="dropdownItem" data-value="none">None (default)</div>
+										<div class="dropdownItem" data-value="genre">Genre</div>
+										<div class="dropdownItem" data-value="path">Subdirectory</div>
+										<div class="dropdownItem" data-value="bitrate">Samplerate</div>
 									</div>
-									<div id="libraryFilterDropdown" class="dropdown">
-										<div class="dropdownTitle">Filter by</div>
-										<div class="dropdownItems">
-											<div class="dropdownItem" data-value="none">None (default)</div>
-											<div class="dropdownItem" data-value="favorites">Favorites</div>
-										</div>
+								</div>
+								<div id="libraryFilterDropdown" class="dropdown">
+									<div class="dropdownTitle">Filter by</div>
+									<div class="dropdownItems">
+										<div class="dropdownItem" data-value="none">None (default)</div>
+										<div class="dropdownItem" data-value="favorites">Favorites</div>
 									</div>
-									<div id="libraryOptionsButtons"><div
-											id="librarySortButton" class="iconButton toggleButton"></div><div
-											id="libraryGroupButton" class="iconButton toggleButton"></div><div
-											id="libraryFilterButton" class="iconButton toggleButton"></div></div>
-
-									<div class="librarySearchDivider"></div>
-
+								</div>
+								<div id="libraryOptionsButtons">
+									<div id="librarySortButton" class="iconButton toggleButton"></div>
+									<div id="libraryGroupButton" class="iconButton toggleButton"></div>
+									<!-- not using, for now -->
+									<!--<div id="libraryFilterButton" class="iconButton toggleButton"></div>-->
 								</div>
 
+								<div class="librarySearchDivider"></div>
 								<div id="librarySearchButton" class="iconButton toggleButton"></div>
 							</div>
+							<div id="librarySearchCloseButton" class="iconButton closeButton"></div>
 						</div>
 
-						<div id="librarySearchOptionsView">
-							<div id="librarySearchCloseButton" class="iconButton closeButton"></div>
-							<label for="librarySearchInput">Search</label>
-							<div class="inputLine">
-								<input id="librarySearchInput" name="librarySearchInput" type="text" required minlength="1" maxlength="64">
-								<div id="librarySearchOkButton" class="textButton">OK</div>
+						<div id="librarySearchPanel">
+							<div class="tabBar">
+								<div id="artistsTabButton" class="tabButton" data-value="artist"></div>
+								<div id="albumsTabButton" class="tabButton" data-value="album" ></div>
+								<div id="tracksTabButton" class="tabButton" data-value="track"></div>
+								<div class="tabBarSpacer"></div>
 							</div>
-							<div class="controlsLine">
-								<div id="searchArtistCheckbox" class="checkbox checkboxSmaller" tabindex="0"></div> <span>Artists</span>
-								<div id="searchAlbumCheckbox" class="checkbox checkboxSmaller" tabindex="0"></div> <span>Albums</span>
-								<div id="searchTrackCheckbox" class="checkbox checkboxSmaller" tabindex="0"></div> <span>Tracks</span>
+							<div id="searchPanelContent">
+								<div class="inputLine">
+									<input id="librarySearchInput" name="librarySearchInput" type="text" required minlength="1" maxlength="64">
+									<div id="librarySearchOkButton" class="textButton">OK</div>
+								</div>
+							</div>
+							<div class="searchFavoritesLine">
+								<div id="albumFavoritesButton" class="textButton"></div>
+								<div id="trackFavoritesButton" class="textButton"></div>
 							</div>
 						</div>
 
@@ -215,9 +219,9 @@
 								<div class="savePresets">
 									<div class="presetLabel">Save to preset</div>
 									<div class="savePresetLine">
-										<div id="savePreset1" class="textButton">1</div><div
-											id="savePreset2" class="textButton" style="margin-left:8px">2</div><div
-											id="savePreset3" class="textButton" style="margin-left:8px">3</div>
+										<span id="savePreset1" class="textButton">1</span>
+										<span id="savePreset2" class="textButton" style="margin-left:8px">2</span>
+										<span id="savePreset3" class="textButton" style="margin-left:8px">3</span>
 									</div>
 								</div>
 								<div class="loadPresets">
@@ -477,6 +481,6 @@
 					</div>
 				</div>
 			</div>
-
+		</div>
 	</body>
 </html>

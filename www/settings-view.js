@@ -39,7 +39,7 @@ export default class SettingsView extends Subview {
 
   show() {
     const $version = this.$el.find('#settingsVersion');
-    $version.text(`${Values.hqpwvVersion}`);
+    $version.text(`v${Values.hqpwvVersion}`);
     const $anchor = this.$el.find("#settingsProjectAnchor");
     $anchor.text(Values.PROJECT_URL);
     $anchor.attr('href', Values.PROJECT_URL);

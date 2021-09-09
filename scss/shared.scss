@@ -7,6 +7,13 @@
   transition: none !important;
 }
 
+label {
+  display:block;
+  text-transform: uppercase;
+  font-size: $font-size-smaller;
+  font-weight: bold;
+}
+
 .colorAccent {
   color: var(--col-accent);
 }

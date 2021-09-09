@@ -156,6 +156,7 @@ select * {
   }
 
   .savePresetLine {
+    display:flex;
     margin-left:$indent-left;
     @include mobile {
       margin-left:0;

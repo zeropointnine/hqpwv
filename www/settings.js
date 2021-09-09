@@ -6,7 +6,7 @@ import AbRuleView from './ab-rule-view.js';
  */
 class Settings {
 
-  storage = window.localStorage;
+  storage = window.localStorage; // todo handle disabledness
 
   _metaEnabled;
   _librarySearchType;
@@ -30,7 +30,7 @@ class Settings {
 
     this._metaEnabled = this.storage.getItem('metaEnabled') || 'true';
 
-    this._librarySearchType = this.storage.getItem('librarySearchType') || 'track';
+    this._librarySearchType = this.storage.getItem('librarySearchType') || 'album';
 
     this._librarySearchValue = this.storage.getItem('librarySearchValue') || '';
 

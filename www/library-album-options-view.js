@@ -46,14 +46,6 @@ export default class LibraryAlbumOptionsView {
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
   }
 
-  show() {
-    ViewUtil.setDisplayed(this.$el, "flex");
-  }
-
-  hide() {
-    ViewUtil.setDisplayed(this.$el, false);
-  }
-
   toggleDropdown(dropdown) {
     ViewUtil.isDisplayed(dropdown.$el)
         ? this.hideDropdowns()

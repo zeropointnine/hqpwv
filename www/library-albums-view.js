@@ -87,6 +87,7 @@ export default class LibraryAlbumsView extends LibraryContentView {
     if (this.domDirty) {
       this.makeDom();
       this.domDirty = false;
+      $(document).trigger('library-albums-view-populated');
     }
   }
 
@@ -137,7 +138,6 @@ export default class LibraryAlbumsView extends LibraryContentView {
 
   // override
   makeDom() {
-    $(document).trigger('library-albums-view-will-populate');
     super.makeDom();
   }
 
