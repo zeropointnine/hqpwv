@@ -17,9 +17,11 @@ export default class LibraryAlbumOptionsView {
   $buttonsHolder;
   $sortButton;
   $groupButton;
+  $filterButton;
 
   sortDropdown;
   groupDropdown;
+  filterDropdown;
   dropdowns;
   pointerUtil;
 
@@ -29,15 +31,18 @@ export default class LibraryAlbumOptionsView {
     this.$buttonsHolder = this.$el.find('#libraryOptionsButtons');
     this.$sortButton = this.$el.find('#librarySortButton');
     this.$groupButton = this.$el.find('#libraryGroupButton');
+    this.$filterButton = this.$el.find('#libraryFilterButton');
 
     this.sortDropdown = new Dropdown($('#librarySortDropdown'));
     this.groupDropdown = new Dropdown($('#libraryGroupDropdown'));
-    this.dropdowns = [this.sortDropdown, this.groupDropdown];
+    this.filterDropdown = new Dropdown($('#libraryFilterDropdown'));
+    this.dropdowns = [this.sortDropdown, this.groupDropdown, this.filterDropdown];
 
     this.pointerUtil = new ModalPointerUtil(this.$el, () => this.hideDropdowns());
 
     this.$sortButton.on('click tap', e => this.toggleDropdown(this.sortDropdown));
     this.$groupButton.on('click tap', e => this.toggleDropdown(this.groupDropdown));
+    this.$filterButton.on('click tap', e => this.toggleDropdown(this.filterDropdown));
     $(document).on('dropdown-item-select', this.onDropdownItemSelect);
   }
 
@@ -57,12 +62,23 @@ export default class LibraryAlbumOptionsView {
 
   selectDropdown(dropdown) {
     // Select corresponding button
-    if (dropdown == this.sortDropdown) {
-      this.$groupButton.removeClass('isSelected');
-      this.$sortButton.addClass('isSelected');
-    } else { // is gruop
-      this.$sortButton.removeClass('isSelected');
-      this.$groupButton.addClass('isSelected');
+    this.$sortButton.removeClass('isSelected');
+    this.$groupButton.removeClass('isSelected');
+    this.$filterButton.removeClass('isSelected');
+    let $button;
+    switch (dropdown) {
+      case this.sortDropdown:
+        $button = this.$sortButton;
+        break;
+      case this.groupDropdown:
+        $button = this.$groupButton;
+        break;
+      case this.filterDropdown:
+        $button = this.$filterButton;
+        break;
+    }
+    if ($button) {
+      $button.addClass('isSelected');
     }
 
     // Show given dropdown only
@@ -74,14 +90,16 @@ export default class LibraryAlbumOptionsView {
     dropdown.show();
 
     // Update dropdown item selection/s
-    let items;
+    let items = [];
     switch (dropdown) {
+      case this.sortDropdown:
+        items = [Settings.librarySortType];
+        break;
       case this.groupDropdown:
         items = [Settings.libraryGroupType];
         break;
-      case this.sortDropdown:
-      default:
-        items = [Settings.librarySortType];
+      case this.filterDropdown:
+        items = [Settings.libraryFilterType];
         break;
     }
     dropdown.selectItems(items);
@@ -95,6 +113,7 @@ export default class LibraryAlbumOptionsView {
     this.$buttonsHolder.removeClass('isSelected');
     this.$sortButton.removeClass('isSelected');
     this.$groupButton.removeClass('isSelected');
+    this.$filterButton.removeClass('isSelected');
 
     for (const dropdown of this.dropdowns) {
       dropdown.hide();
@@ -103,22 +122,20 @@ export default class LibraryAlbumOptionsView {
   }
 
   onDropdownItemSelect = (e, dropdownId, value) => {
-    if (dropdownId == 'librarySortDropdown') {
-      this.handleSortSelect(value);
-    } else {
-      this.handleGroupSelect(value);
+    this.hideDropdowns();
+    switch (dropdownId) {
+      case 'librarySortDropdown':
+        Settings.librarySortType = value;
+        setTimeout(() => $(document).trigger('library-albums-sort-changed'), 16);
+        break;
+      case 'libraryGroupDropdown':
+        Settings.libraryGroupType = value;
+        setTimeout(() => $(document).trigger('library-albums-group-changed'), 16);
+        break;
+      case 'libraryFilterDropdown':
+        Settings.libraryFilterType = value;
+        setTimeout(() => $(document).trigger('library-albums-filter-changed'), 16);
+        break;
     }
   };
-
-  handleSortSelect(value) {
-    this.hideDropdowns();
-    Settings.librarySortType = value;
-    setTimeout(() => $(document).trigger('library-albums-sort-changed'), 16);
-  }
-
-  handleGroupSelect(value) {
-    this.hideDropdowns();
-    Settings.libraryGroupType = value;
-    setTimeout(() => $(document).trigger('library-albums-group-changed'), 16);
-  }
 }

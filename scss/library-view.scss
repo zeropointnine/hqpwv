@@ -27,9 +27,9 @@ $marginUnitMobile: 6px;
 }
 
 #libraryNumbers {
-  margin-left:8px;
+  margin-left:6px;
   font-size: $font-size-smaller;
-  padding-top:3px;
+  padding-top:4px;
   color:var(--col-text-least);
 }
 
@@ -285,6 +285,7 @@ $marginUnitMobile: 6px;
 
 #libraryAlbumOptionsView {
   display:flex;
+  position:relative;
 }
 
 #libraryOptionsButtons {
@@ -317,30 +318,18 @@ $marginUnitMobile: 6px;
     background-image: url('./../img/icons/sort_white_24dp.svg');
   }
 }
-#libraryBitrateButton {
+#libraryFilterButton {
   &:before {
-    background-image: url('./../img/icons/filter_alt_white_24dp.svg');
-  }
-  &.badge {
-    &:after {
-      content: ' ';
-      display: block;
-      position: absolute;
-      left: 22px;
-      top: 4px;
-      width: 5px;
-      height: 5px;
-      background-color: var(--col-text);
-      border-radius: 5px;
-      border:2px solid var(--col-bg);
-    }
+    background-image: url('./../img/icons/favorite_white_24dp.svg'); // filter_alt_white_24dp.svg
   }
 }
+
 #libraryGroupDropdown,
 #librarySortDropdown,
-#libraryBitrateDropdown {
+#libraryFilterDropdown {
+  position:absolute;
+  left:-183px;
   width:175px;
-  margin-right: 8px;
 
   opacity:0;
   transform: translate(38px);

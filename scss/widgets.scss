@@ -25,8 +25,9 @@
   width:150px; // must have hardcoded width; override this
   z-index:9999;
   display:none;
-  color:red;
-  border:1px solid var(--col-listitem);
+  border-top: 1px solid var(--col-listitem-over);
+  border-left: 1px solid var(--col-listitem-over);
+  border-right: 1px solid var(--col-listitem-over);
 
   .dropdownTitle {
     height: 36px;
@@ -46,11 +47,14 @@
     top:36px;
     width:100%;
     background:var(--col-bg); //color-listitem;
+    border-left: 1px solid var(--col-listitem-over);
+    border-right: 1px solid var(--col-listitem-over);
+    border-bottom: 1px solid var(--col-listitem-over);
 
     .dropdownItem {
       $ht: 36px;
       line-height: $ht;
-      padding:0 16px 0 34px;
+      padding:0 16px 4px 34px;
       cursor: pointer;
       white-space: nowrap;
       &:hover {

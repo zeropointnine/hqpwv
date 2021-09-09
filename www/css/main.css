@@ -368,8 +368,9 @@ input::-moz-focus-inner {
   width: 150px;
   z-index: 9999;
   display: none;
-  color: red;
-  border: 1px solid var(--col-listitem);
+  border-top: 1px solid var(--col-listitem-over);
+  border-left: 1px solid var(--col-listitem-over);
+  border-right: 1px solid var(--col-listitem-over);
 }
 .dropdown .dropdownTitle {
   height: 36px;
@@ -389,10 +390,13 @@ input::-moz-focus-inner {
   top: 36px;
   width: 100%;
   background: var(--col-bg);
+  border-left: 1px solid var(--col-listitem-over);
+  border-right: 1px solid var(--col-listitem-over);
+  border-bottom: 1px solid var(--col-listitem-over);
 }
 .dropdown .dropdownItems .dropdownItem {
   line-height: 36px;
-  padding: 0 16px 0 34px;
+  padding: 0 16px 4px 34px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -1719,9 +1723,9 @@ html {
 }
 
 #libraryNumbers {
-  margin-left: 8px;
+  margin-left: 6px;
   font-size: 14px;
-  padding-top: 3px;
+  padding-top: 4px;
   color: var(--col-text-least);
 }
 
@@ -1960,6 +1964,7 @@ html {
 
 #libraryAlbumOptionsView {
   display: flex;
+  position: relative;
 }
 
 #libraryOptionsButtons {
@@ -1987,34 +1992,23 @@ html {
   background-image: url("./../img/icons/sort_white_24dp.svg");
 }
 
-#libraryBitrateButton:before {
-  background-image: url("./../img/icons/filter_alt_white_24dp.svg");
-}
-#libraryBitrateButton.badge:after {
-  content: " ";
-  display: block;
-  position: absolute;
-  left: 22px;
-  top: 4px;
-  width: 5px;
-  height: 5px;
-  background-color: var(--col-text);
-  border-radius: 5px;
-  border: 2px solid var(--col-bg);
+#libraryFilterButton:before {
+  background-image: url("./../img/icons/favorite_white_24dp.svg");
 }
 
 #libraryGroupDropdown,
 #librarySortDropdown,
-#libraryBitrateDropdown {
+#libraryFilterDropdown {
+  position: absolute;
+  left: -183px;
   width: 175px;
-  margin-right: 8px;
   opacity: 0;
   transform: translate(38px);
   transition: transform 200ms cubic-bezier(0, 0.5, 0.3, 1), opacity 200ms linear;
 }
 #libraryGroupDropdown.animIn,
 #librarySortDropdown.animIn,
-#libraryBitrateDropdown.animIn {
+#libraryFilterDropdown.animIn {
   opacity: 1;
   transform: translate(0);
 }

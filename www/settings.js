@@ -11,9 +11,9 @@ class Settings {
   _metaEnabled;
   _librarySearchType;
   _librarySearchValue;
-  _libraryGroupType;
   _librarySortType;
-  _libraryBitratesArray;
+  _libraryGroupType;
+  _libraryFilterType;
   _libraryCollapsedGroups;
   _colorTheme;
   _presetsArray;
@@ -34,7 +34,9 @@ class Settings {
 
     this._librarySearchValue = this.storage.getItem('librarySearchValue') || '';
 
+    this._librarySortType = this.storage.getItem('librarySortType') || 'artist';
     this._libraryGroupType = this.storage.getItem('libraryGroupType') || 'none';
+    this._libraryFilterType = this.storage.getItem('libraryFilterType') || 'none';
 
     s = this.storage.getItem('libraryCollapsedGroups');
     try {
@@ -42,16 +44,6 @@ class Settings {
     } catch (exc) {
       cl('warning', s, exc);
       this._libraryCollapsedGroups = {};
-    }
-
-    this._librarySortType = this.storage.getItem('librarySortType') || 'artist';
-
-    s = this.storage.getItem('libraryBitratesArray');
-    try {
-      this._libraryBitratesArray = JSON.parse(s) || ['all'];
-    } catch (exc) {
-      cl('warning', s, exc);
-      this._libraryBitratesArray = ['all'];
     }
 
     this._colorTheme = this.storage.getItem('colorTheme') || 'dark';
@@ -116,15 +108,6 @@ class Settings {
     this.storage.setItem('librarySearchValue', s);
   }
 
-  get libraryGroupType() {
-    return this._libraryGroupType;
-  }
-
-  set libraryGroupType(s) {
-    this._libraryGroupType = s;
-    this.storage.setItem('libraryGroupType', s);
-  }
-
   get librarySortType() {
     return this._librarySortType;
   }
@@ -134,13 +117,22 @@ class Settings {
     this.storage.setItem('librarySortType', s);
   }
 
-  get libraryBitratesArray() {
-    return this._libraryBitratesArray;
+  get libraryGroupType() {
+    return this._libraryGroupType;
   }
 
-  commitLibraryBitratesArray() {
-    const s = JSON.stringify(this._libraryBitratesArray);
-    this.storage.setItem('libraryBitratesArray', s);
+  set libraryGroupType(s) {
+    this._libraryGroupType = s;
+    this.storage.setItem('libraryGroupType', s);
+  }
+
+  get libraryFilterType() {
+    return this._libraryFilterType;
+  }
+
+  set libraryFilterType(s) {
+    this._libraryFilterType = s;
+    this.storage.setItem('libraryFilterType', s);
   }
 
   get libraryCollapsedGroups() {

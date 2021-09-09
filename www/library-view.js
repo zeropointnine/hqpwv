@@ -14,13 +14,13 @@ import Values from './values.js';
 import ViewUtil from './view-util.js';
 
 /**
- * Library view containing a list of albums.
- * Is always visible under any other main views.
+ * Composite view containing two `LibraryContentView` subclasses.
+ * Lives underneath any other main views.
  */
 export default class LibraryView extends Subview {
 
   $searchButton;
-  $albumViewItemCount;
+  $itemCount;
   $spinner;
 
   albumOptionsView;
@@ -31,7 +31,7 @@ export default class LibraryView extends Subview {
   constructor() {
     super($("#libraryView"));
     this.$searchButton = this.$el.find('#librarySearchButton');
-    this.$albumViewItemCount = this.$el.find('#libraryNumbers');
+    this.$itemCount = this.$el.find('#libraryNumbers');
     this.$spinner = this.$el.find('#librarySpinner');
 
     this.albumOptionsView = new LibraryAlbumOptionsView(this.$el.find("#libraryAlbumOptionsView"));
@@ -42,7 +42,7 @@ export default class LibraryView extends Subview {
     this.$searchButton.on('click tap', this.onSearchButton);
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
     Util.addAppListener(this, 'library-search-close-button', this.showAlbumsView);
-    Util.addAppListener(this, 'library-albums-view-populated', this.onAlbumViewPopulated);
+    Util.addAppListener(this, 'library-albums-filter-changed', () => this.updateItemCount(true));
   }
 
   setSpinnerState(b) {
@@ -65,16 +65,16 @@ export default class LibraryView extends Subview {
   showAlbumsView() {
     this.searchOptionsView.hide();
     this.searchView.hide();
-    ViewUtil.setDisplayed(this.$albumViewItemCount, true);
     this.albumOptionsView.show();
     this.albumsView.show();
+    this.updateItemCount(true);
     ViewUtil.setFocus(this.$el);
   }
 
   showSearchView() {
     this.albumsView.hide();
     this.albumOptionsView.hide();
-    ViewUtil.setDisplayed(this.$albumViewItemCount, false);
+    this.updateItemCount(false);
     this.searchView.show();
     this.searchOptionsView.show();
   }
@@ -101,7 +101,10 @@ export default class LibraryView extends Subview {
     return false;
   }
 
-  onAlbumViewPopulated(numItems) {
-    this.$albumViewItemCount.text(`(${numItems}/${Model.library.albums.length})`);
+  updateItemCount(shouldShow) {
+    const s = shouldShow
+        ? `(${this.albumsView.filteredSortedAlbums.length}/${Model.library.albums.length})`
+        : '';
+    this.$itemCount.text(s);
   }
 }

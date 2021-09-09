@@ -1,21 +1,31 @@
-import Util from './util.js';
 import HqpConfigModel from './hqp-config-model.js';
+import MetaUtil from './meta-util.js';
 import Settings from './settings.js';
+import Util from './util.js';
 
 /**
  *
  */
 export default class LibraryDataUtil {
 
-  static makeFilteredAlbumsArray(albums) {
-    const result = [];
-    for (const album of albums) {
-      if (!album['LibraryFile']) { // todo revisit
-        continue;
+  static makeFilteredAlbumsArray(albums, filterType) {
+    let result = [];
+    if (filterType == 'favorites') {
+      for (const album of albums) {
+        const hash = album['@_hash'];
+        const b = MetaUtil.isAlbumFavoriteFor(hash);
+        if (b) {
+          result.push(album);
+        }
       }
-      result.push(album);
+    } else {
+      result = [...albums];
     }
     return result;
+
+    // if (!album['LibraryFile']) {
+    //   continue;
+    // }
   }
 
   static sortByArtistThenAlbum(o1, o2) {

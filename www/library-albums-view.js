@@ -10,17 +10,18 @@ const groupTypetoIconClass = { 'path': 'folderIcon', 'bitrate': 'waveIcon', 'gen
 
 /**
  * Model 'pipeline':
- * `sortedAlbums` requires `albums` and `sortType`
- * `groups` requires `sortedAlbums` and `groupType`
+ * `filteredSortedAlbums` requires `albums` and `sortType` and `filterType`
+ * `groups` requires `filteredSortedAlbums` and `groupType`
  * dom views require `groups`
  */
 export default class LibraryAlbumsView extends LibraryContentView {
 
-  sortedAlbums;
+  filteredSortedAlbums;
   sortType;
   groupType;
+  filterType;
 
-  sortedAlbumsDirty;
+  filteredSortedAlbumsDirty;
   groupsDirty;
   domDirty;
 
@@ -30,6 +31,7 @@ export default class LibraryAlbumsView extends LibraryContentView {
     this.setGroupType(Settings.libraryGroupType);
     Util.addAppListener(this, 'library-albums-sort-changed', this.onSortChanged);
     Util.addAppListener(this, 'library-albums-group-changed', this.onGroupChanged);
+    Util.addAppListener(this, 'library-albums-filter-changed', this.onFilterChanged);
     Util.addAppListener(this, 'library-search-view-will-populate', this.onSearchWillPopulate);
   }
 
@@ -44,7 +46,7 @@ export default class LibraryAlbumsView extends LibraryContentView {
     }
     this.sortType = sortType;
 
-    this.sortedAlbumsDirty = true;
+    this.filteredSortedAlbumsDirty = true;
     this.groupsDirty = true;
     this.domDirty = true;
   }
@@ -59,13 +61,24 @@ export default class LibraryAlbumsView extends LibraryContentView {
     this.domDirty = true;
   }
 
+  setFilterType(filterType) {
+    if (this.filterType == filterType) {
+      return;
+    }
+    this.filterType = filterType;
+
+    this.filteredSortedAlbumsDirty = true;
+    this.groupsDirty = true;
+    this.domDirty = true;
+  }
+
   /**
    * Inits sorted albums, groups, and dom views as needed.
    */
   update() {
-    if (this.sortedAlbumsDirty) {
-      this.makeSortedAlbums();
-      this.sortedAlbumsDirty = false;
+    if (this.filteredSortedAlbumsDirty) {
+      this.makeFilteredSortedAlbums();
+      this.filteredSortedAlbumsDirty = false;
     }
     if (this.groupsDirty) {
       this.makeGroups();
@@ -77,43 +90,46 @@ export default class LibraryAlbumsView extends LibraryContentView {
     }
   }
 
-  makeSortedAlbums() {
+  makeFilteredSortedAlbums() {
     if (!this.albums || !this.sortType) {
       return;
     }
-    this.sortedAlbums = [...this.albums];
+
+    const a = LibraryDataUtil.makeFilteredAlbumsArray(this.albums, Settings.libraryFilterType);
+
     switch (this.sortType) {
       case 'artist':
-        this.sortedAlbums.sort(LibraryDataUtil.sortByArtistThenAlbum);
+        a.sort(LibraryDataUtil.sortByArtistThenAlbum);
         break;
       case 'album':
-        this.sortedAlbums.sort(LibraryDataUtil.sortByAlbumThenArtist);
+        a.sort(LibraryDataUtil.sortByAlbumThenArtist);
         break;
       case 'path':
-        this.sortedAlbums.sort(LibraryDataUtil.sortByPath);
+        a.sort(LibraryDataUtil.sortByPath);
         break;
       case 'random':
-        Util.shuffleArray(this.sortedAlbums);
+        Util.shuffleArray(a);
         break;
       default:
         cl('warning logic error');
         break;
     }
+    this.filteredSortedAlbums = a;
   }
 
   makeGroups() {
-    if (!this.sortedAlbums || !this.groupType) {
+    if (!this.filteredSortedAlbums || !this.groupType) {
       return;
     }
     let o;
     if (this.groupType == 'path') {
-      o = LibraryGroupUtil.makeDirectoryGroups(this.sortedAlbums);
+      o = LibraryGroupUtil.makeDirectoryGroups(this.filteredSortedAlbums);
     } else if (this.groupType == 'bitrate') {
-      o = LibraryGroupUtil.makeBitrateGroups(this.sortedAlbums);
+      o = LibraryGroupUtil.makeBitrateGroups(this.filteredSortedAlbums);
     } else if (this.groupType == 'genre') {
-      o = LibraryGroupUtil.makeGenreGroups(this.sortedAlbums);
+      o = LibraryGroupUtil.makeGenreGroups(this.filteredSortedAlbums);
     } else {
-      o = LibraryGroupUtil.makeIdentity(this.sortedAlbums);
+      o = LibraryGroupUtil.makeIdentity(this.filteredSortedAlbums);
     }
     this.labels = o['labels'];
     this.groups = o['groups'];
@@ -152,6 +168,11 @@ export default class LibraryAlbumsView extends LibraryContentView {
 
   onGroupChanged() {
     this.setGroupType(Settings.libraryGroupType);
+    this.update();
+  }
+
+  onFilterChanged() {
+    this.setFilterType(Settings.libraryFilterType);
     this.update();
   }
 

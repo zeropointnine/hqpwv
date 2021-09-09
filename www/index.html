@@ -41,12 +41,20 @@
 				<div id="libraryView" class="subview" tabindex="0">
 
 						<div id="libraryHeaderView">
-
-							<span class="viewTitle">Library</span>
-							<span id="libraryNumbers"></span>
-
+							<div style="position:absolute">
+								<span class="viewTitle">Library</span>
+								<span id="libraryNumbers"></span>
+							</div>
 							<div style="margin-left:auto; display:flex;">
 								<div id="libraryAlbumOptionsView">
+									<div id="librarySortDropdown" class="dropdown">
+										<div class="dropdownTitle">Sort by</div>
+										<div class="dropdownItems">
+											<div class="dropdownItem" data-value="artist">Artist</div>
+											<div class="dropdownItem" data-value="album">Album</div>
+											<div class="dropdownItem" data-value="random">Random</div>
+										</div>
+									</div>
 									<div id="libraryGroupDropdown" class="dropdown">
 										<div class="dropdownTitle">Group by</div>
 										<div class="dropdownItems">
@@ -56,17 +64,17 @@
 											<div class="dropdownItem" data-value="bitrate">Samplerate</div>
 										</div>
 									</div>
-									<div id="librarySortDropdown" class="dropdown">
-										<div class="dropdownTitle">Sort by</div>
+									<div id="libraryFilterDropdown" class="dropdown">
+										<div class="dropdownTitle">Filter by</div>
 										<div class="dropdownItems">
-											<div class="dropdownItem" data-value="artist">Artist</div>
-											<div class="dropdownItem" data-value="album">Album</div>
-											<div class="dropdownItem" data-value="random">Random</div>
+											<div class="dropdownItem" data-value="none">None (default)</div>
+											<div class="dropdownItem" data-value="favorites">Favorites</div>
 										</div>
 									</div>
 									<div id="libraryOptionsButtons"><div
 											id="librarySortButton" class="iconButton toggleButton"></div><div
-											id="libraryGroupButton" class="iconButton toggleButton"></div></div>
+											id="libraryGroupButton" class="iconButton toggleButton"></div><div
+											id="libraryFilterButton" class="iconButton toggleButton"></div></div>
 
 									<div class="librarySearchDivider"></div>
 
