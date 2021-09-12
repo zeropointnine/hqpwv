@@ -1,13 +1,14 @@
 # HQPWV    
   
 HQPWV is a local webserver that allows you to remotely control [HQPlayer](https://www.signalyst.com/consumer.html)  from any device on your network using a web browser.
-  
-Requires HQPlayer 4 (Desktop or Embedded).
 
-For <em>end-user installation instructions</em>, [click here](https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md)  
-  
+[End-user installation instructions](https://github.com/zeropointnine/hqpwv/blob/master/readme_enduser.md)
+
+[Discussion thread on audiophilestyle](https://audiophilestyle.com/forums/topic/63831-hqpwv-hqplayer-web-viewer)
+
+Demo video:
 [![Demo video](https://i.vimeocdn.com/video/1226369138?mw=1200&mh=750)](https://vimeo.com/593569610 "Demo video")
-Demo video
+
 
 # Development setup  
   

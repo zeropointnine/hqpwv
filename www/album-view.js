@@ -8,6 +8,7 @@ import MetaUtil from './meta-util.js'
 import Model from './model.js';
 import Service from './service.js';
 import Subview from'./subview.js';
+import TrackListItemUtil from './track-list-item-util.js';
 import Util from'./util.js';
 import Values from'./values.js';
 import ViewUtil from './view-util.js'
@@ -25,8 +26,9 @@ export default class AlbumView extends Subview {
   $list;
   listItems$;
   contextMenu;
+  trackMetaChangeHandler;
 
-  album = null; // album object
+  album = null;
   tracks = null; // tracks array of album object
 
   currentPlayingSong = null;
@@ -41,6 +43,7 @@ export default class AlbumView extends Subview {
     this.$overlayImage = $('#albumOverlayImage');
 
     this.contextMenu = new AlbumContextMenu($("#albumContextMenu"));
+    this.trackMetaChangeHandler = TrackListItemUtil.makeTrackMetaChangeHandler(this.$list);
 
     $("#albumPlayNowButton").on("click tap", this.onPlayNowButton);
     $("#albumQueueButton").on("click tap", this.onQueueButton);
@@ -50,18 +53,18 @@ export default class AlbumView extends Subview {
   }
 
   show(album, $libraryItem=null) {
-
     this.$libraryItemImage = $libraryItem ? $libraryItem.find('img') : null;
     this.currentPlayingSongAlbumIndex = -1;
 
+    // nb, list items get generated on every show
     this.populate(album);
     this.$el[0].scrollTop = 0;
 
     super.show();
 
     $(document).on('model-status-updated', this.updateHighlightedTrack);
-    $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
     $(document).on('new-track', this.onNewTrack);
+    $(document).on('meta-track-favorite-changed meta-track-incremented', this.trackMetaChangeHandler);
 
     if (this.$libraryItemImage) {
       this.animateInOverlay(this.onShowComplete);
@@ -135,8 +138,8 @@ export default class AlbumView extends Subview {
   hide() {
     this.contextMenu.hide();
     $(document).off('model-status-updated', this.updateHighlightedTrack);
-    $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
     $(document).off('new-track', this.onNewTrack);
+    $(document).off('meta-track-favorite-changed meta-track-incremented', this.trackMetaChangeHandler);
 
     // do normal fadeout of album view
     super.hide();
@@ -199,7 +202,7 @@ export default class AlbumView extends Subview {
       const $item = $(this.makeListItem(i, item));
       $item.on("click tap", e => this.onItemClick(e));
       $item.find(".moreButton").on("click tap", e => this.onItemContextButtonClick(e));
-      $item.find(".favoriteButton").on("click tap", e => this.onItemFavoriteButtonClick(e));
+      $item.find(".favoriteButton").on("click tap", e => TrackListItemUtil.onFavoriteButtonClick(e));
       this.listItems$.push($item);
       this.$list.append($item);
     }
@@ -226,19 +229,19 @@ export default class AlbumView extends Subview {
 		const seconds = parseInt(item['@_length']);
 		const duration = seconds ? ` <span class="albumItemDuration">(${Util.durationText(seconds)})</span>` : '';
 		const song = item['@_song'];
-		let s = '';
-    s += `<div class="albumItem" data-index="${index}">`;
-		s += `<div class="albumItemLeft">${index+1}</div>`;
-		s += `<div class="albumItemMain">${song}${duration}</div>`;
     const hash = item['@_hash'];
     const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
     const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
     const numViews = MetaUtil.getNumViewsFor(hash);
-    s += `<div class="albumItemMeta">`;
-    s += `<div class="albumItemViews">${numViews || ''}</div>`;
-    s += `<div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
-    s += `</div>`;
-		s += `<div class="albumItemContext"><div class="iconButton moreButton" data-index="${index}"></div></div>`;
+		let s = '';
+    s += `<div class="albumItem" data-index="${index}" data-hash="${hash}">`;
+		s += `  <div class="albumItemLeft">${index+1}</div>`;
+		s += `  <div class="albumItemMain">${song}${duration}</div>`;
+    s += `  <div class="trackItemMeta">`;
+    s += `    <div class="numViews">${numViews || ''}</div>`;
+    s += `    <div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}"></div>`;
+    s += `  </div>`;
+		s += `  <div class="albumItemContext iconButton moreButton" data-index="${index}"></div>`;
 		s += `</div>`;
 		return $(s);
 		// also: [$]["name"] is filename; [$]["hash"];
@@ -273,88 +276,6 @@ export default class AlbumView extends Subview {
       }
 		}
 	};
-
-	onPlayNowButton = (event) => {
-    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);
-    AppUtil.doPlaylistAdds(commands, true, true);
-	};
-
-	onQueueButton = (event) => {
-    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);
-    AppUtil.doPlaylistAdds(commands);
-	};
-
-  onAlbumFavoriteButton = (event) => {
-    const hash = this.album['@_hash'];
-    const oldValue = MetaUtil.isAlbumFavoriteFor(hash);
-    const newValue = !oldValue;
-    // update button
-    if (newValue) {
-      this.$albumFavoriteButton.addClass('isSelected');
-    } else {
-      this.$albumFavoriteButton.removeClass('isSelected');
-    }
-    // update model
-    MetaUtil.setAlbumFavoriteFor(hash, newValue);
-  }
-
-	onItemClick(event) {
-		const index = $(event.currentTarget).attr("data-index");
-		const item = this.tracks[index];
-    // ...
-	}
-
-	onItemContextButtonClick(event) {
-		event.stopPropagation(); // prevent listitem from responding to same event
-		const $button = $(event.currentTarget);
-		const index = parseInt($button.attr("data-index"));
-    this.contextMenu.show(this.$el, $button, this.album, index);
-	}
-
-  onItemFavoriteButtonClick(event) {
-    event.stopPropagation(); // prevent listitem from responding to same event
-    const $button = $(event.currentTarget);
-    const index = parseInt($button.attr("data-index"));
-    const track = this.tracks[index];
-    const hash = track['@_hash'];
-    const oldValue = MetaUtil.isTrackFavoriteFor(hash);
-    const newValue = !oldValue;
-    // update button
-    if (newValue) {
-      $button.addClass('isSelected');
-    } else {
-      $button.removeClass('isSelected');
-    }
-    // update model
-    MetaUtil.setTrackFavoriteFor(hash, newValue);
-  }
-
-  onMetaTrackIncremented = (e, hash, numViews) => {
-    for (let i = 0; i < this.tracks.length; i++) {
-      const track = this.tracks[i];
-      const $item = this.listItems$[i];
-      if (track['@_hash'] == hash) {
-        $item.find('.albumItemViews').text(numViews);
-        break;
-      }
-    }
-  };
-
-  onNewTrack = (e, currentUri, lastUri) => {
-    if (App.instance.getTopSubview() != this) {
-      return;
-    }
-    const currentTrack = Model.library.getTrackByUri(currentUri);
-    const currentAlbumIndex = this.tracks.indexOf(currentTrack);
-    const lastTrack = Model.library.getTrackByUri(lastUri);
-    const lastAlbumIndex = this.tracks.indexOf(lastTrack);
-    if (currentAlbumIndex > -1) {
-      if (currentAlbumIndex > lastAlbumIndex) {
-        const $listItem = this.listItems$[currentAlbumIndex];
-        Util.autoScrollListItem($listItem, this.$el);
-      }
-    }
-  };
 
   getLibraryItemImageRect() {
     const r1 = this.$libraryItemImage[0].getBoundingClientRect();
@@ -417,4 +338,57 @@ export default class AlbumView extends Subview {
 
     return [overlayX, overlayY, overlayW, overlayH];
   }
+
+	onPlayNowButton = (event) => {
+    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);
+    AppUtil.doPlaylistAdds(commands, true, true);
+	};
+
+	onQueueButton = (event) => {
+    const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);
+    AppUtil.doPlaylistAdds(commands);
+	};
+
+  onAlbumFavoriteButton = (event) => {
+    const hash = this.album['@_hash'];
+    const oldValue = MetaUtil.isAlbumFavoriteFor(hash);
+    const newValue = !oldValue;
+    // update button
+    if (newValue) {
+      this.$albumFavoriteButton.addClass('isSelected');
+    } else {
+      this.$albumFavoriteButton.removeClass('isSelected');
+    }
+    // update model
+    MetaUtil.setAlbumFavoriteFor(hash, newValue);
+  }
+
+	onItemClick(event) {
+		const index = $(event.currentTarget).attr("data-index");
+		const item = this.tracks[index];
+    // ...
+	}
+
+	onItemContextButtonClick(event) {
+		event.stopPropagation(); // prevent listitem from responding to same event
+		const $button = $(event.currentTarget);
+		const index = parseInt($button.attr("data-index"));
+    this.contextMenu.show(this.$el, $button, this.album, index);
+	}
+
+  onNewTrack = (e, currentUri, lastUri) => {
+    if (App.instance.getTopSubview() != this) {
+      return;
+    }
+    const currentTrack = Model.library.getTrackByUri(currentUri);
+    const currentAlbumIndex = this.tracks.indexOf(currentTrack);
+    const lastTrack = Model.library.getTrackByUri(lastUri);
+    const lastAlbumIndex = this.tracks.indexOf(lastTrack);
+    if (currentAlbumIndex > -1) {
+      if (currentAlbumIndex > lastAlbumIndex) {
+        const $listItem = this.listItems$[currentAlbumIndex];
+        Util.autoScrollListItem($listItem, this.$el);
+      }
+    }
+  };
 }

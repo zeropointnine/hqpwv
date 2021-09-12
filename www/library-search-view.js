@@ -5,6 +5,7 @@ import MetaUtil from './meta-util.js';
 import Model from './model.js';
 import Settings from './settings.js';
 import TrackListItemContextMenu from './track-list-item-context-menu.js';
+import TrackListItemUtil from './track-list-item-util.js';
 import ViewUtil from './view-util.js';
 import Util from './util.js';
 
@@ -17,11 +18,15 @@ export default class LibrarySearchView extends LibraryContentView {
 
   searchType;
   searchValue;
+  trackMetaChangeHandler;
 
   constructor($el) {
     super($el);
+    this.trackMetaChangeHandler = TrackListItemUtil.makeTrackMetaChangeHandler(this.$el);
+
     this.hide();
     Util.addAppListener(this, 'library-search', this.onSearch);
+    $(document).on('meta-track-favorite-changed meta-track-incremented', this.trackMetaChangeHandler);
     this.sortType = 'default';
   }
 
@@ -36,7 +41,7 @@ export default class LibrarySearchView extends LibraryContentView {
     this.searchType = type;
     this.searchValue = value;
     this.makeGroups();
-    this.makeDom();
+    this.populateDom();
     $(document).trigger('library-search-view-populated');
   }
 
@@ -72,18 +77,39 @@ export default class LibrarySearchView extends LibraryContentView {
   }
 
   // override
-  makeDom() {
+  get groupClassName() {
+    return (this.searchType == 'track' || this.searchType == 'trackFavorites')
+        ? 'libraryTrackGroup' : 'libraryAlbumGroup';
+  }
+
+  // override
+  populateDom() {
     $(document).trigger('library-search-view-will-populate');
-    super.makeDom();
+    super.populateDom();
+  }
+
+  // override
+  populateGroupDiv($group, array) {
+    if (this.searchType == 'track' || this.searchType == 'trackFavorites') {
+      this.populateTrackGroupDiv($group, array);
+    } else {
+      super.populateGroupDiv($group, array);
+    }
+  }
+
+  populateTrackGroupDiv($group, array) {
+    const a = array.map(item => item['track']);
+    const items$ = TrackListItemUtil.populateList($group, a);
+
+    for (const $item of items$) {
+      $item.find(".contextButton").on("click tap", this.onTrackListItemContextButton);
+    }
   }
 
   // override
   makeLabel(label, group) {
-    switch (this.searchType) {
-      case 'artist':
-        return LibraryContentView.makeLabel(label, '', group.length);
-      case 'album':
-        return '';
+    if (this.searchType == 'artist') {
+      return LibraryContentView.makeLabel(label, '', group.length);
     }
     return '';
   }
@@ -240,17 +266,23 @@ export default class LibrarySearchView extends LibraryContentView {
     return { labels: [], groups: [group] };
   }
 
+  //(index, item, itemPrevious, itemNext, hasAlbum) {
   makeTrackListItem(data, index) {
     const track = data['track'];
     const album = data['album'];
     const artistDiv = album['@_artist'] ? `<div class="artist">${album['@_artist']}</div>` : '';
     const albumDiv = album['@_album'] ? `<div class="album">${album['@_album']}</div>` : '';
+    const favoriteSelectedClass = 'isFavorite'; // temp
     let s = '';
-    s += `<div class="librarySearchTrackItem">`;
+    s += `<div class="libraryTrackItem">`;
     s += `  <div class="content">`;
     s += `    <div class="song">${track['@_song'] || ''}</div>`;
     s +=      artistDiv;
     s +=      albumDiv;
+    s += `  </div>`;
+    s += `  <div class="trackItemMeta">`;
+    s += `    <div class="numViews">${999 || ''}</div>`;
+    s += `    <div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}" data-index="${index}"></div>`;
     s += `  </div>`;
     s += `  <div class="iconButton moreButton" data-index="${index}"></div>`;
     s += `</div>`;
@@ -278,9 +310,9 @@ export default class LibrarySearchView extends LibraryContentView {
 
   onTrackListItemContextButton = (e) => {
     event.stopPropagation();
-
     const $button = $(e.currentTarget);
-    const index = $button.attr('data-index');
+    const $listItem = $button.parent().parent();
+    const index = $listItem.attr('data-index');
     if (!(index >= 0)) {
       return;
     }

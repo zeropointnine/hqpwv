@@ -7,7 +7,7 @@ export default class Util {}
 
 /** 
  * Hooks up custom events off of document.
- * Doesn't support removing listener. :/
+ * Doesn't support removing listener.
  * todo/nb: doesnt work correctly when target is not same object as where this fn is invoked from [?]
  */
 Util.addAppListener = (context, eventName, callback) => {
@@ -142,7 +142,7 @@ Util.makeHowLongAgoString = (ms) => {
   if (mo < 12.5) {
     return Math.round(m) + 'mo'
   }
-  return '12+ mo';
+  return '1y+';
 };
 
 // From https://medium.com/@nitinpatel_20236/

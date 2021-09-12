@@ -10,11 +10,7 @@
 }
 
 #albumCloseButton {
-  position:absolute;
-  right:$space-unit;
-  @include mobile {
-    right:$space-unit-mobile;
-  }
+  margin-left:auto;
 }
 
 #albumViewInfo {
@@ -232,24 +228,8 @@
     @include userSelect(text);
   }
 }
-.albumItemMeta {
-  display:none;
-  height:$icon-button-side; // w/o this, is too tall, not sure why
-  margin-left:12px;
-  align-items:center;
-}
-.isMetaEnabled .albumItemMeta {
-  display:flex;
-}
-
-.albumItemViews {
-  font-size: $font-size-smaller;
-  color:var(--col-text-least);
-  margin-right:4px;
-}
 .albumItemContext {
   height:$icon-button-side; // w/o this, is too tall, not sure why
-	margin-left:6px;
 }
 
 // ---

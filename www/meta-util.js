@@ -157,6 +157,7 @@ class MetaUtil {
       o = this._tracks[hash];
     }
     o['favorite'] = isFavorite;
+    $(document).trigger('meta-track-favorite-changed', hash);
 
     this.setTrackFavoriteOnServer(hash, isFavorite);
   }
@@ -233,7 +234,7 @@ class MetaUtil {
     // Also add to history (Server will have done the same as well!)
     this.addToHistory(hash);
 
-    $(document).trigger('meta-track-incremented', [hash, newValue]);
+    $(document).trigger('meta-track-incremented', hash);
   }
 
   incrementTrackViewsOnServer(hash) {

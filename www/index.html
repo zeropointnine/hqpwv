@@ -8,16 +8,22 @@
 		<title>HQPWV</title>
 
 		<link rel="stylesheet" href="css/main.css">
-		<script src="libs/jquery-3.6.0.min.js"></script>
 
+		<script src="libs/platform.js"></script>
+		<script src="libs/window-app.js"></script>
 		<script>
-			window.cl = console.log;
+			const message = isSafariTooLow();
+			if (message) {
+				alert(message);
+			}
 		</script>
 
+		<script src="libs/jquery-3.6.0.min.js"></script>
 		<script type="module">
 			import App from './app.js';
 			$(document).ready(() => {
-				const app = new App();
+				// reference added to window as a dev convenience
+				window.app = new App();
 			});
 		</script>
 
@@ -40,11 +46,9 @@
 
 				<div id="libraryView" class="subview" tabindex="0">
 
-						<div id="libraryHeaderView">
-							<div style="position:absolute">
-								<span id="libraryTitle" class="viewTitle">Library</span>
-								<span id="libraryNumbers"></span>
-							</div>
+						<div id="libraryHeaderView" class="viewHeader">
+							<span id="libraryTitle" class="title">Library</span>
+							<span id="libraryNumbers" class="headerCountText"></span>
 							<div id="libraryAlbumOptionsView" style="margin-left:auto; display:flex;">
 								<div id="librarySortDropdown" class="dropdown">
 									<div class="dropdownTitle">Sort by</div>
@@ -109,8 +113,10 @@
 				</div>
 
 				<div id="albumView" class="subview" tabindex="0">
-					<div id="albumCloseButton" class="iconButton closeButton"></div>
-					<div id="albumViewHeader" class="viewTitle">Album</div>
+					<div class="viewHeader">
+						<span class="title">Album</span>
+						<div id="albumCloseButton" class="iconButton closeButton"></div>
+					</div>
 
 					<div id="albumViewInfo">
 						<div class="albumViewPictureOuter"><img id="albumViewPicture"></div>
@@ -135,8 +141,8 @@
 
 					<div id="playlistMainView" class="subview">
 
-						<div id="playlistHeader" style="display:flex;">
-							<div class="viewTitle">Playlist</div>
+						<div class="viewHeader">
+							<span class="title">Playlist</span>
 							<div id="playlistRepeatButton" class="textButton">Repeat none</div>
 							<div id="playlistCloseButton" class="iconButton closeButton"></div>
 						</div>
@@ -166,16 +172,17 @@
 					</div>
 
 					<div id="historyView" class="subview">
-						<div id="historyViewHeader" style="display:flex;">
-							<div class="viewTitle">History</div>
-							<div id="historyCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
+						<div class="viewHeader">
+							<span class="title">History</span>
+							<span id="historyCount" class="headerCountText">(XXX)</span>
+							<div id="historyCloseButton" class="iconButton closeButton" style="margin-left:auto"></div>
 						</div>
 						<div id="historyList"></div>
 					</div>
 
 					<div id="loadPlaylistView" class="subview">
-						<div id="loadHeader" style="display:flex;">
-							<div class="viewTitle">Load Playlist</div>
+						<div id="loadHeader" class="viewHeader">
+							<span class="title">Load Playlist</span>
 							<div id="loadCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
 						</div>
 						<div class="loadListCustomSubheader">Custom Playlists</div>
@@ -188,8 +195,10 @@
 
 				<div id="hqpSettingsView" class="subview">
 
-					<div id="hqpSettingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
-					<div class="viewTitle">Upscaler settings</div>
+					<div class="viewHeader">
+						<span class="title">Upscaler settings</span>
+						<div id="hqpSettingsCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
+					</div>
 
 					<div class="hqpSettingsInner">
 
@@ -324,12 +333,12 @@
 
 				<div id="settingsView" class="subview">
 
-					<div id="settingsCloseButton" class="iconButton closeButton" style="position:absolute; right:16px;top:16px;"></div>
-
-					<div style="position:relative; margin-right:56px;">
-						<div id="settingsVersion" class="viewTitle"></div>
-						<a id="settingsProjectAnchor" class="colorTextLess" style="position:relative; top:-6px;"></a>
+					<div class="viewHeader">
+						<div id="settingsVersion" class="title"></div>
+						<div id="settingsCloseButton" class="iconButton closeButton" style="margin-left:auto"></div>
 					</div>
+
+					<a id="settingsProjectAnchor" class="colorTextLess" style="position:relative; top:-6px;"></a>
 
 					<div id="settingsHotkeys" style="margin-top:28px;">
 						<div class="settingsSubheading">Hotkeys:</div>
@@ -397,7 +406,6 @@
 				<div id="trackListItemContextMenu" class="contextMenu">
 					<div id="trackListItemContextQueue" class="contextItem">Queue track</div>
 					<div id="trackListItemContextPlayNow" class="contextItem">Play track now</div>
-					<div id="trackListItemContextAlbum" class="contextItem">Go to album</div>
 				</div>
 
 				<div id="loadPlaylistContextMenu" class="contextMenu">

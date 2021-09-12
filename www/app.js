@@ -79,7 +79,7 @@ export default class App {
 		Util.addAppListener(this, 'album-view-close-button', this.hideAlbumView);
 		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistCompoundView);
 		Util.addAppListener(this, 'playlist-close-button', this.hidePlaylist);
-		Util.addAppListener(this, 'playlist-context-album history-context-album', this.playlistToAlbum);
+		Util.addAppListener(this, 'track-album-button-click', this.trackListItemToAlbum);
     Util.addAppListener(this, 'settings-view-close', this.hideSettingsView);
     Util.addAppListener(this, 'hqp-settings-view-close', this.hideHqpSettingsView);
     Util.addAppListener(this, 'app-do-escape', this.doEscape);
@@ -160,7 +160,7 @@ export default class App {
     Service.queueCommandFront(Commands.playlistGet());
   }
 
-  playlistToAlbum(album) {
+  trackListItemToAlbum(album) {
     ViewUtil.setVisible(this.albumView.$el, false);
     this.playlistView.hide();
     setTimeout(() => this.showAlbumView(album), 200);

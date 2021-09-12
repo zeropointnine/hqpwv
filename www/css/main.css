@@ -188,12 +188,6 @@ label {
   }
 }
 
-.viewTitle {
-  font-size: 16px;
-  font-weight: bold;
-  line-height: 36px;
-}
-
 .lowKeyCaption {
   font-size: 14px;
   font-weight: bold;
@@ -347,6 +341,24 @@ label {
 .buttonBlink:after {
   transition: background-color 0s linear;
   opacity: 1;
+}
+
+.viewHeader {
+  display: flex;
+  height: 36px;
+  align-items: center;
+  position: relative;
+}
+.viewHeader .title {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 36px;
+}
+.viewHeader .headerCountText {
+  margin-left: 6px;
+  font-size: 14px;
+  padding-top: 4px;
+  color: var(--col-text-least);
 }
 
 .contextMenu {
@@ -540,6 +552,190 @@ label {
     rotate: 360deg;
   }
 }
+.trackItemMeta {
+  display: none;
+  height: 36px;
+  margin-left: 12px;
+  margin-right: 6px;
+  align-items: center;
+}
+.trackItemMeta .numViews {
+  font-size: 14px;
+  color: var(--col-text-least);
+  margin-right: 6px;
+}
+
+.isMetaEnabled .trackItemMeta {
+  display: flex;
+}
+
+.trackItem {
+  display: flex;
+  align-items: center;
+  background-color: var(--col-listitem-less);
+  padding: 10px 12px 10px 12px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.trackItem:hover {
+  background-color: var(--col-listitem);
+}
+@media (max-width: 480px) {
+  .trackItem {
+    padding: 8px 8px 8px 8px;
+  }
+}
+.trackItem .left {
+  width: 48px;
+  text-align: center;
+  color: var(--col-text-least);
+  margin-right: 16px;
+}
+@media (max-width: 480px) {
+  .trackItem .left {
+    margin-right: 10px;
+  }
+}
+.trackItem .main {
+  flex: 1;
+}
+.trackItem .main .nonLibraryInfo {
+  color: var(--col-text-less);
+  font-size: 14px;
+  line-height: 19px;
+  margin-bottom: 4px;
+}
+.trackItem .right {
+  height: 36px;
+}
+
+.isTouch .trackItem:hover {
+  background-color: var(--col-listitem-less);
+}
+
+.trackItem.trackItemAlbumHeader {
+  display: flex;
+  padding-left: 12px;
+  padding-top: 12px;
+  cursor: default;
+}
+.trackItem.trackItemAlbumHeader:hover {
+  background-color: var(--col-listitem-less);
+}
+.trackItem.trackItemAlbumHeader .albumLineButton {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  cursor: pointer;
+}
+.trackItem.trackItemAlbumHeader .albumLineButton:hover {
+  background-color: var(--col-listitem);
+}
+.trackItem.trackItemAlbumHeader .albumLineButton img {
+  width: 48px;
+  height: 48px;
+  align-self: start;
+}
+.trackItem.trackItemAlbumHeader .albumLineButton .text {
+  color: var(--col-text-less);
+  font-size: 14px;
+  line-height: 19px;
+  margin-left: 16px;
+  padding-bottom: 1px;
+  padding-right: 12px;
+}
+.trackItem.trackItemAlbumHeader .statsText {
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--col-text-least);
+  text-align: right;
+  align-self: start;
+}
+
+.trackItem.groupFirst {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-bottom: 0px;
+  border-top: 1px solid var(--col-listitem);
+  border-left: 1px solid var(--col-listitem);
+  border-right: 1px solid var(--col-listitem);
+}
+@media (max-width: 480px) {
+  .trackItem.groupFirst {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+}
+
+.trackItem.groupMiddle {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border-left: 1px solid var(--col-listitem);
+  border-right: 1px solid var(--col-listitem);
+}
+
+.trackItem.groupLast {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  margin-top: 0px;
+  margin-bottom: 16px;
+  border-left: 1px solid var(--col-listitem);
+  border-right: 1px solid var(--col-listitem);
+  border-bottom: 1px solid var(--col-listitem);
+}
+@media (max-width: 480px) {
+  .trackItem.groupLast {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+}
+
+.trackItem.groupSingle {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--col-listitem);
+}
+
+.libraryTrackGroup .trackItem.groupFirst,
+#historyList .trackItem.groupFirst {
+  padding-bottom: 6px;
+}
+.libraryTrackGroup .trackItem.groupMiddle,
+#historyList .trackItem.groupMiddle {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.libraryTrackGroup .trackItem.groupLast,
+#historyList .trackItem.groupLast {
+  padding-top: 4px;
+}
+.libraryTrackGroup .trackItem,
+#historyList .trackItem {
+  cursor: auto;
+}
+.libraryTrackGroup .trackItem:hover,
+#historyList .trackItem:hover {
+  background-color: var(--col-listitem-less);
+}
+.libraryTrackGroup .trackItemAlbumHeader .albumLineButton .text,
+#historyList .trackItemAlbumHeader .albumLineButton .text {
+  color: var(--col-text-less);
+}
+
+.libraryTrackGroup .trackItem .left {
+  visibility: hidden;
+}
+.libraryTrackGroup .trackItem .main .trackText {
+  font-weight: bold;
+}
+
+#historyList .trackItem .left {
+  color: var(--col-text-less);
+  font-style: italic;
+}
+
 html {
   visibility: hidden;
 }
@@ -1267,85 +1463,6 @@ html {
   color: var(--col-text-less);
 }
 
-.playHisItem {
-  display: flex;
-  align-items: center;
-  background-color: var(--col-listitem-less);
-  padding: 10px 12px 10px 12px;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  cursor: pointer;
-}
-.playHisItem:hover {
-  background-color: var(--col-listitem);
-}
-@media (max-width: 480px) {
-  .playHisItem {
-    padding: 8px 8px 8px 8px;
-  }
-}
-.playHisItem .left {
-  margin-right: 16px;
-}
-@media (max-width: 480px) {
-  .playHisItem .left {
-    margin-right: 10px;
-  }
-}
-.playHisItem .main {
-  flex: 1;
-}
-.playHisItem .right {
-  height: 36px;
-}
-
-.isTouch .playHisItem:hover {
-  background-color: var(--col-listitem-less);
-}
-
-.playHisItem.groupFirst {
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  margin-bottom: 0px;
-  border-top: 1px solid var(--col-listitem);
-  border-left: 1px solid var(--col-listitem);
-  border-right: 1px solid var(--col-listitem);
-}
-@media (max-width: 480px) {
-  .playHisItem.groupFirst {
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-  }
-}
-
-.playHisItem.groupMiddle {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  border-left: 1px solid var(--col-listitem);
-  border-right: 1px solid var(--col-listitem);
-}
-
-.playHisItem.groupLast {
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  margin-top: 0px;
-  margin-bottom: 16px;
-  border-left: 1px solid var(--col-listitem);
-  border-right: 1px solid var(--col-listitem);
-  border-bottom: 1px solid var(--col-listitem);
-}
-@media (max-width: 480px) {
-  .playHisItem.groupLast {
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-  }
-}
-
-.playHisItem.single {
-  margin-bottom: 16px;
-  border: 1px solid var(--col-listitem);
-}
-
 #playlistView {
   margin: 0;
   padding: 0;
@@ -1362,10 +1479,6 @@ html {
   height: 100%;
   left: 0;
   transition: left 400ms ease-in-out;
-}
-
-#playlistHeader {
-  margin-bottom: 8px;
 }
 
 #playlistRepeatButton {
@@ -1514,10 +1627,10 @@ html {
   top: 6px;
 }
 
-.playlistItem {
+#playlistList .trackItem {
   position: relative;
 }
-.playlistItem:before {
+#playlistList .trackItem:before {
   width: 0;
   background: var(--col-text-less);
   content: " ";
@@ -1526,81 +1639,20 @@ html {
   height: 100%;
   opacity: 1;
 }
-.playlistItem.selected:before {
+#playlistList .trackItem.selected:before {
   width: 4px;
 }
-.playlistItem .left {
-  width: 48px;
-  text-align: center;
-  color: var(--col-text-least);
-}
-.playlistItem .right {
-  margin-left: 6px;
-}
-.playlistItem .duration {
+#playlistList .trackItem .duration {
   font-size: 14px;
   color: var(--col-text-least);
 }
 
-.isPaused .playlistItem.selected:before {
-  opacity: 0.7;
+.isPaused #playlistList .trackItem.selected:before {
+  opacity: 0.5;
 }
 
-.isBusy .playlistItem.selected:before {
+.isBusy #playlistList .trackItem.selected:before {
   animation: thumbPulse 1.33s infinite;
-}
-
-.playlistItemMeta {
-  display: none;
-  height: 36px;
-  margin-left: 12px;
-  align-items: center;
-}
-
-.isMetaEnabled .playlistItemMeta {
-  display: flex;
-}
-
-.playlistItemViews {
-  font-size: 14px;
-  color: var(--col-text-least);
-  margin-right: 6px;
-}
-
-.playlistAlbumLine {
-  display: flex;
-  padding-left: 12px;
-  padding-top: 12px;
-  cursor: default;
-}
-.playlistAlbumLine:hover {
-  background-color: var(--col-listitem-less);
-}
-.playlistAlbumLine .playlistAlbumButton {
-  display: flex;
-  align-items: center;
-  margin-right: 16px;
-  cursor: pointer;
-}
-.playlistAlbumLine .playlistAlbumButton:hover {
-  background-color: var(--col-listitem);
-}
-.playlistAlbumLine .playlistAlbumButton img {
-  width: 48px;
-  height: 48px;
-  align-self: start;
-}
-.playlistAlbumLine .playlistAlbumButton .text {
-  margin-left: 16px;
-  padding-right: 12px;
-}
-.playlistAlbumLine .statsText {
-  margin-left: auto;
-  font-size: 14px;
-  line-height: 18px;
-  color: var(--col-text-least);
-  text-align: right;
-  align-self: start;
 }
 
 #historyView {
@@ -1753,24 +1805,14 @@ html {
 }
 
 #libraryHeaderView {
-  display: flex;
   margin-left: 16px;
   margin-right: 16px;
-  height: 36px;
-  align-items: center;
 }
 @media (max-width: 480px) {
   #libraryHeaderView {
     margin-left: 12px;
     margin-right: 12px;
   }
-}
-
-#libraryNumbers {
-  margin-left: 6px;
-  font-size: 14px;
-  padding-top: 4px;
-  color: var(--col-text-least);
 }
 
 #librarySpinner {
@@ -1803,11 +1845,11 @@ html {
   max-width: 1800px;
   padding-left: 8px;
   padding-right: 8px;
-  margin-top: 16px;
+  margin-top: 24px;
 }
 @media (max-width: 480px) {
   #librarySearchView {
-    margin-top: 12px;
+    margin-top: 18px;
     padding-left: 6px;
     padding-right: 6px;
   }
@@ -1868,12 +1910,21 @@ html {
   color: var(--col-text-least);
 }
 
-.libraryGroup {
+.libraryAlbumGroup {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 8px;
 }
-.libraryGroup.isCollapsed {
+.libraryAlbumGroup.isCollapsed {
+  display: none;
+}
+
+.libraryTrackGroup {
+  margin-left: 8px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+.libraryTrackGroup.isCollapsed {
   display: none;
 }
 
@@ -2076,14 +2127,13 @@ html {
 
 #librarySearchCloseButton {
   display: none;
-  position: absolute;
-  right: 16px;
+  margin-left: auto;
 }
 
 #librarySearchPanel {
   display: none;
   position: relative;
-  margin: 8px 16px 24px 16px;
+  margin: 16px 16px 24px 16px;
 }
 
 #artistsTabButton:before {
@@ -2182,11 +2232,11 @@ html {
 }
 
 #albumFavoritesButton:before {
-  content: "Favorites albums";
+  content: "Favorite albums";
 }
 
 #trackFavoritesButton:before {
-  content: "Favorites tracks";
+  content: "Favorite tracks";
 }
 
 @media (max-width: 480px) {
@@ -2198,36 +2248,35 @@ html {
     content: "Fav. tracks";
   }
 }
-.librarySearchTrackItem {
+.libraryTrackItem {
   display: flex;
   align-items: center;
-  width: 50%;
-  padding: 0px 12px 0 12px;
-  margin-bottom: 24px;
+  width: 100%;
+  padding: 8px 12px 8px 12px;
+  border-top: 1px solid var(--col-listitem);
   cursor: default;
 }
 @media (max-width: 480px) {
-  .librarySearchTrackItem {
-    width: 100%;
+  .libraryTrackItem {
     padding: 0 8px 0 8px;
     margin-bottom: 18px;
   }
 }
-.librarySearchTrackItem .content {
+.libraryTrackItem .content {
   width: calc(100% - 48px);
 }
-.librarySearchTrackItem .song, .librarySearchTrackItem .artist, .librarySearchTrackItem .album {
+.libraryTrackItem .song, .libraryTrackItem .artist, .libraryTrackItem .album {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
-.librarySearchTrackItem .song {
+.libraryTrackItem .song {
   font-weight: bold;
 }
-.librarySearchTrackItem .artist, .librarySearchTrackItem .album {
+.libraryTrackItem .artist, .libraryTrackItem .album {
   color: var(--col-text-less);
 }
-.librarySearchTrackItem .moreButton {
+.libraryTrackItem .moreButton {
   margin-left: auto;
 }
 
@@ -2240,13 +2289,7 @@ html {
 }
 
 #albumCloseButton {
-  position: absolute;
-  right: 16px;
-}
-@media (max-width: 480px) {
-  #albumCloseButton {
-    right: 12px;
-  }
+  margin-left: auto;
 }
 
 #albumViewInfo {
@@ -2459,26 +2502,8 @@ html {
   -o-user-select: text;
 }
 
-.albumItemMeta {
-  display: none;
-  height: 36px;
-  margin-left: 12px;
-  align-items: center;
-}
-
-.isMetaEnabled .albumItemMeta {
-  display: flex;
-}
-
-.albumItemViews {
-  font-size: 14px;
-  color: var(--col-text-least);
-  margin-right: 4px;
-}
-
 .albumItemContext {
   height: 36px;
-  margin-left: 6px;
 }
 
 #albumOverlayImage {

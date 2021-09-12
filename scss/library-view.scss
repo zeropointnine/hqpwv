@@ -15,22 +15,12 @@ $marginUnitMobile: 6px;
 }
 
 #libraryHeaderView {
-  display:flex;
   margin-left:$space-unit;
   margin-right:$space-unit;
-  height:36px;
-  align-items:center;
   @include mobile {
     margin-left:$space-unit-mobile;
     margin-right:$space-unit-mobile;
   }
-}
-
-#libraryNumbers {
-  margin-left:6px;
-  font-size: $font-size-smaller;
-  padding-top:4px;
-  color:var(--col-text-least);
 }
 
 #librarySpinner {
@@ -63,10 +53,10 @@ $marginUnitMobile: 6px;
   max-width:1800px;
   padding-left:8px; // net effect is that listitems align 16px from edge
   padding-right:8px;
-  margin-top:$space-unit;
+  margin-top: ($space-unit * 1.5);
 
   @include mobile {
-    margin-top:$space-unit-mobile;
+    margin-top: ($space-unit-mobile * 1.5);
     padding-left:6px; // net effect is that listitems align 12px from edges
     padding-right:6px;
   }
@@ -133,11 +123,18 @@ $marginUnitMobile: 6px;
 }
 
 
-// Wraps library items.
-// The list may have one or more groups.
-.libraryGroup {
+.libraryAlbumGroup {
   display:flex;
   flex-wrap: wrap;
+  margin-bottom:8px;
+  &.isCollapsed{
+    display:none;
+  }
+}
+
+.libraryTrackGroup {
+  margin-left:8px;
+  margin-right:8px;
   margin-bottom:8px;
   &.isCollapsed{
     display:none;
@@ -361,8 +358,7 @@ $marginUnitMobile: 6px;
 
 #librarySearchCloseButton {
   display:none;
-  position:absolute;
-  right:16px;
+  margin-left: auto;
 }
 
 // ---
@@ -370,7 +366,7 @@ $marginUnitMobile: 6px;
 #librarySearchPanel {
   display:none;
   position:relative;
-  margin: ($space-unit / 2) ($space-unit * 1) ($space-unit * 1.5) $space-unit;
+  margin: $space-unit ($space-unit * 1) ($space-unit * 1.5) $space-unit;
 }
 
 #artistsTabButton:before {
@@ -467,10 +463,10 @@ $marginUnitMobile: 6px;
 }
 
 #albumFavoritesButton:before {
-  content: 'Favorites albums';
+  content: 'Favorite albums';
 }
 #trackFavoritesButton:before {
-  content: 'Favorites tracks';
+  content: 'Favorite tracks';
 }
 @include mobile {
   #albumFavoritesButton:before {
@@ -483,17 +479,16 @@ $marginUnitMobile: 6px;
 // ---
 
 // rem, container is flex wrap
-.librarySearchTrackItem {
+.libraryTrackItem {
   // has no bg col
   display:flex;
   align-items:center;
-  width:50%; // 2cols
-  padding: 0px 12px 0 12px;
-  margin-bottom: 24px;
+  width:100%;
+  padding: 8px 12px 8px 12px;
+  border-top: 1px solid var(--col-listitem);
   cursor:default;
 
   @include mobile {
-    width:100%;
     padding: 0 8px 0 8px;
     margin-bottom:18px;
   }
@@ -519,3 +514,4 @@ $marginUnitMobile: 6px;
     margin-left:auto;
   }
 }
+

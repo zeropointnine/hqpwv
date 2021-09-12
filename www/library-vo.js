@@ -17,7 +17,7 @@ export default class LibraryVo {
   /** Key is uri, value is track hash. */
   _trackUriToTrackHash;
   /** Key is track hash. Value is [track, album] */
-  _historyLookup = null;
+  _trackHashLookup = null;
   /** Key is album path, value is album */
   _pathToItem;
 
@@ -87,6 +87,26 @@ export default class LibraryVo {
   }
 
   /**
+   * Returns array of two elements (track and its containing album), or null.
+   */
+  getTrackAndAlbumByHash(hash) {
+    if (!this._trackHashLookup) {
+      this.initTrackHashLookup(); // lazy init
+    }
+    return this._trackHashLookup[hash];
+  }
+
+  getTrackByHash(hash) {
+    const a = this.getTrackAndAlbumByHash(hash);
+    return a ? a[0] : null;
+  }
+
+  getAlbumByTrackHash(hash) {
+    const a = this.getTrackAndAlbumByHash(hash);
+    return a ? a[1] : null;
+  }
+
+  /**
    * Find library item that contains the given track
    * (Rem, a playlist item added via hqp does not have to exist in the library)
    *
@@ -106,37 +126,12 @@ export default class LibraryVo {
     return this._pathToItem[path];
   }
 
-  getTrackAndAlbumByHash(hash) {
-    if (!this._historyLookup) {
-      this.initHistoryLookup(); // lazy init
-    }
-    return this._historyLookup[hash];
-  }
-
-  makeTrackUriUsing(albumTrack, album) {
-    if (!album || !albumTrack) {
-      return null;
-    }
-    const albumPath = album['@_path'];
-    const trackName = albumTrack['@_name'];
-    if (!albumPath || !trackName) {
-      cl('warning missing expected properties');
-      return null;
-    }
-    const uri = 'file://' + albumPath + '/' + trackName;
-    return uri;
-  }
-
   getTrackByUri(uri) {
     const hash = this.getTrackHashForTrackUri(uri);
     if (!hash) {
       return null;
     }
-    const a = this.getTrackAndAlbumByHash(hash);
-    if (!a) {
-      return null;
-    }
-    return a[0];
+    return this.getTrackByHash(hash)
   }
 
   // ---
@@ -202,13 +197,13 @@ export default class LibraryVo {
     }
   }
 
-  initHistoryLookup() {
-    this._historyLookup = {};
+  initTrackHashLookup() {
+    this._trackHashLookup = {};
     for (const album of this.albums) {
       const tracks = AlbumUtil.getTracksOf(album);
       for (const track of tracks) {
         const hash = track['@_hash'];
-        this._historyLookup[hash] = [track, album];
+        this._trackHashLookup[hash] = [track, album];
       }
     }
   };

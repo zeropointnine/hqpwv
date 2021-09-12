@@ -6,13 +6,11 @@ import Service from './service.js';
 import ViewUtil from './view-util.js';
 
 /**
- *
+ * Used by search/track and history list items.
  */
 class TrackListItemContextMenu extends ContextMenu {
 
   data;
-
-  hello = Math.random();
 
   constructor() {
     super($("#trackListItemContextMenu"));
@@ -29,12 +27,25 @@ class TrackListItemContextMenu extends ContextMenu {
 
     const $item = $(event.currentTarget);
 
+    // `data` is either { track, album } object, or just track object (not pretty)
+    const track = this.data['track'] || this.data;
+    let album;
+    if (this.data['album']) {
+      album = this.data['album'];
+    } else {
+      album = Model.library.getAlbumByTrackHash(track['@_hash']);
+    }
+    if (!album) {
+      cl('warning check logic');
+      return;
+    }
+
     const id = $item.attr('id');
     let uri;
     let commands;
     switch (id) {
       case 'trackListItemContextQueue':
-        uri = DataUtil.makeUriUsingAlbumAndTrack(this.data['album'], this.data['track']);
+        uri = DataUtil.makeUriUsingAlbumAndTrack(album, track);
         commands = [
           Commands.playlistAdd(uri),
           Commands.playlistGet(),
@@ -43,7 +54,7 @@ class TrackListItemContextMenu extends ContextMenu {
         Service.queueCommandsFront(commands);
         break;
       case 'trackListItemContextPlayNow':
-        uri = DataUtil.makeUriUsingAlbumAndTrack(this.data['album'], this.data['track']);
+        uri = DataUtil.makeUriUsingAlbumAndTrack(album, track);
         commands = [
           Commands.stop(),
           Commands.playlistClear(),
@@ -54,11 +65,8 @@ class TrackListItemContextMenu extends ContextMenu {
         ];
         Service.queueCommandsFront(commands);
         break;
-      case 'trackListItemContextAlbum':
-        $(document).trigger('history-context-album', this.data['album']);
-        break;
     }
   }
 }
 
-export default new TrackListItemContextMenu(); // NB! singleton-like
+export default new TrackListItemContextMenu();

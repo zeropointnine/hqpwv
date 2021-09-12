@@ -11,7 +11,7 @@ import ViewUtil from './view-util.js';
  *
  * Has albums array. And groups/labels arrays (which would be dependent on albums).
  *
- * Subclass must provide enough logic for `makeDom()` to work, basically.
+ * Subclass must provide enough logic for `populateDom()` to work, basically.
  */
 export default class LibraryContentView {
 
@@ -28,7 +28,6 @@ export default class LibraryContentView {
     const config = { root: $('#libraryView')[0], rootMargin: (window.screen.height * 0.66) + 'px', threshold: 0  };
     this.intersectionObs = new IntersectionObserver(this.onIntersection, config);
     $(document).on('album-favorite-changed', this.onAlbumFavoriteChanged);
-
   }
 
   /**
@@ -42,6 +41,9 @@ export default class LibraryContentView {
    * 'Abstract'
    */
   makeLabel(label, group) { }
+
+  /** 'Abstract' */
+  get groupClassName() { }
 
   /**
    * Returns a list item DOM element
@@ -60,7 +62,7 @@ export default class LibraryContentView {
   /**
    * Populates dom.
    */
-  makeDom() {
+  populateDom() {
     this.clear();
 
     const isLibraryEmpty = (Model.library.albums.length == 0);
@@ -77,6 +79,7 @@ export default class LibraryContentView {
       return;
     }
 
+    // Make labels and groups
     for (let i = 0; i < this.groups.length; i++) {
       const label = this.labels[i];
       const group = this.groups[i];
@@ -89,19 +92,19 @@ export default class LibraryContentView {
         $label.on('click tap', (e) => this.onLabelClick(e));
         this.$el.append($label);
       }
-      const $group = $(`<div class="libraryGroup"></div>`);
+      const $group = $(`<div class="${this.groupClassName}"></div>`);
       if (isCollapsed) {
         $group.addClass('isCollapsed');
       }
-      this.addItemsToGroupDiv($group, group);
+      this.populateGroupDiv($group, group);
       this.$el.append($group);
     }
-
   }
 
-  addItemsToGroupDiv($group, group) {
-    for (let i = 0; i < group.length; i++) {
-      const item = group[i];
+  // override-able
+  populateGroupDiv($group, array) {
+    for (let i = 0; i < array.length; i++) {
+      const item = array[i];
       const $item = this.makeListItem(item, i);
       $item.on("click tap", e => this.onItemClick(e));
       $item.on("keydown", this.onItemKeydown);

@@ -1,5 +1,25 @@
 // Higher-level 'widget' definitions
 
+
+// Subview header UI with title text and usually a close button on the right
+.viewHeader {
+  display:flex;
+  height:$icon-button-side;
+  align-items:center;
+  position:relative;
+  .title {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: $icon-button-side;
+  }
+  .headerCountText {
+    margin-left:6px;
+    font-size: $font-size-smaller;
+    padding-top:4px;
+    color:var(--col-text-least);
+  }
+}
+
 .contextMenu {
   position:absolute; // gets positioned programmatically
   z-index:10001;
@@ -189,4 +209,23 @@
   33% { rotate:120deg }
   66% { rotate:240deg; }
   100% { rotate:360deg; }
+}
+
+// track list item metadata section
+// contains view-count text and favorite button
+.trackItemMeta {
+  display:none;
+  height:$icon-button-side; // w/o this, is too tall, not sure why
+  margin-left:12px;
+  margin-right:6px;
+  align-items:center;
+
+  .numViews {
+    font-size: $font-size-smaller;
+    color:var(--col-text-least);
+    margin-right:6px;
+  }
+}
+.isMetaEnabled .trackItemMeta {
+  display:flex;
 }

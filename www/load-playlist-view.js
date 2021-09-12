@@ -78,7 +78,7 @@ export default class LoadPlaylistView  extends Subview {
     let name = Util.getFilenameFromPath(customPlaylistPath);
     name = name.replace('.m3u8', '');
     let s = '';
-    s += `<div class="playHisItem loadItem" data-index="${index}">`;
+    s += `<div class="trackItem loadItem" data-index="${index}">`;
     s += `<span>${name}</span>`;
     s += `<div class="iconButton moreButton" data-index="${index}"></div>`;
     s += `</div>`;
@@ -105,19 +105,19 @@ export default class LoadPlaylistView  extends Subview {
 
   makeHqpListItem(hqpPlaylistItem, index) {
     let s = '';
-    s += `<div class="playHisItem loadItem" data-index="${index}" style="padding-right:12px; overflow:hidden;">`;
+    s += `<div class="trackItem loadItem" data-index="${index}" style="padding-right:12px; overflow:hidden;">`;
     s += `<span>${hqpPlaylistItem['@_album']}</span>`;
     s += `</div>`;
     return $(s);
   }
 
   makeNonItem() {
-    const s = `<div class="playHisItem loadItem loadNonItem">No playlists</div>`;
+    const s = `<div class="trackItem loadItem loadNonItem">No playlists</div>`;
     return $(s);
   }
 
   makeFyiCustomItem() {
-    const s = `<div class="playHisItem loadItem loadNonItem loadFyiItem">HQPWV and HQPlayer must be running on the same machine for custom playlists to be enabled.</div>`;
+    const s = `<div class="trackItem loadItem loadNonItem loadFyiItem">HQPWV and HQPlayer must be running on the same machine for custom playlists to be enabled.</div>`;
     return $(s);
   }
 

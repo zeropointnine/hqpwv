@@ -23,15 +23,8 @@ Demo video
 TODO
  
 # Roadmap, possible TODOs
-- Consider supporting older versions of Desktop Safari and Mobile Safari
-- Consider signing executables for major and minor releases.
+- Add DSD bitrates to the "Preset Rules" section.
 - Support random playback.
 - Pagination system for extra-large user libraries?
-- ~~Support (or validate use with) HQPlayer Embedded.~~ added
-- ~~Filter (search) controls to the library view.~~ added
-- ~~Saved playlists.~~ added
-- ~~Add 'metadata layer' to track number of plays and likes.~~ added
-- ~~Add UI for controling HQPlayer upsampling filters.~~ added
-- ~~Allow for running HQPWV on a different machine than HQPlayer.~~ added
-- ~~Volume control~~ added
-- ~~Add repeat setting.~~ added
+- Consider supporting older versions of Desktop Safari and Mobile Safari
+- Consider signing executables for major and minor releases.

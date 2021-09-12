@@ -3,7 +3,7 @@ import MetaUtil from './meta-util.js';
 import Model from './model.js';
 import PlaylistContextMenu from './playlist-context-menu.js';
 import PlaylistSavePanel from './playlist-save-panel.js';
-import PlaylistViewUtil from './playlist-view-util.js';
+import TrackListItemUtil from './track-list-item-util.js';
 import PlaylistVo from './playlist-vo.js'
 import Service from './service.js';
 import Settings from './settings.js';
@@ -52,6 +52,8 @@ export default class PlaylistView extends Subview {
 
     Util.addAppListener(this, 'model-playlist-updated', this.populate);
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
+    const f = TrackListItemUtil.makeTrackMetaChangeHandler(this.$list);
+    $(document).on('meta-track-favorite-changed meta-track-incremented', f); // fyi, must persist
 	}
 
   onShow() {
@@ -59,9 +61,7 @@ export default class PlaylistView extends Subview {
     ViewUtil.setFocus(this.$el);
     $(document).on('model-status-updated', this.updateSelectedItem);
     $(document).on('model-state-updated', this.updateRepeatButton);
-    $(document).on('meta-track-incremented', this.onMetaTrackIncremented);
     $(document).on('new-track', this.onNewTrack);
-
     this.updateSaveButton();
     this.showSavePanel(false);
 
@@ -72,7 +72,6 @@ export default class PlaylistView extends Subview {
     this.contextMenu.hide();
     $(document).off('model-status-updated', this.updateSelectedItem);
     $(document).off('model-state-updated', this.updateRepeatButton);
-    $(document).off('meta-track-incremented', this.onMetaTrackIncremented);
     $(document).off('new-track', this.onNewTrack);
   }
 
@@ -82,7 +81,6 @@ export default class PlaylistView extends Subview {
 
     this.updateRepeatButton();
 
-    // Populate list items
     this.playlist = Model.playlist;
     this.updateSaveButton();
     this.trackItems$ = [];
@@ -95,26 +93,11 @@ export default class PlaylistView extends Subview {
 
     } else {
 
-      for (let i = 0; i < this.playlist.array.length; i++) { // todo do not reference model.playlist.array here
+      this.trackItems$ = TrackListItemUtil.populateList(this.$list, this.playlist.array);
 
-        const item = this.playlist.array[i];
-        const itemPrevious = (i > 0) ? Model.playlist.array[i - 1] : null;
-        const itemNext = (i < Model.playlist.array.length - 1) ? Model.playlist.array[i + 1] : null;
-        const album = Model.library.getAlbumByTrackUri(item['@_uri']);
-
-        const $albumLine = PlaylistViewUtil.makeAlbumHeader(album, item, itemPrevious);
-        if ($albumLine) {
-          this.$list.append($albumLine);
-          $albumLine.find('.playlistAlbumButton').on('click tap', this.onAlbumButton);
-        }
-
-        const $item = PlaylistViewUtil.makeListItem(i, item, itemPrevious, itemNext, album);
-        $item.on("click tap", e => this.onItemClick(e));
-        $item.find(".contextButton").on("click tap", e => this.onItemContextButtonClick(e));
-        $item.find(".favoriteButton").on("click tap", e => PlaylistViewUtil.onItemFavoriteButtonClick(e));
-
-        this.trackItems$.push($item);
-        this.$list.append($item);
+      for (const $item of this.trackItems$) {
+          $item.on("click tap", this.onItemClick);
+          $item.find(".contextButton").on("click tap", this.onItemContextButton);
       }
     }
 
@@ -178,17 +161,30 @@ export default class PlaylistView extends Subview {
     }
   }
 
-  onItemClick(event) {
+  showSavePanel(b) {
+    if (b) {
+      this.savePanel.show();
+    } else {
+      this.savePanel.hide();
+    }
+  }
+
+  onItemClick = (event) => {
 		const index = parseInt($(event.currentTarget).attr("data-index"));
 		Service.queueCommandFrontAndGetStatus(
         Commands.selectTrack(index + 1)); // rem, 1-indexed
-	}
+	};
 
-	onItemContextButtonClick(event) {
-    event.stopPropagation(); // prevent listitem from responding to same event
-    const button = event.currentTarget;
-    const index = parseInt($(button).attr("data-index"));
-    this.contextMenu.show(this.$el, $(button), index);
+	onItemContextButton = (event) => {
+    event.stopPropagation();
+    const $button = $(event.currentTarget);
+    const $listItem = $button.parent().parent();
+    const index = parseInt($listItem.attr('data-index'));
+    if (!(index >= 0)) {
+      cl('warning no index');
+      return;
+    }
+    this.contextMenu.show(this.$el, $button, index);
 	}
 
   onClearButton = () => {
@@ -208,32 +204,10 @@ export default class PlaylistView extends Subview {
     Service.queueCommandsFront([Commands.setRepeat(value), Commands.state()]);
   };
 
-  onMetaTrackIncremented = (e, hash, count) => {
-    for (let i = 0; i < this.playlist.array.length; i++) {
-      const item = this.playlist.array[i];
-      const $item = this.trackItems$[i];
-      const itemHash = Model.library.getHashForPlaylistItem(item);
-      if (itemHash == hash) {
-        $item.find('.playlistItemViews').text(count);
-        break;
-      }
-    }
-  };
-
   onModelLibraryUpdated() {
     this.$historyButton.removeClass('isDisabled');
     this.populate();
   }
-
-  onAlbumButton = (e) => {
-    const $el = $(e.currentTarget);
-    const hash = $el.attr('data-hash');
-    const album = Model.library.getAlbumByAlbumHash(hash);
-    if (!album) {
-      return;
-    }
-    $(document).trigger('playlist-context-album', album);
-  };
 
   onSaveButton = () => {
     const b = ViewUtil.isDisplayed(this.savePanel.$el);
@@ -250,12 +224,4 @@ export default class PlaylistView extends Subview {
       }
     }
   };
-
-  showSavePanel(b) {
-    if (b) {
-      this.savePanel.show();
-    } else {
-      this.savePanel.hide();
-    }
-  }
 }

@@ -50,6 +50,9 @@ export default class PlaylistCompoundView extends Subview {
   }
 
   hide() {
+    if (!ViewUtil.isVisible(this.$el)) {
+      return;
+    }
     ViewUtil.animateCss(this.$el,
         null,
         () => this.$el.css("top", this.$el.outerHeight() + "px"),
