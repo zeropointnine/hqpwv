@@ -17,6 +17,8 @@ class Model {
 	_playlist = new PlaylistVo();
   _infoData = {};
 
+  hasLibrary;
+
   constructor() {
     // Dev convenience
     if (!window.hqpwv) {
@@ -33,6 +35,7 @@ class Model {
 	setLibraryDataUsingResponseObject(data) {
 		this._library = new LibraryVo(data);
 		$(document).trigger('model-library-updated');
+    this.hasLibrary = true;
 	}
 
   // @NonNull

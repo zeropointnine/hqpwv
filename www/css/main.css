@@ -516,6 +516,12 @@ label {
   color: var(--col-text-less);
 }
 
+@media (max-width: 480px) {
+  .tabButton {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
 .tabBarSpacer {
   flex: 1;
   border-bottom: 1px solid var(--col-listitem-selected);
@@ -1865,7 +1871,7 @@ html {
   padding-right: 12px;
   height: 36px;
   border-top: 1px solid var(--col-listitem);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   cursor: pointer;
 }
 .libraryGroupLabel:before {
@@ -1887,27 +1893,72 @@ html {
 .libraryGroupLabel.isCollapsed:before {
   background-image: url("./../img/icons/expand_more_white_24dp.svg");
 }
+.libraryGroupLabel:hover {
+  background-color: var(--col-listitem-less);
+}
+.libraryGroupLabel .icon {
+  display: none;
+  width: 36px;
+  height: 36px;
+}
+.libraryGroupLabel .icon:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  opacity: 0.7;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  filter: brightness(var(--icon-brightness));
+}
 .libraryGroupLabel .inner {
-  margin-left: 6px;
+  margin-left: 3px;
   line-height: 36px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-}
-.libraryGroupLabel .folderIcon:before {
-  background-image: url("./../img/icons/folder_white_24dp.svg");
-}
-.libraryGroupLabel .waveIcon:before {
-  background-image: url("./../img/icons/sound-wave-1.svg");
-}
-.libraryGroupLabel .genreIcon:before {
-  background-image: url("./../img/icons/category_white_24dp.svg");
 }
 .libraryGroupLabel .count {
   margin-left: 10px;
   padding-top: 2px;
   font-size: 14px;
   color: var(--col-text-least);
+}
+
+.libraryGroupLabel.genre .icon {
+  display: block;
+}
+.libraryGroupLabel.genre .icon:before {
+  background-image: url("./../img/icons/album_white_24dp.svg");
+}
+.libraryGroupLabel.genre .inner {
+  text-transform: uppercase;
+  font-size: 14px;
+  color: var(--col-text-less);
+  font-weight: bold;
+  padding-top: 1px;
+}
+.libraryGroupLabel.path .icon {
+  display: block;
+}
+.libraryGroupLabel.path .icon:before {
+  background-image: url("./../img/icons/folder_white_24dp.svg");
+}
+.libraryGroupLabel.bitrate .icon {
+  display: block;
+}
+.libraryGroupLabel.bitrate .icon:before {
+  background-image: url("./../img/icons/sound-wave-1.svg");
+}
+.libraryGroupLabel.artist .icon {
+  display: block;
+}
+.libraryGroupLabel.artist .icon:before {
+  background-image: url("./../img/icons/piano_white_24dp.svg");
 }
 
 .libraryAlbumGroup {
@@ -2081,6 +2132,10 @@ html {
   opacity: 1;
 }
 
+.isDisabled #libraryAlbumOptionsView {
+  pointer-events: none;
+}
+
 #libraryGroupButton:before {
   background-image: url("./../img/icons/category_white_24dp.svg");
 }
@@ -2125,6 +2180,11 @@ html {
   background-image: url("./../img/icons/search_white_24dp.svg");
 }
 
+.isDisabled #librarySearchButton {
+  pointer-events: none;
+  background: red;
+}
+
 #librarySearchCloseButton {
   display: none;
   margin-left: auto;
@@ -2141,7 +2201,11 @@ html {
 }
 
 #albumsTabButton:before {
-  content: "Album titles";
+  content: "Albums";
+}
+
+#genresTabButton:before {
+  content: "Genres";
 }
 
 #tracksTabButton:before {
@@ -2150,11 +2214,15 @@ html {
 
 @media (max-width: 480px) {
   #artistsTabButton:before {
-    content: "Artists";
+    content: "Artist";
   }
 
   #albumsTabButton:before {
-    content: "Albums";
+    content: "Album";
+  }
+
+  #genresTabButton:before {
+    content: "Genre";
   }
 
   #tracksTabButton:before {
@@ -2207,10 +2275,6 @@ html {
 
 #librarySearchOkButton {
   margin-left: 12px;
-}
-
-.isDisabled #libraryAlbumOptionsView {
-  pointer-events: none;
 }
 
 .searchFavoritesLine {
@@ -2320,7 +2384,17 @@ html {
 }
 #albumViewTexts #albumViewTextsInner {
   height: auto;
-  padding-bottom: 24px;
+  padding-bottom: 18px;
+}
+#albumViewTexts #albumViewTextsInner #albumViewArtist {
+  display: inline-block;
+  padding: 8px;
+  margin: -8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#albumViewTexts #albumViewTextsInner #albumViewArtist:hover {
+  background-color: var(--col-listitem);
 }
 #albumViewTexts #albumViewTextsInner #albumViewTitle {
   font-family: "Noto Serif SC", sans-serif;
@@ -2330,6 +2404,32 @@ html {
 }
 #albumViewTexts #albumViewTextsInner #albumViewStats {
   margin-top: 16px;
+}
+#albumViewTexts #albumViewTextsInner #albumViewGenreButtons {
+  margin-top: 16px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#albumViewTexts #albumViewTextsInner #albumViewGenreButtons .genreButton {
+  padding-left: 6px;
+  padding-right: 6px;
+  height: 24px;
+  line-height: 22px;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--col-text-least);
+  border: 1px solid var(--col-text-least);
+  cursor: pointer;
+}
+#albumViewTexts #albumViewTextsInner #albumViewGenreButtons .genreButton:hover {
+  color: var(--col-text);
+  background-color: var(--col-listitem-over);
+}
+@media (max-width: 768px) {
+  #albumViewTexts #albumViewTextsInner #albumViewGenreButtons {
+    justify-content: center;
+  }
 }
 #albumViewTexts #albumViewTextsInner #albumViewPath {
   margin-top: 16px;
@@ -2362,6 +2462,10 @@ html {
     margin-left: 8px;
     margin-right: 8px;
     padding-bottom: 0;
+  }
+  #albumViewTexts #albumViewTextsInner #albumViewArtist {
+    padding: 6px;
+    margin: -6px;
   }
   #albumViewTexts #albumViewTextsInner #albumViewTitle {
     margin-top: 12px;

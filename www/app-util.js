@@ -112,4 +112,29 @@ export default class AppUtil {
         cl('warning bad val', Settings.colorTheme)
     }
   }
+
+  /**
+   * Returns array
+   */
+  static splitGenreString(string) {
+    if (!string) {
+      return [];
+    }
+    // hqp genre string has html entities (!)
+    string = AppUtil.htmlDecode(string);
+    const a = string.split(/[,;/]/); // comma or semicolon or forward-slash
+    for (let i = 0; i < a.length; i++) {
+      a[i] = a[i].trim().toLowerCase();
+      if (a[i].length > 50) {
+        a[i] = a[i].substr(0, 50) + '…';
+      }
+    }
+    const result = [];
+    for (const item of a) {
+      if (item) {
+        result.push(item);
+      }
+    }
+    return result;
+  }
 }

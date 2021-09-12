@@ -46,9 +46,8 @@ export default class LibraryView extends Subview {
     this.$searchButton.on('click tap', this.onSearchButton);
     this.$searchCloseButton.on('click tap', () => this.showAlbumsView());
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
-    Util.addAppListener(this, 'library-albums-filter-changed', this.updateHeaderText);
-    Util.addAppListener(this, 'library-albums-view-populated', this.updateHeaderText);
-    Util.addAppListener(this, 'library-search-view-populated', this.updateHeaderText);
+    const types = 'library-albums-filter-changed library-albums-view-populated library-search-view-populated';
+    Util.addAppListener(this, types, this.updateHeaderText);
   }
 
   setSpinnerState(b) {
@@ -79,14 +78,15 @@ export default class LibraryView extends Subview {
     ViewUtil.setFocus(this.$el);
   }
 
-  showSearchView() {
+  showSearchView(type=null, value=null) {
     ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
-    ViewUtil.setDisplayed(this.$searchCloseButton, true);
     this.albumsView.hide();
     this.albumsView.clear();
-    this.searchView.show();
-    this.searchPanel.show();
+    ViewUtil.setDisplayed(this.$searchCloseButton, true);
+    this.searchPanel.show(type, value);
+    this.searchView.show(type, value);
     this.updateHeaderText();
+    ViewUtil.setFocus(this.$el);
   }
 
   onModelLibraryUpdated() {
@@ -122,16 +122,12 @@ export default class LibraryView extends Subview {
         : this.albumsView.filteredSortedAlbums.length;
 
     let suffix;
-    if (isSearch) {
-      if (this.searchView.getSearchType() == 'track' || this.searchView.getSearchType() == 'trackFavorites') {
-        suffix = ' tracks';
-      } else {
-        suffix = ' albums';
-      }
+    if (isSearch &&
+        (this.searchView.getSearchType() == 'track' || this.searchView.getSearchType() == 'trackFavorites')) {
+      suffix = (count == 1) ? ' track' : ' tracks';
     } else {
-      suffix = ' albums'
+      suffix = (count == 1) ? ' album' : ' albums';
     }
-
     const countText = '(' + count + suffix + ')';
     this.$itemCount.text(countText);
   }

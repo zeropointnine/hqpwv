@@ -25,16 +25,12 @@ export default class AlbumUtil {
   static makeAlbumStatsText(album) {
     const duration = AlbumUtil.makeAlbumDurationText(AlbumUtil.getTracksOf(album));
     const date = album['@_date'];
-    const genre = album['@_genre'];
     const bitrateText = AlbumUtil.getBitrateText(album);
     const filetypeText = AlbumUtil.getFiletypeText(album);
 
     let s = '';
     if (date) {
       s = s ? (s + ' | ' + date) : date;
-    }
-    if (genre) {
-      s = s ? (s + ' | ' + genre) : genre;
     }
     if (bitrateText || filetypeText) {
       let s2 = '';
@@ -51,6 +47,34 @@ export default class AlbumUtil {
     }
     return s;
   }
+
+  /**
+   *
+   */
+  static updateGenreButtons($holder, album) {
+    $holder.empty();
+    if (album['genres'].length == 0) {
+      ViewUtil.setDisplayed($holder, false);
+      return;
+    }
+    ViewUtil.setDisplayed($holder, 'flex');
+    for (const genre of album['genres']) {
+      const buttonText = (genre.length <= 15) ? genre : (genre.substring(0, 15) + `&hellip;`);
+      const s = `<span class="genreButton" data-value="${genre}">${buttonText}</span>`;
+      const $button = $(s);
+      $button.on('click tap', AlbumUtil.onGenreButtonClick);
+      $holder.append($button);
+    }
+  }
+
+  static onGenreButtonClick = (e) => {
+    const value = $(e.currentTarget).attr('data-value');
+    if (!value) {
+      cl('warning no value');
+      return;
+    }
+    $(document).trigger('album-genre-button', value);
+  };
 
   static makePlaylistAlbumStatsText(album) {
     const bitrateText = AlbumUtil.getBitrateText(album);

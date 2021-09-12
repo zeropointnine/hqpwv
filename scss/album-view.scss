@@ -43,9 +43,19 @@
   align-items:center;
   #albumViewTextsInner { // wrapped content gets v-aligned
     height:auto;
-    padding-bottom:24px;  // raise vertically a little (looks better)
-    #albumViewArtist {
+    padding-bottom:18px;  // raise vertically a little (looks better)
+
+    #albumViewArtist { // acts as a button
+      display:inline-block;
+      padding:8px;
+      margin:-8px;
+      border-radius: 6px;
+      cursor:pointer;
+      &:hover {
+        background-color:var(--col-listitem);
+      }
     }
+
     #albumViewTitle {
       font-family: 'Noto Serif SC', sans-serif;
       font-size:36px;
@@ -55,6 +65,33 @@
     }
     #albumViewStats {
       margin-top:$space-unit;
+    }
+
+    #albumViewGenreButtons {
+      margin-top:$space-unit;
+      display: inline-flex;
+      flex-wrap:wrap;
+      gap:8px;
+
+      .genreButton {
+        padding-left: 6px;
+        padding-right: 6px;
+        height: 24px;
+        line-height: 22px;
+        text-transform: uppercase;
+        font-size:$font-size-smallest;
+        color:var(--col-text-least);
+        border: 1px solid var(--col-text-least);
+        cursor:pointer;
+        &:hover {
+          color:var(--col-text);
+          background-color: var(--col-listitem-over);
+        }
+      }
+
+      @include tablet {
+        justify-content:center;
+      }
     }
     #albumViewPath {
       margin-top:$space-unit;
@@ -87,6 +124,8 @@
       margin-right:8px;
       padding-bottom:0;
       #albumViewArtist {
+        padding:6px;
+        margin:-6px;
       }
       #albumViewTitle {
         margin-top:$space-unit-mobile;

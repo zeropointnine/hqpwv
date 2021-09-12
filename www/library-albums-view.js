@@ -6,8 +6,6 @@ import Settings from './settings.js';
 import Util from './util.js';
 import ViewUtil from './view-util.js';
 
-const groupTypetoIconClass = { 'path': 'folderIcon', 'bitrate': 'waveIcon', 'genre': 'genreIcon' };
-
 /**
  * Model 'pipeline':
  * `filteredSortedAlbums` requires `albums` and `sortType` and `filterType`
@@ -32,7 +30,6 @@ export default class LibraryAlbumsView extends LibraryContentView {
     Util.addAppListener(this, 'library-albums-sort-changed', this.onSortChanged);
     Util.addAppListener(this, 'library-albums-group-changed', this.onGroupChanged);
     Util.addAppListener(this, 'library-albums-filter-changed', this.onFilterChanged);
-    Util.addAppListener(this, 'library-search-view-will-populate', this.onSearchWillPopulate);
   }
 
   // override
@@ -59,6 +56,8 @@ export default class LibraryAlbumsView extends LibraryContentView {
 
     this.groupsDirty = true;
     this.domDirty = true;
+
+    this.labelClass = this.groupType; // nb
   }
 
   setFilterType(filterType) {
@@ -142,12 +141,6 @@ export default class LibraryAlbumsView extends LibraryContentView {
   }
 
   // override
-  makeLabel(label, group) {
-    const iconClass = groupTypetoIconClass[this.groupType];
-    return LibraryContentView.makeLabel(label, iconClass, group.length);
-  }
-
-  // override
   makeListItem(data) {
     return LibraryContentView.makeAlbumListItem(data);
   }
@@ -159,6 +152,8 @@ export default class LibraryAlbumsView extends LibraryContentView {
 
   hide() {
     ViewUtil.setDisplayed(this.$el, false);
+    this.$el.empty();
+    this.domDirty = true;
   }
 
   onSortChanged() {
@@ -174,10 +169,5 @@ export default class LibraryAlbumsView extends LibraryContentView {
   onFilterChanged() {
     this.setFilterType(Settings.libraryFilterType);
     this.update();
-  }
-
-  onSearchWillPopulate() {
-    this.clear();
-    this.domDirty = true;
   }
 }

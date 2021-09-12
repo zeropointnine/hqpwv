@@ -177,6 +177,12 @@
     color:var(--col-text-less);
   }
 }
+@include mobile {
+  .tabButton {
+    padding-left:8px;
+    padding-right:8px;
+  }
+}
 
 .tabBarSpacer {
   flex: 1;

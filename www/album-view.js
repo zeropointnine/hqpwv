@@ -22,6 +22,7 @@ export default class AlbumView extends Subview {
   $picture;
   $overlayImage;
   $libraryItemImage;
+  $artistButton;
   $albumFavoriteButton;
   $list;
   listItems$;
@@ -41,10 +42,12 @@ export default class AlbumView extends Subview {
     this.$albumFavoriteButton = this.$el.find('#albumFavoriteButton');
     this.$list = this.$el.find('#albumList');
     this.$overlayImage = $('#albumOverlayImage');
+    this.$artistButton = this.$el.find('#albumViewArtist');
 
     this.contextMenu = new AlbumContextMenu($("#albumContextMenu"));
     this.trackMetaChangeHandler = TrackListItemUtil.makeTrackMetaChangeHandler(this.$list);
 
+    this.$artistButton.on('click tap', this.onArtistButton);
     $("#albumPlayNowButton").on("click tap", this.onPlayNowButton);
     $("#albumQueueButton").on("click tap", this.onQueueButton);
     this.$albumFavoriteButton.on('click tap', this.onAlbumFavoriteButton);
@@ -212,12 +215,24 @@ export default class AlbumView extends Subview {
 	}
 
   updateInfoArea() {
+
     const imgPath = DataUtil.getAlbumImageUrl(this.album);
     this.$picture.attr('src', imgPath);
 
-    $("#albumViewTitle").html(this.album['@_album']);
-    $("#albumViewArtist").html(this.album['@_artist']);
+    let s = this.album['@_artist'] || '';
+    s = s.trim();
+    s = s || 'Artist';
+    this.$artistButton.html(s);
+
+    s = this.album['@_album'] || '';
+    s = s.trim();
+    s = s || 'Album';
+    $("#albumViewTitle").html(s);
+
     $("#albumViewStats").html(AlbumUtil.makeAlbumStatsText(this.album));
+
+    AlbumUtil.updateGenreButtons($('#albumViewGenreButtons'), this.album);
+
     $("#albumViewPath").html(this.album['@_path']);
 
     MetaUtil.isAlbumFavoriteFor(this.album['@_hash'])
@@ -338,6 +353,15 @@ export default class AlbumView extends Subview {
 
     return [overlayX, overlayY, overlayW, overlayH];
   }
+
+  onArtistButton = () => {
+    let s = this.album['@_artist'] || '';
+    s = s.trim();
+    if (!s) {
+      return;
+    }
+    $(document).trigger('album-artist-button', s);
+  };
 
 	onPlayNowButton = (event) => {
     const commands = Commands.playlistAddUsingAlbumAndIndices(this.album);

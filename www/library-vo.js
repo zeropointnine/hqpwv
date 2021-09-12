@@ -1,5 +1,6 @@
-import Util from './util.js';
 import AlbumUtil from './album-util.js';
+import AppUtil from './app-util.js';
+import Util from './util.js';
 
 /**
  * Value object wrapper around hqp <Library /> object.
@@ -16,10 +17,12 @@ export default class LibraryVo {
   _albumHashToAlbum;
   /** Key is uri, value is track hash. */
   _trackUriToTrackHash;
-  /** Key is track hash. Value is [track, album] */
+  /** Key is track hash, value is [track, album] */
   _trackHashLookup = null;
   /** Key is album path, value is album */
   _pathToItem;
+  /** Alphabetized list of genre names */
+  _genreNames;
 
   constructor(responseObject=null) {
     // Get main array from response object
@@ -165,6 +168,8 @@ export default class LibraryVo {
       }
     });
 
+    this.initGenreArrays();
+
     // Init album lookup
     this.initTrackUriToTrackHash();
   }
@@ -183,6 +188,24 @@ export default class LibraryVo {
       return false;
     }
     return path.includes('.m3u');
+  }
+
+  /**
+   * Creates new 'genres' property on the album objects, which is an array.
+   * Also inits the `_genreNames` array.
+   */
+  initGenreArrays() {
+    const names = {};
+    for (const album of this._albums) {
+      album['genres'] = [];
+      const genreString = album['@_genre'];
+      album['genres'] = AppUtil.splitGenreString(genreString);
+
+      for (const genre of album['genres']) {
+        names[genre] = '';
+      }
+    }
+    this._genreNames = Object.keys(names).sort();
   }
 
   initTrackUriToTrackHash() {

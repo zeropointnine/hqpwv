@@ -82,7 +82,7 @@ class LibraryGroupUtil {
       group.push(album);
       lastSubdir = subdir;
     }
-    return { groups: groups, labels: labels };
+    return { labels: labels, groups: groups };
   }
 
   makeDirectoryGroups(albums) {
@@ -115,33 +115,42 @@ class LibraryGroupUtil {
   /**
    *
    */
-  makeGenreGroups(albums) {
-    const genres = {};
+  makeGenreGroups(albums, searchString=null) {
+
+    // key = genre and value = array of albums
+    const genreArrays = {};
     const noGenreAlbums = [];
     for (const album of albums) {
-      let genre = album['@_genre'];
-      if (!genre) {
-        noGenreAlbums.push(genre);
-      } else {
-        genre = genre.toLowerCase();
-        genre = genre.substr(0, 100);
-        if (!genres[genre]) {
-          genres[genre] = [];
+      const genres = album['genres'];
+      if (genres.length > 0) {
+        for (const genre of genres) {
+          if (!genreArrays[genre]) {
+            genreArrays[genre] = [];
+          }
+          genreArrays[genre].push(album);
         }
-        genres[genre].push(album);
+      } else {
+        noGenreAlbums.push(album);
       }
     }
 
-    const genreKeys = Object.keys(genres);
+    const genreKeys = Object.keys(genreArrays);
     genreKeys.sort();
-
-    const groups = [];
     const labels = [];
+    const groups = [];
     for (const genreKey of genreKeys) {
-      groups.push(genres[genreKey]);
-      labels.push(genreKey);
+      const b = (!searchString || genreKey.includes(searchString));
+      if (b) {
+        labels.push(genreKey);
+        groups.push(genreArrays[genreKey]);
+      }
     }
-    return { groups: groups, labels: labels };
+    if (!searchString) {
+      labels.push('No genre');
+      groups.push(noGenreAlbums);
+    }
+
+    return { labels: labels, groups: groups };
   }
 
   makeBitrateGroups(albums) {
@@ -208,7 +217,7 @@ class LibraryGroupUtil {
       groups.push(unknown);
       labels.push(`Unknown`);
     }
-    return { groups: groups, labels: labels };
+    return { labels: labels, groups: groups };
   }
 
   /**
@@ -220,7 +229,7 @@ class LibraryGroupUtil {
     groups.push(group);
     const labels = [];
     labels.push('');
-    return { groups: groups, labels: labels };
+    return { labels: labels, groups: groups };
   }
 
   makePathArray(path) {

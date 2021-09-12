@@ -19,6 +19,7 @@ export default class LibraryContentView {
 
   albums;
   labels;
+  labelClass;
   groups;
 
   intersectionObs;
@@ -35,12 +36,6 @@ export default class LibraryContentView {
    * 'Abstract'
    */
   setAlbums(albums) { }
-
-  /**
-   * Returns a label DOM element
-   * 'Abstract'
-   */
-  makeLabel(label, group) { }
 
   /** 'Abstract' */
   get groupClassName() { }
@@ -83,9 +78,14 @@ export default class LibraryContentView {
     for (let i = 0; i < this.groups.length; i++) {
       const label = this.labels[i];
       const group = this.groups[i];
-      const isCollapsed = !!Settings.libraryCollapsedGroups[encodeURIComponent(label)]; // NB!
+      const settingsKey = this.labelClass + ":" + encodeURIComponent(label); // NB!
+      const isCollapsed = !!Settings.libraryCollapsedGroups[settingsKey];
       if (label) {
-        const $label = this.makeLabel(label, group);
+        if (!this.labelClass) {
+          cl('warning no labelclass');
+          return;
+        }
+        const $label = this.makeLabel(label, this.labelClass, group.length);
         if (isCollapsed) {
           $label.addClass('isCollapsed');
         }
@@ -114,6 +114,20 @@ export default class LibraryContentView {
       }
       $group.append($item);
     }
+  }
+
+  /**
+   * Returns a label DOM element or null // todo ?
+   */
+  makeLabel(label, labelClass, count=0) {
+    const settingsKey = labelClass + ":" + encodeURIComponent(label);
+    let s = '';
+    s += `<div class="libraryGroupLabel ${labelClass}" data-settings="${settingsKey}">`;
+    s += `<span class="icon"></span>`;
+    s += `<span class="inner">${label}</span>`;
+    s += (count > 0) ? `<span class="count">(${count})</span>` : '';
+    s += `</div>`;
+    return $(s);
   }
 
   makeLibraryIsEmptyItem() {
@@ -163,7 +177,7 @@ export default class LibraryContentView {
     }
 
     // Update settings
-    const label = $label.attr('data-label');
+    const label = $label.attr('data-settings');
     if (label) {
       if (shouldCollapse) {
         Settings.addLibraryCollapsedGroup(label);
@@ -222,20 +236,5 @@ export default class LibraryContentView {
     s +=    `</div>`; // todo fault
     const $item = $(s);
     return $item;
-  }
-
-  /** 
-   * Returns a label list item.
-   */
-  static makeLabel(label, iconClass=null, count=0) {
-    const iconSpan = iconClass ? `<span class="icon ${iconClass}"></span>` : '';
-    const textSpan = `<span class="inner">${label}</span>`;
-    const countSpan = (count > 0) ? `<span class="count">(${count})</span>` : '';
-    let s = '';
-    s += `<div class="libraryGroupLabel" data-label="${encodeURIComponent(label)}">`;
-    s += `${iconSpan}${textSpan}${countSpan}`;
-    s += `</div>`;
-    const $label = $(s);
-    return $label;
   }
 }

@@ -77,6 +77,8 @@ export default class App {
 
 		Util.addAppListener(this, 'library-item-click', this.showAlbumView);
 		Util.addAppListener(this, 'album-view-close-button', this.hideAlbumView);
+    Util.addAppListener(this, 'album-genre-button', this.onAlbumGenreButton);
+    Util.addAppListener(this, 'album-artist-button', this.onAlbumArtistButton);
 		Util.addAppListener(this, 'playbar-show-playlist', this.togglePlaylistCompoundView);
 		Util.addAppListener(this, 'playlist-close-button', this.hidePlaylist);
 		Util.addAppListener(this, 'track-album-button-click', this.trackListItemToAlbum);
@@ -449,9 +451,9 @@ export default class App {
         this.minKeyDuration = long;
         break;
       case 'f':
-        if (this.getTopSubview() == this.libraryView) {
+        if (this.getTopSubview() == this.libraryView && Model.hasLibrary) {
           e.preventDefault();
-          this.libraryView.showSearchView();
+          this.libraryView.$searchButton.click();
         }
         break;
       case 's':
@@ -495,6 +497,16 @@ export default class App {
         break;
     }
   };
+
+  onAlbumGenreButton(genre) {
+    this.libraryView.showSearchView('genre', genre);
+    this.albumView.hide();
+  }
+
+  onAlbumArtistButton(artist) {
+    this.libraryView.showSearchView('artist', artist);
+    this.albumView.hide();
+  }
 
   onSettingsMetaChanged() {
     if (Settings.isMetaEnabled && !MetaUtil.isReady && !MetaUtil.isFailed && !MetaUtil.isLoading) {

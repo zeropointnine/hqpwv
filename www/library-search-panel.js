@@ -10,6 +10,7 @@ export default class LibrarySearchPanel {
 
   $artistsTabButton;
   $albumsTabButton;
+  $genresTabButton;
   $tracksTabButton;
 
   $panelContent;
@@ -25,6 +26,7 @@ export default class LibrarySearchPanel {
     this.$el = $el;
     this.$artistsTabButton = $el.find('#artistsTabButton');
     this.$albumsTabButton = $el.find('#albumsTabButton');
+    this.$genresTabButton = $el.find('#genresTabButton');
     this.$tracksTabButton = $el.find('#tracksTabButton');
     this.$panelContent = $el.find('#searchPanelContent');
     this.$input = $el.find('#librarySearchInput');
@@ -34,6 +36,7 @@ export default class LibrarySearchPanel {
 
     this.$artistsTabButton.on('click tap', this.onTabButton);
     this.$albumsTabButton.on('click tap', this.onTabButton);
+    this.$genresTabButton.on('click tap', this.onTabButton);
     this.$tracksTabButton.on('click tap', this.onTabButton);
     this.$okButton.on('click tap', this.onOkButton);
     this.$albumFavoritesButton.on('click tap', this.onAlbumFavoritesButton);
@@ -44,13 +47,17 @@ export default class LibrarySearchPanel {
     this.hide();
   }
 
-  show() {
+  show(type=null, value=null) {
+    if (!type) {
+      type = Settings.librarySearchType;
+      value = Settings.librarySearchValue || '';
+    }
     ViewUtil.setDisplayed(this.$el, true);
-    this.searchType = Settings.librarySearchType;
+    this.searchType = type;
+    this.$input[0].value = value;
+
     this.$input.on('input', this.onInputInput);
     this.$input.on('keyup', this.onInputKeyUp);
-    this.$input.focus();
-    this.$okButton.click();
   }
 
   hide() {
@@ -68,6 +75,7 @@ export default class LibrarySearchPanel {
 
     this.$artistsTabButton.removeClass('isSelected');
     this.$albumsTabButton.removeClass('isSelected');
+    this.$genresTabButton.removeClass('isSelected');
     this.$tracksTabButton.removeClass('isSelected');
     this.$albumFavoritesButton.removeClass('isSelected');
     this.$trackFavoritesButton.removeClass('isSelected');
@@ -79,6 +87,9 @@ export default class LibrarySearchPanel {
         break;
       case 'album':
         $el = this.$albumsTabButton;
+        break;
+      case 'genre':
+        $el = this.$genresTabButton;
         break;
       case 'track':
         $el = this.$tracksTabButton;
@@ -98,6 +109,7 @@ export default class LibrarySearchPanel {
     switch (this._searchType) {
       case 'artist':
       case 'album':
+      case 'genre':
       case 'track':
         this.$panelContent.addClass('isEnabled');
         break;

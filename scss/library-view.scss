@@ -2,7 +2,6 @@
 $marginUnit: 8px;
 $marginUnitMobile: 6px;
 
-
 #libraryView {
   // special case for lib view
   padding-left:0;
@@ -62,10 +61,11 @@ $marginUnitMobile: 6px;
   }
 }
 
-// Precedes libraryGroup
+// ---
+
 .libraryGroupLabel {
 
-  position:relative;
+  // expand/collapse caret icon
   &:before {
     @include iconBefore();
     background-position: 6px center;
@@ -77,6 +77,11 @@ $marginUnitMobile: 6px;
     }
   }
 
+  &:hover {
+    background-color: var(--col-listitem-less);
+  }
+
+  position:relative;
   display:flex;
   align-items: center;
   margin-left: 6px;
@@ -85,35 +90,24 @@ $marginUnitMobile: 6px;
   padding-right:12px;
   height:$icon-button-side;
   border-top: 1px solid var(--col-listitem);
-  // border-left: 1px solid var(--col-listitem);
-  margin-bottom: 8px;
-
+  margin-bottom: 12px;
   cursor:pointer;
 
+  .icon {
+    display: none; // default
+    width:$icon-button-side;
+    height:$icon-button-side;
+    &:before {
+      @include iconBefore;
+    }
+  }
   .inner {
-    margin-left:6px;
+    margin-left:3px;
     line-height:36px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
-
-  .folderIcon {
-    &:before {
-      background-image: url('./../img/icons/folder_white_24dp.svg');
-    }
-  }
-  .waveIcon {
-    &:before {
-      background-image: url('./../img/icons/sound-wave-1.svg');
-    }
-  }
-  .genreIcon {
-    &:before {
-      background-image: url('./../img/icons/category_white_24dp.svg');
-    }
-  }
-
   .count {
     margin-left: 10px;
     padding-top: 2px;
@@ -122,6 +116,49 @@ $marginUnitMobile: 6px;
   }
 }
 
+.libraryGroupLabel {
+  &.genre {
+    .icon {
+      display: block;
+      &:before {
+        background-image: url('./../img/icons/album_white_24dp.svg');
+      }
+    }
+    .inner {
+      text-transform: uppercase;
+      font-size: $font-size-smaller;
+      color: var(--col-text-less);
+      font-weight: bold;
+      padding-top:1px;
+    }
+  }
+  &.path {
+    .icon {
+      display: block;
+      &:before {
+        background-image: url('./../img/icons/folder_white_24dp.svg');
+      }
+    }
+  }
+  &.bitrate {
+    .icon {
+      display: block;
+      &:before {
+        background-image: url('./../img/icons/sound-wave-1.svg');
+      }
+    }
+  }
+  &.artist {
+    .icon {
+      display: block;
+      &:before {
+        background-image: url('./../img/icons/piano_white_24dp.svg');
+      }
+    }
+  }
+}
+
+// ---
 
 .libraryAlbumGroup {
   display:flex;
@@ -145,14 +182,14 @@ $marginUnitMobile: 6px;
 
 .libraryItem {
   position:relative;
-	width: calc(16.666% - #{$marginUnit * 2}); // 6 cols from 1501px to maxwidth
-	background:var(--col-listitem);
+  width: calc(16.666% - #{$marginUnit * 2}); // 6 cols from 1501px to maxwidth
+  background:var(--col-listitem);
   cursor:pointer;
 
-	padding: 12px 12px 11px 12px;
-	margin-left: $marginUnit;
-	margin-right: $marginUnit;
-	margin-bottom: $marginUnit * 2;
+  padding: 12px 12px 11px 12px;
+  margin-left: $marginUnit;
+  margin-right: $marginUnit;
+  margin-bottom: $marginUnit * 2;
 
   @include mobile {
     padding: 9px;
@@ -202,9 +239,9 @@ $marginUnitMobile: 6px;
 }
 
 .libraryItemPicture {
-	position:relative;
+  position:relative;
   width:100%;
-	margin-bottom: 6px;
+  margin-bottom: 6px;
 
   // force square aspect ratio
   &:after {
@@ -222,14 +259,14 @@ $marginUnitMobile: 6px;
 }
 
 .libraryItemText1 {
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .libraryItemText2 {
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   margin-top:-4px;
 }
 .libraryItemBits {
@@ -305,6 +342,9 @@ $marginUnitMobile: 6px;
     }
   }
 }
+.isDisabled #libraryAlbumOptionsView {
+  pointer-events: none;
+}
 
 #libraryGroupButton {
   &:before {
@@ -355,6 +395,10 @@ $marginUnitMobile: 6px;
     background-image: url('./../img/icons/search_white_24dp.svg');
   }
 }
+.isDisabled #librarySearchButton {
+  pointer-events: none;
+  background:red;
+}
 
 #librarySearchCloseButton {
   display:none;
@@ -373,17 +417,23 @@ $marginUnitMobile: 6px;
   content: 'Artists'
 }
 #albumsTabButton:before {
-  content: 'Album titles'
+  content: 'Albums'
+}
+#genresTabButton:before {
+  content: 'Genres'
 }
 #tracksTabButton:before {
   content: 'Track titles'
 }
 @include mobile {
   #artistsTabButton:before {
-    content: 'Artists'
+    content: 'Artist'
   }
   #albumsTabButton:before {
-    content: 'Albums'
+    content: 'Album'
+  }
+  #genresTabButton:before {
+    content: 'Genre'
   }
   #tracksTabButton:before {
     content: 'Tracks'
@@ -440,10 +490,6 @@ $marginUnitMobile: 6px;
   margin-left:12px;
 }
 
-.isDisabled #libraryAlbumOptionsView {
-  pointer-events: none;
-}
-
 .searchFavoritesLine {
   display:flex;
   margin-top:12px;
@@ -478,8 +524,7 @@ $marginUnitMobile: 6px;
 }
 // ---
 
-// rem, container is flex wrap
-.libraryTrackItem {
+.libraryTrackItem {  // rem, container is flex wrap // todo change that
   // has no bg col
   display:flex;
   align-items:center;
@@ -509,9 +554,7 @@ $marginUnitMobile: 6px;
     color:var(--col-text-less);
   }
 
-
   .moreButton {
     margin-left:auto;
   }
 }
-
