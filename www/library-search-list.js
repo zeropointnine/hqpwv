@@ -1,5 +1,5 @@
 import AlbumUtil from './album-util.js';
-import LibraryContentView from './library-content-view.js';
+import LibraryContentList from './library-content-list.js';
 import LibraryDataUtil from './library-data-util.js';
 import MetaUtil from './meta-util.js';
 import Model from './model.js';
@@ -15,7 +15,7 @@ import Util from './util.js';
  * Shows search results using artist name, album name, or tracks name (mutually exclusive).
  * Track results use own list item type (similar to history view).
  */
-export default class LibrarySearchView extends LibraryContentView {
+export default class LibrarySearchList extends LibraryContentList {
 
   searchType;
   searchValue;
@@ -23,11 +23,11 @@ export default class LibrarySearchView extends LibraryContentView {
 
   constructor($el) {
     super($el);
-    this.trackMetaChangeHandler = TrackListItemUtil.makeTrackMetaChangeHandler(this.$el);
+    ViewUtil.setDisplayed(this.$el, false);
 
-    this.hide();
-    Util.addAppListener(this, 'library-search', this.onSearch);
+    this.trackMetaChangeHandler = TrackListItemUtil.makeTrackMetaChangeHandler(this.$el);
     $(document).on('meta-track-favorite-changed meta-track-incremented', this.trackMetaChangeHandler);
+
     this.sortType = 'default';
   }
 
@@ -39,7 +39,7 @@ export default class LibrarySearchView extends LibraryContentView {
   }
 
   /**
-   * Data + dom only ever gets generated thru here
+   * Data + dom only ever get generated thru here
    */
   setSearchTypeAndValue(type, value='') {
     this.searchType = type;
@@ -118,7 +118,7 @@ export default class LibrarySearchView extends LibraryContentView {
       case 'album':
       case 'genre':
       case 'albumFavorites':
-        return LibraryContentView.makeAlbumListItem(data);
+        return LibraryContentList.makeAlbumListItem(data);
         break;
       case 'track':
       case 'trackFavorites':
@@ -127,20 +127,6 @@ export default class LibrarySearchView extends LibraryContentView {
     }
     cl('warning logic');
     return null;
-  }
-
-  show(type=null, value=null) {
-    if (!type) {
-      type = Settings.librarySearchType;
-      value = Settings.librarySearchValue;
-    }
-    ViewUtil.setDisplayed(this.$el, true);
-    this.setSearchTypeAndValue(type, value);
-  }
-
-  hide() {
-    ViewUtil.setDisplayed(this.$el, false);
-    this.$el.empty();
   }
 
   getItemCount() {
@@ -278,6 +264,7 @@ export default class LibrarySearchView extends LibraryContentView {
   }
 
   //(index, item, itemPrevious, itemNext, hasAlbum) {
+  // todo is this used?
   makeTrackListItem(data, index) {
     const track = data['track'];
     const album = data['album'];
@@ -309,10 +296,6 @@ export default class LibrarySearchView extends LibraryContentView {
       return;
     }
     super.onItemClick(e)
-  }
-
-  onSearch(type, value) {
-    this.setSearchTypeAndValue(type, value);
   }
 
   onTrackListItemContextButton = (e) => {

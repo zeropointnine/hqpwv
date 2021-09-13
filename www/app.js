@@ -499,12 +499,12 @@ export default class App {
   };
 
   onAlbumGenreButton(genre) {
-    this.libraryView.showSearchView('genre', genre);
+    this.libraryView.showSearchSync('genre', genre);
     this.albumView.hide();
   }
 
   onAlbumArtistButton(artist) {
-    this.libraryView.showSearchView('artist', artist);
+    this.libraryView.showSearchSync('artist', artist);
     this.albumView.hide();
   }
 

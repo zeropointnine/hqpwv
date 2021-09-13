@@ -1,9 +1,9 @@
 import AlbumUtil from './album-util.js';
 import DataUtil from './data-util.js';
 import LibraryAlbumOptionsView from './library-album-options-view.js';
-import LibraryAlbumsView from './library-albums-view.js';
+import LibraryAlbumsList from './library-albums-list.js';
 import LibrarySearchPanel from './library-search-panel.js';
-import LibrarySearchView from './library-search-view.js';
+import LibrarySearchList from './library-search-list.js';
 import LibraryDataUtil from './library-data-util.js';
 import Model from './model.js';
 import Service from './service.js';
@@ -14,7 +14,7 @@ import Values from './values.js';
 import ViewUtil from './view-util.js';
 
 /**
- * Composite view containing two `LibraryContentView` subclasses.
+ * Composite view containing two `LibraryContentList` subclasses.
  * Lives underneath any other main views.
  */
 export default class LibraryView extends Subview {
@@ -26,9 +26,9 @@ export default class LibraryView extends Subview {
   $spinner;
 
   albumOptionsView;
-  albumsView;
+  albumsList;
   searchPanel;
-  searchView;
+  searchList;
 
   constructor() {
     super($("#libraryView"));
@@ -39,15 +39,18 @@ export default class LibraryView extends Subview {
     this.$spinner = this.$el.find('#librarySpinner');
 
     this.albumOptionsView = new LibraryAlbumOptionsView(this.$el.find("#libraryAlbumOptionsView"));
-    this.albumsView = new LibraryAlbumsView(this.$el.find('#libraryAlbumsView'));
+    this.albumsList = new LibraryAlbumsList(this.$el.find('#libraryAlbumsList'));
     this.searchPanel = new LibrarySearchPanel(this.$el.find("#librarySearchPanel"));
-    this.searchView = new LibrarySearchView(this.$el.find('#librarySearchView'));
+    this.searchList = new LibrarySearchList(this.$el.find('#librarySearchList'));
 
-    this.$searchButton.on('click tap', this.onSearchButton);
-    this.$searchCloseButton.on('click tap', () => this.showAlbumsView());
+    this.$searchButton.on('click tap', () => this.showSearch());
+    this.$searchCloseButton.on('click tap', () => this.closeSearch());
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
-    const types = 'library-albums-filter-changed library-albums-view-populated library-search-view-populated';
-    Util.addAppListener(this, types, this.updateHeaderText);
+    Util.addAppListener(this, 'library-albums-filter-changed library-albums-list-populated',
+        () => this.updateHeaderText(false));
+    Util.addAppListener(this, 'library-search-view-populated',
+        () => this.updateHeaderText(true));
+    Util.addAppListener(this, 'library-search', this.onSearch);
   }
 
   setSpinnerState(b) {
@@ -63,72 +66,105 @@ export default class LibraryView extends Subview {
 
   showFirstTime() {
     this.setSpinnerState(false);
-    ViewUtil.setVisible(this.albumsView.$el, true);
-    this.showAlbumsView();
+    ViewUtil.setVisible(this.albumsList.$el, true);
+
+    this.searchList.hide();
+    this.albumsList.show();
+    this.albumsList.update();
 	}
 
-  showAlbumsView() {
-    ViewUtil.setDisplayed(this.albumOptionsView.$el, 'flex');
-    ViewUtil.setDisplayed(this.$searchCloseButton, false);
-    this.searchPanel.hide();
-    this.searchView.hide();
-    this.searchView.clear();
-    this.albumsView.show();
-    this.updateHeaderText();
-    ViewUtil.setFocus(this.$el);
+  /**
+   * Animates in search view state.
+   */
+  showSearch() {
+    this.updateHeaderText(true);
+
+    ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
+    ViewUtil.setDisplayed(this.$searchCloseButton, true);
+
+    this.albumsList.hide();
+    this.searchPanel.show();
   }
 
-  showSearchView(type=null, value=null) {
+  /**
+   * Shows search view state synchronously, with list populated.
+   */
+  showSearchSync(searchType, value) {
+    this.updateHeaderText(true);
+
     ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
-    this.albumsView.hide();
-    this.albumsView.clear();
     ViewUtil.setDisplayed(this.$searchCloseButton, true);
-    this.searchPanel.show(type, value);
-    this.searchView.show(type, value);
-    this.updateHeaderText();
-    ViewUtil.setFocus(this.$el);
+
+    this.albumsList.hide(true);
+    this.searchPanel.show(searchType, value, true);
+    this.searchList.setSearchTypeAndValue(searchType, value);
+    this.searchList.show(true);
+  }
+
+  /**
+   * Animates out search view state.
+   */
+  closeSearch() {
+    ViewUtil.setDisplayed(this.$searchCloseButton, false);
+    this.searchPanel.hide();
+    this.searchList.hide();
+    this.searchList.clear();
+
+    ViewUtil.setDisplayed(this.albumOptionsView.$el, 'flex');
+    this.albumsList.update();
+    this.albumsList.show();
+
+    this.updateHeaderText(false);
   }
 
   onModelLibraryUpdated() {
-    this.albumsView.setAlbums(Model.library.albums);
-    this.searchView.setAlbums(Model.library.albums);
+    this.albumsList.setAlbums(Model.library.albums);
+    this.searchList.setAlbums(Model.library.albums);
   }
 
-  onSearchButton = () => {
-    if (ViewUtil.isDisplayed(this.albumsView.$el)) {
-      this.showSearchView();
-    } else {
-      this.showAlbumsView();
-    }
-  };
+  onSearch(type, value) {
+    this.albumsList.clear();
+    this.albumsList.hide();
+    this.searchList.show();
+    this.searchList.setSearchTypeAndValue(type, value);
+  }
 
   /** Returns true if handled/'eaten' */
   onEscape() {
-    if (ViewUtil.isDisplayed(this.searchView.$el)) {
-      this.showAlbumsView();
+    if (ViewUtil.isDisplayed(this.searchPanel.$el)) {
+      this.closeSearch();
       return true;
     }
     return false;
   }
 
-  updateHeaderText() {
-    const isSearch = ViewUtil.isDisplayed(this.searchView.$el);
+  updateHeaderText(isForSearch) {
 
-    const headingText = isSearch ? 'Library Search' : 'Library';
+    const headingText = isForSearch ? 'Search' : 'Library';
     this.$title.text(headingText);
 
-    const count = isSearch
-        ? this.searchView.getItemCount()
-        : this.albumsView.filteredSortedAlbums.length;
-
-    let suffix;
-    if (isSearch &&
-        (this.searchView.getSearchType() == 'track' || this.searchView.getSearchType() == 'trackFavorites')) {
-      suffix = (count == 1) ? ' track' : ' tracks';
+    let count;
+    if (isForSearch) {
+      const isEmpty = (this.searchList.$el[0].childNodes.length == 0);
+      count = isEmpty ? 0 : this.searchList.getItemCount();
     } else {
-      suffix = (count == 1) ? ' album' : ' albums';
+      count = this.albumsList.filteredSortedAlbums.length;
     }
-    const countText = '(' + count + suffix + ')';
+
+    let countText;
+    if (isForSearch && count == 0) {
+      countText = '';
+    } else {
+      const isTracks = isForSearch &&
+          (this.searchList.getSearchType() == 'track' || this.searchList.getSearchType() == 'trackFavorites');
+      let suffix;
+      if (isTracks) {
+        suffix = (count == 1) ? ' track' : ' tracks';
+      } else {
+        suffix = (count == 1) ? ' album' : ' albums';
+      }
+      countText = '(' + count + suffix + ')';
+    }
     this.$itemCount.text(countText);
   }
 }

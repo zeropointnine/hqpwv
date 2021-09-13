@@ -88,29 +88,31 @@
 						</div>
 
 						<div id="librarySearchPanel">
-							<div class="tabBar">
-								<div id="artistsTabButton" class="tabButton" data-value="artist"></div>
-								<div id="albumsTabButton" class="tabButton" data-value="album" ></div>
-								<div id="genresTabButton" class="tabButton" data-value="genre"></div>
-								<div id="tracksTabButton" class="tabButton" data-value="track"></div>
-								<div class="tabBarSpacer"></div>
-							</div>
-							<div id="searchPanelContent">
-								<div class="inputLine">
-									<input id="librarySearchInput" name="librarySearchInput" type="text" required minlength="1" maxlength="64">
-									<div id="librarySearchOkButton" class="textButton">OK</div>
+							<div id="librarySearchPanelInner">
+								<div class="tabBar">
+									<div id="artistsTabButton" class="tabButton" data-value="artist"></div>
+									<div id="albumsTabButton" class="tabButton" data-value="album" ></div>
+									<div id="genresTabButton" class="tabButton" data-value="genre"></div>
+									<div id="tracksTabButton" class="tabButton" data-value="track"></div>
+									<div class="tabBarSpacer"></div>
 								</div>
-							</div>
-							<div class="searchFavoritesLine">
-								<div id="albumFavoritesButton" class="textButton"></div>
-								<div id="trackFavoritesButton" class="textButton"></div>
+								<div id="searchTabContent">
+									<div class="inputLine">
+										<input id="librarySearchInput" name="librarySearchInput" type="text" required minlength="1" maxlength="64">
+										<div id="librarySearchOkButton" class="textButton">OK</div>
+									</div>
+								</div>
+								<div class="searchFavoritesLine">
+									<div id="albumFavoritesButton" class="textButton"></div>
+									<div id="trackFavoritesButton" class="textButton"></div>
+								</div>
 							</div>
 						</div>
 
 						<div id="librarySpinner" class="spinner"></div>
 
-						<div id="libraryAlbumsView"></div>
-						<div id="librarySearchView"></div>
+						<div id="libraryAlbumsList"></div>
+						<div id="librarySearchList"></div>
 				</div>
 
 				<div id="albumView" class="subview" tabindex="0">

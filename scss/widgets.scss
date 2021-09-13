@@ -165,17 +165,23 @@
   border-right: 1px solid var(--col-listitem-bg);
   border-top: 1px solid var(--col-listitem-bg);
   cursor:pointer;
-  &.isSelected {
-    color:var(--col-text);
+
+  &:hover {
+    color:var(--col-text-less);
+  }
+
+  // tricky multi-state thing
+  &.isOn {
     border-bottom: 1px solid var(--col-bg);
     border-left: 1px solid var(--col-listitem-selected);
     border-right: 1px solid var(--col-listitem-selected);
     border-top: 1px solid var(--col-listitem-selected);
     pointer-events:none;
   }
-  &:hover {
-    color:var(--col-text-less);
+  &.isSelected {
+    color:var(--col-text);
   }
+
 }
 @include mobile {
   .tabButton {

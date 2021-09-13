@@ -1,4 +1,5 @@
 import Settings from './settings.js';
+import Util from './util.js';
 import ViewUtil from './view-util.js';
 
 /**
@@ -12,15 +13,17 @@ export default class LibrarySearchPanel {
   $albumsTabButton;
   $genresTabButton;
   $tracksTabButton;
+  tabButtons$;
 
-  $panelContent;
+  $tabContent;
   $input;
   $okButton;
 
   $albumFavoritesButton;
   $trackFavoritesButton;
 
-  _searchType = '';
+  _searchType;
+  _tabType; // 'enum' subset of searchType. tricky.
 
   constructor($el) {
     this.$el = $el;
@@ -28,7 +31,8 @@ export default class LibrarySearchPanel {
     this.$albumsTabButton = $el.find('#albumsTabButton');
     this.$genresTabButton = $el.find('#genresTabButton');
     this.$tracksTabButton = $el.find('#tracksTabButton');
-    this.$panelContent = $el.find('#searchPanelContent');
+    this.tabButtons$ = [ this.$artistsTabButton, this.$albumsTabButton, this.$genresTabButton, this.$tracksTabButton];
+    this.$tabContent = $el.find('#searchTabContent');
     this.$input = $el.find('#librarySearchInput');
     this.$okButton = $el.find('#librarySearchOkButton');
     this.$albumFavoritesButton = $el.find('#albumFavoritesButton');
@@ -41,29 +45,48 @@ export default class LibrarySearchPanel {
     this.$okButton.on('click tap', this.onOkButton);
     this.$albumFavoritesButton.on('click tap', this.onAlbumFavoritesButton);
     this.$trackFavoritesButton.on('click tap', this.onTrackFavoritesButton);
+    Util.addAppListener(this, 'library-search-list-cleared', () => this.searchType = null);
+    Util.addAppListener(this, 'list debounced-window-resize', () => this.updateHeightSync());
 
-    this.searchType = 'artist';
+    this.$tabContent.addClass('isEnabled');
+
+    this.tabType = 'artist'; // default
 
     this.hide();
   }
 
-  show(type=null, value=null) {
-    if (!type) {
-      type = Settings.librarySearchType;
-      value = Settings.librarySearchValue || '';
-    }
-    ViewUtil.setDisplayed(this.$el, true);
+  show(type=null, value=null, now=false) {
     this.searchType = type;
     this.$input[0].value = value;
 
     this.$input.on('input', this.onInputInput);
     this.$input.on('keyup', this.onInputKeyUp);
+
+    ViewUtil.setDisplayed(this.$el, true);
+
+    if (now) {
+      this.updateHeightSync();
+    } else {
+      const ht = $('#librarySearchPanelInner').outerHeight();
+      ViewUtil.animateCss(this.$el,
+          () => this.$el.css('height', 0),
+          () => this.$el.css('height', ht),
+          null);
+    }
   }
 
   hide() {
-    ViewUtil.setDisplayed(this.$el, false);
+    if (!ViewUtil.isDisplayed(this.$el)) {
+      return;
+    }
     this.$input.off('input', this.onInputInput);
     this.$input.off('keyup', this.onInputKeyUp);
+
+    const ht = $('#librarySearchPanelInner').outerHeight();
+    ViewUtil.animateCss(this.$el,
+        () => this.$el.css('height', ht),
+        () => this.$el.css('height', 0),
+        () => ViewUtil.setDisplayed(this.$el, false) );
   }
 
   /**
@@ -73,10 +96,9 @@ export default class LibrarySearchPanel {
 
     this._searchType = value;
 
-    this.$artistsTabButton.removeClass('isSelected');
-    this.$albumsTabButton.removeClass('isSelected');
-    this.$genresTabButton.removeClass('isSelected');
-    this.$tracksTabButton.removeClass('isSelected');
+    for (const $tabButton of this.tabButtons$) {
+      $tabButton.removeClass('isSelected');
+    }
     this.$albumFavoritesButton.removeClass('isSelected');
     this.$trackFavoritesButton.removeClass('isSelected');
 
@@ -101,26 +123,61 @@ export default class LibrarySearchPanel {
         $el = this.$trackFavoritesButton;
         break;
       default:
-        cl('warning logic');
         return;
     }
-    $el.addClass('isSelected');
+    if ($el) {
+      $el.addClass('isSelected');
+    }
 
     switch (this._searchType) {
       case 'artist':
       case 'album':
       case 'genre':
       case 'track':
-        this.$panelContent.addClass('isEnabled');
+        this.tabType = this._searchType;
         break;
       case 'albumFavorites':
       case 'trackFavorites':
-        this.$panelContent.removeClass('isEnabled');
+        this.$input[0].value = '';
+        break;
+      default:
+        return;
+    }
+  }
+
+  set tabType(type) {
+
+    this._tabType = type;
+
+    // update .isOn and placeholder text
+    let placeholder;
+    let $tabButton;
+    switch (this._tabType) {
+      case 'artist':
+        $tabButton = this.$artistsTabButton;
+        placeholder = 'Search artist names';
+        break;
+      case 'album':
+        $tabButton = this.$albumsTabButton;
+        placeholder = 'Search album titles';
+        break;
+      case 'genre':
+        $tabButton = this.$genresTabButton;
+        placeholder = 'Search album genres';
+        break;
+      case 'track':
+        $tabButton = this.$tracksTabButton;
+        placeholder = 'Search track titles';
         break;
       default:
         cl('warning logic');
         return;
     }
+    for (const $b of this.tabButtons$) {
+      $b.removeClass('isOn');
+    }
+    $tabButton.addClass('isOn');
+    this.$input.attr('placeholder', placeholder);
   }
 
   getMassagedInput() {
@@ -132,6 +189,14 @@ export default class LibrarySearchPanel {
   massageInput() {
     const s = this.getMassagedInput();
     this.$input[0].value = s;
+  }
+
+  updateHeightSync() {
+    const ht = $('#librarySearchPanelInner').outerHeight();
+    if (ht == 0) {
+      return;
+    }
+    ViewUtil.setCssSync(this.$el, () => this.$el.css('height', ht))
   }
 
   onInputKeyUp = (e) => {
@@ -147,14 +212,19 @@ export default class LibrarySearchPanel {
   onOkButton = () => {
     this.massageInput();
     const value = this.getMassagedInput();
-    $(document).trigger('library-search', [this._searchType, value]);
+    $(document).trigger('library-search', [this._tabType, value]);
+    this.searchType = this._tabType;
   };
 
   onTabButton = (e) => {
     const value = $(e.currentTarget).attr('data-value') ;
-    this.searchType = value;
-    this.massageInput();
-    this.$okButton.click();
+    if (value == this._searchType) {
+      return;
+    }
+    this.tabType = value;
+
+    ViewUtil.setFocus(this.$input[0]);
+    this.$input[0].value = '';
   };
 
   onAlbumFavoritesButton = (e) => {

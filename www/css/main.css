@@ -504,16 +504,18 @@ label {
   border-top: 1px solid var(--col-listitem-bg);
   cursor: pointer;
 }
-.tabButton.isSelected {
-  color: var(--col-text);
+.tabButton:hover {
+  color: var(--col-text-less);
+}
+.tabButton.isOn {
   border-bottom: 1px solid var(--col-bg);
   border-left: 1px solid var(--col-listitem-selected);
   border-right: 1px solid var(--col-listitem-selected);
   border-top: 1px solid var(--col-listitem-selected);
   pointer-events: none;
 }
-.tabButton:hover {
-  color: var(--col-text-less);
+.tabButton.isSelected {
+  color: var(--col-text);
 }
 
 @media (max-width: 480px) {
@@ -1829,23 +1831,24 @@ html {
   transition: opacity 1s linear 1s;
 }
 
-#libraryAlbumsView {
+#libraryAlbumsList {
   margin-top: 16px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 8px;
   padding-right: 8px;
   max-width: 1800px;
+  transition: opacity 400ms ease-out;
 }
 @media (max-width: 480px) {
-  #libraryAlbumsView {
+  #libraryAlbumsList {
     margin-top: 12px;
     padding-left: 6px;
     padding-right: 6px;
   }
 }
 
-#librarySearchView {
+#librarySearchList {
   margin-left: auto;
   margin-right: auto;
   max-width: 1800px;
@@ -1854,7 +1857,7 @@ html {
   margin-top: 24px;
 }
 @media (max-width: 480px) {
-  #librarySearchView {
+  #librarySearchList {
     margin-top: 18px;
     padding-left: 6px;
     padding-right: 6px;
@@ -2182,7 +2185,6 @@ html {
 
 .isDisabled #librarySearchButton {
   pointer-events: none;
-  background: red;
 }
 
 #librarySearchCloseButton {
@@ -2193,7 +2195,15 @@ html {
 #librarySearchPanel {
   display: none;
   position: relative;
-  margin: 16px 16px 24px 16px;
+  height: 0;
+  transition: height 400ms ease-out;
+  overflow: hidden;
+}
+
+#librarySearchPanelInner {
+  position: absolute;
+  width: 100%;
+  padding: 16px 16px 0px 16px;
 }
 
 #artistsTabButton:before {
@@ -2229,7 +2239,7 @@ html {
     content: "Tracks";
   }
 }
-#searchPanelContent {
+#searchTabContent {
   padding: 16px;
   border-left: 1px solid var(--col-listitem-selected);
   border-right: 1px solid var(--col-listitem-selected);
@@ -2237,7 +2247,7 @@ html {
   opacity: 0.66;
   pointer-events: none;
 }
-#searchPanelContent.isEnabled {
+#searchTabContent.isEnabled {
   opacity: 1;
   pointer-events: auto;
 }
@@ -2261,6 +2271,9 @@ html {
   -ms-user-select: auto;
   user-select: auto;
   -o-user-select: auto;
+}
+#librarySearchInput::placeholder {
+  color: var(--col-text-least);
 }
 #librarySearchInput:disabled {
   pointer-events: none;

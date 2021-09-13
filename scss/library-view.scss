@@ -31,13 +31,14 @@ $marginUnitMobile: 6px;
 }
 
 // Wrapper of the main library content
-#libraryAlbumsView {
+#libraryAlbumsList {
   margin-top:$space-unit;
 	margin-left:auto;
 	margin-right:auto;
   padding-left:8px; // net effect is that listitems align 16px from edge
   padding-right:8px;
   max-width:1800px;
+  transition: opacity $app-standard-duration ease-out;
   @include mobile {
     margin-top:$space-unit-mobile;
     padding-left:6px; // net effect is that listitems align 12px from edges
@@ -46,7 +47,7 @@ $marginUnitMobile: 6px;
 }
 
 // Wrapper for the search results content
-#librarySearchView {
+#librarySearchList {
   margin-left:auto;
   margin-right:auto;
   max-width:1800px;
@@ -397,7 +398,6 @@ $marginUnitMobile: 6px;
 }
 .isDisabled #librarySearchButton {
   pointer-events: none;
-  background:red;
 }
 
 #librarySearchCloseButton {
@@ -410,7 +410,14 @@ $marginUnitMobile: 6px;
 #librarySearchPanel {
   display:none;
   position:relative;
-  margin: $space-unit ($space-unit * 1) ($space-unit * 1.5) $space-unit;
+  height: 0; // height gets set programmatically to that of the inner container, which is pos abs
+  transition: height $app-standard-duration ease-out;
+  overflow:hidden
+}
+#librarySearchPanelInner {
+  position:absolute;width:100%;
+  padding: ($space-unit * 1.0) $space-unit ($space-unit * 0) $space-unit;
+  //background:#400;
 }
 
 #artistsTabButton:before {
@@ -440,7 +447,7 @@ $marginUnitMobile: 6px;
   }
 }
 
-#searchPanelContent {
+#searchTabContent {
   padding: 16px;
   border-left: 1px solid var(--col-listitem-selected);
   border-right: 1px solid var(--col-listitem-selected);
@@ -468,6 +475,10 @@ $marginUnitMobile: 6px;
   line-height: $icon-button-side;
   padding-left:8px;
   padding-right:8px;
+
+  &::placeholder {
+    color:var(--col-text-least);
+  }
 
   // not sure why this works
   flex:1 1;

@@ -1,4 +1,4 @@
-import LibraryContentView from './library-content-view.js';
+import LibraryContentList from './library-content-list.js';
 import LibraryGroupUtil from './library-group-util.js';
 import LibraryDataUtil from './library-data-util.js';
 import Model from './model.js';
@@ -12,16 +12,16 @@ import ViewUtil from './view-util.js';
  * `groups` requires `filteredSortedAlbums` and `groupType`
  * dom views require `groups`
  */
-export default class LibraryAlbumsView extends LibraryContentView {
+export default class LibraryAlbumsList extends LibraryContentList {
 
   filteredSortedAlbums;
   sortType;
   groupType;
   filterType;
 
-  filteredSortedAlbumsDirty;
-  groupsDirty;
-  domDirty;
+  filteredSortedAlbumsDirty = true;
+  groupsDirty = true;
+  domDirty = true;
 
   constructor($el) {
     super($el);
@@ -30,6 +30,39 @@ export default class LibraryAlbumsView extends LibraryContentView {
     Util.addAppListener(this, 'library-albums-sort-changed', this.onSortChanged);
     Util.addAppListener(this, 'library-albums-group-changed', this.onGroupChanged);
     Util.addAppListener(this, 'library-albums-filter-changed', this.onFilterChanged);
+  }
+
+  // override
+  show() {
+    if (ViewUtil.isDisplayed(this.$el)) {
+      return;
+    }
+    ViewUtil.setDisplayed(this.$el, true);
+    ViewUtil.animateCss(this.$el,
+        () => this.$el.css('opacity', 0),
+        () => this.$el.css('opacity', 1),
+        null);
+  }
+
+  // override
+  hide(now) {
+    if (!ViewUtil.isDisplayed(this.$el)) {
+      return;
+    }
+    if (now) {
+      ViewUtil.setDisplayed(this.$el, false);
+      return;
+    }
+    ViewUtil.animateCss(this.$el,
+        null,
+        () => this.$el.css('opacity', 0),
+        () => ViewUtil.setDisplayed(this.$el, false));
+  }
+
+  // override
+  clear() {
+    super.clear();
+    this.domDirty = true;
   }
 
   // override
@@ -72,7 +105,7 @@ export default class LibraryAlbumsView extends LibraryContentView {
   }
 
   /**
-   * Inits sorted albums, groups, and dom views as needed.
+   * Updates the data and the views as needed.
    */
   update() {
     if (this.filteredSortedAlbumsDirty) {
@@ -86,7 +119,7 @@ export default class LibraryAlbumsView extends LibraryContentView {
     if (this.domDirty) {
       this.populateDom();
       this.domDirty = false;
-      $(document).trigger('library-albums-view-populated');
+      $(document).trigger('library-albums-list-populated');
     }
   }
 
@@ -142,18 +175,7 @@ export default class LibraryAlbumsView extends LibraryContentView {
 
   // override
   makeListItem(data) {
-    return LibraryContentView.makeAlbumListItem(data);
-  }
-
-  show() {
-    ViewUtil.setDisplayed(this.$el, true);
-    this.update();
-  }
-
-  hide() {
-    ViewUtil.setDisplayed(this.$el, false);
-    this.$el.empty();
-    this.domDirty = true;
+    return LibraryContentList.makeAlbumListItem(data);
   }
 
   onSortChanged() {

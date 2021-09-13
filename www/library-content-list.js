@@ -13,7 +13,7 @@ import ViewUtil from './view-util.js';
  *
  * Subclass must provide enough logic for `populateDom()` to work, basically.
  */
-export default class LibraryContentView {
+export default class LibraryContentList {
 
   $el;
 
@@ -29,6 +29,14 @@ export default class LibraryContentView {
     const config = { root: $('#libraryView')[0], rootMargin: (window.screen.height * 0.66) + 'px', threshold: 0  };
     this.intersectionObs = new IntersectionObserver(this.onIntersection, config);
     $(document).on('album-favorite-changed', this.onAlbumFavoriteChanged);
+  }
+
+  show(type=null, value=null) {
+    ViewUtil.setDisplayed(this.$el, true);
+  }
+
+  hide() {
+    ViewUtil.setDisplayed(this.$el, false);
   }
 
   /**
