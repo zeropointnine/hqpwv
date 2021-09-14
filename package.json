@@ -1,6 +1,6 @@
 {
   "name": "hqpwv",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Remote control application for HQPlayer",
   "bin": "server/server.js",
   "homepage": "https://github.com/zeropointnine/hqpwv",
