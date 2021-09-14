@@ -46,7 +46,6 @@ export default class LibrarySearchPanel {
     this.$albumFavoritesButton.on('click tap', this.onAlbumFavoritesButton);
     this.$trackFavoritesButton.on('click tap', this.onTrackFavoritesButton);
     Util.addAppListener(this, 'library-search-list-cleared', () => this.searchType = null);
-    Util.addAppListener(this, 'list debounced-window-resize', () => this.updateHeightSync());
 
     this.$tabContent.addClass('isEnabled');
 
@@ -65,28 +64,34 @@ export default class LibrarySearchPanel {
     ViewUtil.setDisplayed(this.$el, true);
 
     if (now) {
-      this.updateHeightSync();
+      ViewUtil.setCssSync(this.$el, () => this.$el.css('opacity', 1));
     } else {
-      const ht = $('#librarySearchPanelInner').outerHeight();
       ViewUtil.animateCss(this.$el,
-          () => this.$el.css('height', 0),
-          () => this.$el.css('height', ht),
+          () => this.$el.css('opacity', 0),
+          () => this.$el.css('opacity', 1),
           null);
     }
   }
 
-  hide() {
+  hide(callback) {
     if (!ViewUtil.isDisplayed(this.$el)) {
+      if (callback) {
+        callback();
+      }
       return;
     }
     this.$input.off('input', this.onInputInput);
     this.$input.off('keyup', this.onInputKeyUp);
 
-    const ht = $('#librarySearchPanelInner').outerHeight();
     ViewUtil.animateCss(this.$el,
-        () => this.$el.css('height', ht),
-        () => this.$el.css('height', 0),
-        () => ViewUtil.setDisplayed(this.$el, false) );
+        () => this.$el.css('opacity', 1),
+        () => this.$el.css('opacity', 0),
+        () => {
+          ViewUtil.setDisplayed(this.$el, false)
+          if (callback) {
+            callback();
+          }
+        });
   }
 
   /**
@@ -189,14 +194,6 @@ export default class LibrarySearchPanel {
   massageInput() {
     const s = this.getMassagedInput();
     this.$input[0].value = s;
-  }
-
-  updateHeightSync() {
-    const ht = $('#librarySearchPanelInner').outerHeight();
-    if (ht == 0) {
-      return;
-    }
-    ViewUtil.setCssSync(this.$el, () => this.$el.css('height', ht))
   }
 
   onInputKeyUp = (e) => {

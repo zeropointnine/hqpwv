@@ -1838,7 +1838,7 @@ html {
   padding-left: 8px;
   padding-right: 8px;
   max-width: 1800px;
-  transition: opacity 400ms ease-out;
+  transition: opacity 264ms ease-in;
 }
 @media (max-width: 480px) {
   #libraryAlbumsList {
@@ -1855,6 +1855,7 @@ html {
   padding-left: 8px;
   padding-right: 8px;
   margin-top: 24px;
+  transition: opacity 264ms ease-in;
 }
 @media (max-width: 480px) {
   #librarySearchList {
@@ -2194,16 +2195,8 @@ html {
 
 #librarySearchPanel {
   display: none;
-  position: relative;
-  height: 0;
-  transition: height 400ms ease-out;
-  overflow: hidden;
-}
-
-#librarySearchPanelInner {
-  position: absolute;
-  width: 100%;
-  padding: 16px 16px 0px 16px;
+  margin: 16px 16px 0px 16px;
+  transition: opacity 264ms ease-in;
 }
 
 #artistsTabButton:before {

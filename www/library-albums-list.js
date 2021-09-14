@@ -45,18 +45,29 @@ export default class LibraryAlbumsList extends LibraryContentList {
   }
 
   // override
-  hide(now) {
+  hide(now, callback) {
     if (!ViewUtil.isDisplayed(this.$el)) {
+      if (callback) {
+        callback();
+      }
       return;
     }
     if (now) {
       ViewUtil.setDisplayed(this.$el, false);
+      if (callback) {
+        callback();
+      }
       return;
     }
     ViewUtil.animateCss(this.$el,
         null,
         () => this.$el.css('opacity', 0),
-        () => ViewUtil.setDisplayed(this.$el, false));
+        () => {
+          ViewUtil.setDisplayed(this.$el, false);
+          if (callback) {
+            callback();
+          }
+        });
   }
 
   // override

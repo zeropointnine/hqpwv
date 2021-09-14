@@ -38,12 +38,12 @@ $marginUnitMobile: 6px;
   padding-left:8px; // net effect is that listitems align 16px from edge
   padding-right:8px;
   max-width:1800px;
-  transition: opacity $app-standard-duration ease-out;
   @include mobile {
     margin-top:$space-unit-mobile;
     padding-left:6px; // net effect is that listitems align 12px from edges
     padding-right:6px;
   }
+  transition: opacity ($app-standard-duration * .66) ease-in;
 }
 
 // Wrapper for the search results content
@@ -54,12 +54,12 @@ $marginUnitMobile: 6px;
   padding-left:8px; // net effect is that listitems align 16px from edge
   padding-right:8px;
   margin-top: ($space-unit * 1.5);
-
   @include mobile {
     margin-top: ($space-unit-mobile * 1.5);
     padding-left:6px; // net effect is that listitems align 12px from edges
     padding-right:6px;
   }
+  transition: opacity ($app-standard-duration * .66) ease-in;
 }
 
 // ---
@@ -409,15 +409,8 @@ $marginUnitMobile: 6px;
 
 #librarySearchPanel {
   display:none;
-  position:relative;
-  height: 0; // height gets set programmatically to that of the inner container, which is pos abs
-  transition: height $app-standard-duration ease-out;
-  overflow:hidden
-}
-#librarySearchPanelInner {
-  position:absolute;width:100%;
-  padding: ($space-unit * 1.0) $space-unit ($space-unit * 0) $space-unit;
-  //background:#400;
+  margin: ($space-unit * 1.0) $space-unit ($space-unit * 0) $space-unit;
+  transition:opacity ($app-standard-duration * .66) ease-in;
 }
 
 #artistsTabButton:before {

@@ -32,6 +32,41 @@ export default class LibrarySearchList extends LibraryContentList {
   }
 
   // override
+  show(now) {
+    ViewUtil.setDisplayed(this.$el, true);
+    if (now) {
+      ViewUtil.setCssSync(this.$el, () => this.$el.css('opacity', 1));
+    } else {
+      ViewUtil.animateCss(this.$el,
+          () => this.$el.css('opacity', 0),
+          () => this.$el.css('opacity', 1),
+          null);
+    }
+  }
+
+  // override
+  hide(callback) {
+    if (!ViewUtil.isDisplayed(this.$el)) {
+      this.clear();
+      if (callback) {
+        callback();
+      }
+      return;
+    }
+    ViewUtil.animateCss(this.$el,
+        () => this.$el.css('opacity', 1),
+        () => this.$el.css('opacity', 0),
+        () => {
+          ViewUtil.setDisplayed(this.$el, false);
+          this.clear();
+          if (callback) {
+            callback();
+          }
+        });
+  }
+
+
+  // override
   setAlbums(albums) {
     this.albums = [...albums];
     // For search results, we are only ever ordering items by artist/album

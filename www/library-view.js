@@ -77,13 +77,15 @@ export default class LibraryView extends Subview {
    * Animates in search view state.
    */
   showSearch() {
-    this.updateHeaderText(true);
-
-    ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
-    ViewUtil.setDisplayed(this.$searchCloseButton, true);
-
-    this.albumsList.hide();
-    this.searchPanel.show();
+    $(document).trigger('disable-user-input');
+    this.albumsList.hide(false, () => {
+      this.updateHeaderText(true);
+      ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
+      ViewUtil.setDisplayed(this.$searchCloseButton, true);
+      this.searchPanel.show();
+      this.searchList.show();
+      $(document).trigger('enable-user-input');
+    });
   }
 
   /**
@@ -91,10 +93,8 @@ export default class LibraryView extends Subview {
    */
   showSearchSync(searchType, value) {
     this.updateHeaderText(true);
-
     ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
     ViewUtil.setDisplayed(this.$searchCloseButton, true);
-
     this.albumsList.hide(true);
     this.searchPanel.show(searchType, value, true);
     this.searchList.setSearchTypeAndValue(searchType, value);
@@ -105,16 +105,17 @@ export default class LibraryView extends Subview {
    * Animates out search view state.
    */
   closeSearch() {
-    ViewUtil.setDisplayed(this.$searchCloseButton, false);
-    this.searchPanel.hide();
+    $(document).trigger('disable-user-input');
     this.searchList.hide();
-    this.searchList.clear();
-
-    ViewUtil.setDisplayed(this.albumOptionsView.$el, 'flex');
-    this.albumsList.update();
-    this.albumsList.show();
-
-    this.updateHeaderText(false);
+    this.searchPanel.hide(() => {
+      this.$el[0].scrollTop = 0;
+      ViewUtil.setDisplayed(this.$searchCloseButton, false);
+      ViewUtil.setDisplayed(this.albumOptionsView.$el, 'flex');
+      this.albumsList.update();
+      this.albumsList.show();
+      this.updateHeaderText(false);
+      $(document).trigger('enable-user-input');
+    });
   }
 
   onModelLibraryUpdated() {

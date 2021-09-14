@@ -451,7 +451,8 @@ export default class App {
         this.minKeyDuration = long;
         break;
       case 'f':
-        if (this.getTopSubview() == this.libraryView && Model.hasLibrary) {
+        if (this.getTopSubview() == this.libraryView
+            && ViewUtil.isDisplayed(this.libraryView.albumsList.$el) && Model.hasLibrary) {
           e.preventDefault();
           this.libraryView.$searchButton.click();
         }
