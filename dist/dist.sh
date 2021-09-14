@@ -8,17 +8,17 @@ echo '************************************************'
 
 pkg ../package.json
 
-mv hqpwv-node16-macos-x64 hqpwv-server-0-9-5-macos-x64
-mv hqpwv-node14-win-x64.exe hqpwv-server-0-9-5-win-x64.exe
-mv hqpwv-node16-linux-x64 hqpwv-server-0-9-5-linux-x64
-mv hqpwv-node16-linux-arm64 hqpwv-server-0-9-5-linux-arm64
+mv hqpwv-node16-macos-x64 hqpwv-server-0-9-7-macos-x64
+mv hqpwv-node14-win-x64.exe hqpwv-server-0-9-7-win-x64.exe
+mv hqpwv-node16-linux-x64 hqpwv-server-0-9-7-linux-x64
+mv hqpwv-node16-linux-arm64 hqpwv-server-0-9-7-linux-arm64
 
-zip hqpwv-server-0-9-5-macos-x64.zip hqpwv-server-0-9-5-macos-x64
-zip hqpwv-server-0-9-5-win-x64.zip hqpwv-server-0-9-5-win-x64.exe
-zip hqpwv-server-0-9-5-linux-x64.zip hqpwv-server-0-9-5-linux-x64
-zip hqpwv-server-0-9-5-linux-arm64.zip hqpwv-server-0-9-5-linux-arm64
+zip hqpwv-server-0-9-7-macos-x64.zip hqpwv-server-0-9-7-macos-x64
+zip hqpwv-server-0-9-7-win-x64.zip hqpwv-server-0-9-7-win-x64.exe
+zip hqpwv-server-0-9-7-linux-x64.zip hqpwv-server-0-9-7-linux-x64
+zip hqpwv-server-0-9-7-linux-arm64.zip hqpwv-server-0-9-7-linux-arm64
 
-# rm hqpwv-server-0-9-5-macos
-# rm hqpwv-server-0-9-5-win.exe
-# rm hqpwv-server-0-9-5-linux-x64
-# rm hqpwv-server-0-9-5-linux-arm64
+# rm hqpwv-server-0-9-7-macos
+# rm hqpwv-server-0-9-7-win.exe
+# rm hqpwv-server-0-9-7-linux-x64
+# rm hqpwv-server-0-9-7-linux-arm64
