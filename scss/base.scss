@@ -34,6 +34,8 @@
 
 // SASS values
 
+$site-min-width:320px;
+
 $mobile-max-width: 480px;
 $tablet-max-width: 768px;
 
@@ -57,6 +59,7 @@ $app-standard-duration: 400ms;
 // values of specific ui elements
 $top-bar-height: 52px;
 $view-header-height: 52px;
+$playbar-height: 100px;
 
 
 @mixin mobile {
@@ -144,9 +147,6 @@ $view-header-height: 52px;
 }
 
 body {
-	min-width: 320px;
-  display:flex;
-  flex-direction:column;
 	overflow-x: hidden;
   overflow-y: hidden;
 	background-color: var(--col-bg);

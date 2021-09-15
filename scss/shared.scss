@@ -33,7 +33,6 @@ label {
   position:absolute;
   width:100%;
   height:100%;
-  padding: $view-header-height $space-unit $space-unit $space-unit;
   overflow-y: scroll;
   background-color:var(--col-bg);
   transition: opacity $app-standard-duration $app-standard-ease;
@@ -41,8 +40,12 @@ label {
   &:focus {
     outline: none
   }
+
+  padding: ($view-header-height - 8) $space-unit $space-unit $space-unit;
+  // ... results in 8px space btw header and subview content
+
   @include mobile {
-    padding:$space-unit-mobile;
+    padding: ($view-header-height - 8) $space-unit-mobile $space-unit-mobile $space-unit-mobile;
   }
 }
 

@@ -170,6 +170,8 @@ export default class LibraryAlbumsList extends LibraryContentList {
       o = LibraryGroupUtil.makeDirectoryGroups(this.filteredSortedAlbums);
     } else if (this.groupType == 'bitrate') {
       o = LibraryGroupUtil.makeBitrateGroups(this.filteredSortedAlbums);
+    } else if (this.groupType == 'artist') {
+      o = LibraryGroupUtil.makeArtistGroups(this.filteredSortedAlbums);
     } else if (this.groupType == 'genre') {
       o = LibraryGroupUtil.makeGenreGroups(this.filteredSortedAlbums);
     } else {

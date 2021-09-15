@@ -9,6 +9,7 @@ import Model from './model.js';
 import Service from './service.js';
 import Settings from './settings.js';
 import Subview from './subview.js';
+import TopBarUtil from './top-bar-util.js';
 import Util from './util.js';
 import Values from './values.js';
 import ViewUtil from './view-util.js';
@@ -21,13 +22,15 @@ export default class LibraryView extends Subview {
 
   $title;
   $itemCount;
-  $searchButton;
-  $searchCloseButton;
   $spinner;
 
-  albumOptionsView;
-  albumsList;
+  albumOptionsView; // dropdowns + search button
+  $searchButton;
+  $searchCloseButton;
+
   searchPanel;
+
+  albumsList;
   searchList;
 
   constructor() {
@@ -43,7 +46,7 @@ export default class LibraryView extends Subview {
     this.searchPanel = new LibrarySearchPanel(this.$el.find("#librarySearchPanel"));
     this.searchList = new LibrarySearchList(this.$el.find('#librarySearchList'));
 
-    this.$searchButton.on('click tap', () => this.showSearch());
+    this.$searchButton.on('click tap', () => this.openSearch());
     this.$searchCloseButton.on('click tap', () => this.closeSearch());
     Util.addAppListener(this, 'model-library-updated', this.onModelLibraryUpdated);
     Util.addAppListener(this, 'library-albums-filter-changed library-albums-list-populated',
@@ -76,8 +79,9 @@ export default class LibraryView extends Subview {
   /**
    * Animates in search view state.
    */
-  showSearch() {
+  openSearch() {
     $(document).trigger('disable-user-input');
+    TopBarUtil.returnSubviewHeader(true)
     this.albumsList.hide(false, () => {
       this.updateHeaderText(true);
       ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
@@ -91,7 +95,8 @@ export default class LibraryView extends Subview {
   /**
    * Shows search view state synchronously, with list populated.
    */
-  showSearchSync(searchType, value) {
+  openSearchSync(searchType, value) {
+    TopBarUtil.returnSubviewHeader(true)
     this.updateHeaderText(true);
     ViewUtil.setDisplayed(this.albumOptionsView.$el, false);
     ViewUtil.setDisplayed(this.$searchCloseButton, true);
@@ -106,6 +111,7 @@ export default class LibraryView extends Subview {
    */
   closeSearch() {
     $(document).trigger('disable-user-input');
+    TopBarUtil.returnSubviewHeader(true)
     this.searchList.hide();
     this.searchPanel.hide(() => {
       this.$el[0].scrollTop = 0;

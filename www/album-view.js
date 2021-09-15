@@ -17,6 +17,7 @@ import ViewUtil from './view-util.js'
 
 /**
  * Album view containing a header and a list of track list items.
+ * todo put top area in its own class
  */
 export default class AlbumView extends Subview {
 
@@ -26,7 +27,6 @@ export default class AlbumView extends Subview {
   $libraryItemImage;
   $artistButton;
   $albumFavoriteButton;
-  $list;
   listItems$;
   contextMenu;
   trackMetaChangeHandler;
@@ -80,7 +80,7 @@ export default class AlbumView extends Subview {
   }
 
   animateInThis(isStandalone=false) {
-    // slide up album view
+
     if (isStandalone) {
       ViewUtil.setVisible(this.$picture, '');
     } else {
@@ -93,14 +93,15 @@ export default class AlbumView extends Subview {
 
     this.$el.addClass('animIn');
 
+    // Fade in + slide up album view
     ViewUtil.animateCss(this.$el,
         () => {
-          this.$el.css("top", this.$el.height() / 1 + "px");
           this.$el.css('opacity', 0);
+          this.$el.css("transform", `translateY(${this.$el.height()}px)`);
         },
         () => {
-          this.$el.css('top', '0px');
           this.$el.css('opacity', 1);
+          this.$el.css('transform', 'translateY(0)');
         },
         () => {
           this.$el.removeClass('animIn');
@@ -116,18 +117,14 @@ export default class AlbumView extends Subview {
     ViewUtil.setCssSync(this.$el, () => this.$el.css('top', '0')); // bc view must be in its end-state to get rectEnd
     const rectEnd = this.getAlbumViewImageRect();
 
-    // animate overlay image
     ViewUtil.setVisible(this.$libraryItemImage, false);
     ViewUtil.setDisplayed(this.$overlayImage, true);
-    this.$overlayImage.removeClass('animOut');
+    this.$overlayImage.css('transform', 'translate(0,0) scale(1,1)');
     this.$overlayImage.attr('src', this.$libraryItemImage.attr('src'));
+
     ViewUtil.animateCss(this.$overlayImage,
-        () => {
-          ViewUtil.setXYWH(this.$overlayImage, ...rectStart);
-        },
-        () => {
-          ViewUtil.setXYWH(this.$overlayImage, ...rectEnd);
-        },
+        () => ViewUtil.setXYWH(this.$overlayImage, ...rectStart),
+        () => this.setTransformUsing(this.$overlayImage, rectStart, rectEnd),
         () => {
           ViewUtil.setVisible(this.$libraryItemImage, '');
           ViewUtil.setVisible(this.$picture, '');
@@ -174,11 +171,11 @@ export default class AlbumView extends Subview {
     ViewUtil.setVisible(this.$picture, false);
     ViewUtil.setVisible(this.$libraryItemImage, false);
     ViewUtil.setDisplayed(this.$overlayImage, true);
-    this.$overlayImage.addClass('animOut');
+    this.$overlayImage.css('transform', 'translate(0,0) scale(1,1)');
 
     ViewUtil.animateCss(this.$overlayImage,
-        () => { ViewUtil.setXYWH(this.$overlayImage, ...rectStart); },
-        () => { ViewUtil.setXYWH(this.$overlayImage, ...rectEnd); },
+        () => ViewUtil.setXYWH(this.$overlayImage, ...rectStart),
+        () => this.setTransformUsing(this.$overlayImage, rectStart, rectEnd),
         this.animateOutOverlayContinued);
   }
 
@@ -417,4 +414,23 @@ export default class AlbumView extends Subview {
       }
     }
   };
+
+  /**
+   * Given an abs el whose left/top/width/height are already set to `r1`,
+   * set its transform such that its new apparent position and dimensions
+   * are that of `r2`.
+   *
+   * @param $el
+   * @param r1 an array with [x,y,w,h]
+   * @param r2
+   */
+  setTransformUsing = ($el, r1, r2) => {
+    const dx = r2[0] - r1[0];
+    const dy = r2[1] - r1[1];
+    const sx = r2[2] / r1[2];
+    const sy = r2[3] / r1[3];
+    const value = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+    $el.css('transform', value);
+  } ;
+
 }

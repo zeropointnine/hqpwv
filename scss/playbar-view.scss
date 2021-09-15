@@ -4,7 +4,8 @@
   left:0;
   bottom:0;
   width:100%;
-  height:100px;
+  height:$playbar-height;
+  min-width:$site-min-width;
 	flex: 0 0 auto;
 	padding: 12px 0 0 0;
   background-color: var(--col-bg);
@@ -18,6 +19,7 @@
   margin-left:12px;
 
   // this impacts overall playbar height; careful
+  // todo refactor layout :/
   margin-top:1px;
   height:24px;
   margin-bottom:11px;
@@ -34,9 +36,9 @@
   }
 
   @include mobile {
-    margin-top:1px;
-    height:20px;
-    margin-bottom:11px;
+    margin-top:3px;
+    height:24px;
+    margin-bottom:9px;
 
     max-width: calc(100% - 108px);
   }

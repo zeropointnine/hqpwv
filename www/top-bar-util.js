@@ -6,7 +6,8 @@ import ViewUtil from './view-util.js';
  */
 class TopBarUtil {
 
-  THRESHOLD = 45;
+  VIEW_HEADER_HEIGHT = 52; // must match scss $view-header-height
+  THRESHOLD;
 
   $libraryView = $('#libraryView');
   $libraryHeader;
@@ -15,11 +16,15 @@ class TopBarUtil {
   $header;
 
   constructor() {
+    this.THRESHOLD = this.VIEW_HEADER_HEIGHT * 0.5;
     this.$libraryView = $('#libraryView');
     this.$libraryHeader = this.$libraryView.find('.viewHeader');
   }
 
-  setSubview($subview) {
+  /**
+   *
+   */
+  takeSubviewHeader($subview, now) {
     const $h = $subview.find('.viewHeader');
     if ($h.length == 0) {
       return;
@@ -27,47 +32,68 @@ class TopBarUtil {
     this.$subview = $subview;
     this.$header = $h;
 
-    TopBar.$el.append(this.$header);
     TopBar.hideButtons();
-  }
 
-  setLibrarySubviewIfNecessary() {
-    const y = this.$libraryView[0].scrollTop;
-    cl('a', y)
-    if (y > this.THRESHOLD) {
-      cl('b')
-      this.setSubview(this.$libraryView);
+    TopBar.$el.append(this.$header);
+
+    if (now) {
+      ViewUtil.setCssPropertySync(this.$header, 'top', 0);
+    } else {
+      ViewUtil.animateCss(this.$header,
+          () => { this.$header.css('top', (this.VIEW_HEADER_HEIGHT - 8)) },
+          () => { this.$header.css('top', 0)},
+          () => {});
     }
   }
 
   /**
    * Gives back header to its subview.
    */
-  returnHeader() {
+  returnSubviewHeader(now) {
     if (!this.$header) {
       return;
     }
-    this.$subview.append(this.$header);
+
     TopBar.showButtons();
+
+    this.$subview.append(this.$header);
+
+    if (now) {
+      ViewUtil.setCssPropertySync(this.$header, 'top', 0);
+    } else {
+      ViewUtil.animateCss(this.$header,
+          () => { this.$header.css('top', -(this.VIEW_HEADER_HEIGHT - 16)) },
+          () => { this.$header.css('top', 0)},
+          () => {});
+    }
+
     this.$subview = null;
     this.$header = null;
+  }
+
+  /**
+   * Should be called when transitioning forward or backward between subviews.
+   *
+   * @param $subview is the subview which is or is-about-to-be exposed via either an anim-in or out.
+   */
+  updateFor($subview, now) {
+    const y = $subview[0].scrollTop;
+    if (!this.$subview) {
+      if (y > this.THRESHOLD) {
+        this.takeSubviewHeader($subview, now);
+      }
+    } else { // has subview
+      if (y == 0) {
+        this.returnSubviewHeader(now);
+      }
+    }
   }
 
   /**
    * Should be called by subviews on-scroll.
    */
   onSubviewScroll($subview) {
-
-    const y = $subview[0].scrollTop;
-    if (!this.$subview) {
-      if (y > this.THRESHOLD) {
-        this.setSubview($subview);
-      }
-    } else {
-      if (y == 0) {
-        this.returnHeader();
-      }
-    }
+    this.updateFor($subview);
   }
 }
 

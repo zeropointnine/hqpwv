@@ -14,7 +14,7 @@ $leftRightEase: ease-in-out;
   margin:0;
   padding:0;
   overflow:hidden;
-  transition: top $app-standard-duration $app-standard-ease;
+  transition: transform $app-standard-duration $app-standard-ease;
 
   &.animIn {
     border-top: 1px solid var(--col-listitem);

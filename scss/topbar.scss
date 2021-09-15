@@ -4,6 +4,7 @@
 
   width:100%;
   height: $top-bar-height;
+  min-width: $site-min-width;
   top:0;
   left:0;
 
@@ -17,9 +18,6 @@
   &.isAnimating {
     transition: margin-top $app-standard-duration ease-out;
   }
-  @include mobile {
-    // todo
-  }
 }
 
 #appLogo {
@@ -27,14 +25,21 @@
   top:0;
   left:0;
   z-index:9998;
+  transition: opacity $app-standard-duration ease-out;
+
+  @include mobile {
+    transform:scale(0.8); // lazy. looks better, actually; apply to main?
+    top:5px;
+    left:6px;
+  }
 }
 #appLogoInner {
   position:absolute;
-  top:-33px;
-  left:-7px;
+  top:-32px;
+  left:-6px;
 
   span {
-    font-size:74px;
+    font-size:72px;
     font-weight:900;
     color:var(--col-listitem);
   }
@@ -50,46 +55,29 @@
   span.v {
     margin-left:-4px;
   }
-
-  @include mobile {
-    top:-28px;
-    left:-5px;
-    span {
-      font-size: 61px;
-    }
-    span.q {
-      margin-left:-5px;
-    }
-    span.p {
-      margin-left:-5px;
-    }
-    span.w {
-      margin-left:-1px;
-    }
-    span.v {
-      margin-left:-3px;
-    }
-  }
 }
+
 #appTitle {
-  font-size:18px;
-  font-weight: bold;
-  color:var(--col-text-least);
-  flex: 1;
   visibility: hidden;
-  @include mobile {
-    font-size:16px;
-  }
+  color:var(--col-listitem-selected-over);
 }
 .lightTheme #appTitle {
   color:var(--col-listitem-selected);
 }
 
 #topBarButtons {
-  display:flex;
   margin-left:auto;
 }
-
+#hqpSettingsButton {
+  &:before {
+    background-image: url('./../img/icons/settings_applications_white_24dp.svg');
+    opacity:0.66;
+  }
+  background-color: transparent;
+  &:hover {
+    background-color: var(--col-listitem-over);
+  }
+}
 #settingsButton {
   &:before {
     background-image: url('./../img/icons/settings_white_24dp.svg');
@@ -105,16 +93,6 @@
   visibility: hidden;
 }
 
-#hqpSettingsButton {
-  &:before {
-    background-image: url('./../img/icons/settings_applications_white_24dp.svg');
-    opacity:0.66;
-  }
-  background-color: transparent;
-  &:hover {
-    background-color: var(--col-listitem-over);
-  }
-}
 .settingsView #hqpSettingsButton,
 .hqpSettingsView #hqpSettingsButton{
   visibility: hidden;

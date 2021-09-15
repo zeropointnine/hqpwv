@@ -114,9 +114,6 @@
 }
 
 body {
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: var(--col-bg);
@@ -174,17 +171,17 @@ label {
   position: absolute;
   width: 100%;
   height: 100%;
-  padding: 52px 16px 16px 16px;
   overflow-y: scroll;
   background-color: var(--col-bg);
   transition: opacity 400ms cubic-bezier(0, 0.5, 0.3, 1);
+  padding: 44px 16px 16px 16px;
 }
 .subview:focus {
   outline: none;
 }
 @media (max-width: 480px) {
   .subview {
-    padding: 12px;
+    padding: 44px 12px 12px 12px;
   }
 }
 
@@ -344,7 +341,6 @@ label {
 }
 
 .viewHeader {
-  background: rgba(255, 0, 0, 0.1);
   position: absolute;
   display: flex;
   align-items: center;
@@ -352,17 +348,17 @@ label {
   height: 52px;
   top: 0;
   left: 0;
-  padding: 16px 16px 16px 16px;
+  padding: 16px 8px 16px 16px;
+  transition: top 132ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 .viewHeader .title {
   font-size: 16px;
   font-weight: bold;
-  line-height: 36px;
+  margin-top: -3px;
 }
 .viewHeader .headerCountText {
   margin-left: 6px;
   font-size: 14px;
-  padding-top: 4px;
   color: var(--col-text-least);
 }
 
@@ -756,10 +752,11 @@ html {
 #mainArea {
   position: absolute;
   width: 100%;
+  min-width: 320px;
   top: 52px;
   bottom: 100px;
-  background-color: var(--col-bg);
   overflow: hidden;
+  background-color: var(--col-bg);
 }
 
 #breakpointIndicator {
@@ -818,6 +815,7 @@ html {
   display: flex;
   width: 100%;
   height: 52px;
+  min-width: 320px;
   top: 0;
   left: 0;
   align-items: center;
@@ -830,20 +828,29 @@ html {
 #topBar.isAnimating {
   transition: margin-top 400ms ease-out;
 }
+
 #appLogo {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 9998;
+  transition: opacity 400ms ease-out;
+}
+@media (max-width: 480px) {
+  #appLogo {
+    transform: scale(0.8);
+    top: 5px;
+    left: 6px;
+  }
 }
 
 #appLogoInner {
   position: absolute;
-  top: -33px;
-  left: -7px;
+  top: -32px;
+  left: -6px;
 }
 #appLogoInner span {
-  font-size: 74px;
+  font-size: 72px;
   font-weight: 900;
   color: var(--col-listitem);
 }
@@ -859,39 +866,10 @@ html {
 #appLogoInner span.v {
   margin-left: -4px;
 }
-@media (max-width: 480px) {
-  #appLogoInner {
-    top: -28px;
-    left: -5px;
-  }
-  #appLogoInner span {
-    font-size: 61px;
-  }
-  #appLogoInner span.q {
-    margin-left: -5px;
-  }
-  #appLogoInner span.p {
-    margin-left: -5px;
-  }
-  #appLogoInner span.w {
-    margin-left: -1px;
-  }
-  #appLogoInner span.v {
-    margin-left: -3px;
-  }
-}
 
 #appTitle {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--col-text-least);
-  flex: 1;
   visibility: hidden;
-}
-@media (max-width: 480px) {
-  #appTitle {
-    font-size: 16px;
-  }
+  color: var(--col-listitem-selected-over);
 }
 
 .lightTheme #appTitle {
@@ -899,8 +877,18 @@ html {
 }
 
 #topBarButtons {
-  display: flex;
   margin-left: auto;
+}
+
+#hqpSettingsButton {
+  background-color: transparent;
+}
+#hqpSettingsButton:before {
+  background-image: url("./../img/icons/settings_applications_white_24dp.svg");
+  opacity: 0.66;
+}
+#hqpSettingsButton:hover {
+  background-color: var(--col-listitem-over);
 }
 
 #settingsButton {
@@ -917,17 +905,6 @@ html {
 .settingsView #settingsButton,
 .hqpSettingsView #settingsButton {
   visibility: hidden;
-}
-
-#hqpSettingsButton {
-  background-color: transparent;
-}
-#hqpSettingsButton:before {
-  background-image: url("./../img/icons/settings_applications_white_24dp.svg");
-  opacity: 0.66;
-}
-#hqpSettingsButton:hover {
-  background-color: var(--col-listitem-over);
 }
 
 .settingsView #hqpSettingsButton,
@@ -1003,6 +980,7 @@ html {
   bottom: 0;
   width: 100%;
   height: 100px;
+  min-width: 320px;
   flex: 0 0 auto;
   padding: 12px 0 0 0;
   background-color: var(--col-bg);
@@ -1026,9 +1004,9 @@ html {
 }
 @media (max-width: 480px) {
   #playingText {
-    margin-top: 1px;
-    height: 20px;
-    margin-bottom: 11px;
+    margin-top: 3px;
+    height: 24px;
+    margin-bottom: 9px;
     max-width: calc(100% - 108px);
   }
 }
@@ -1481,7 +1459,7 @@ html {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1);
+  transition: transform 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
 #playlistView.animIn {
   border-top: 1px solid var(--col-listitem);
@@ -1899,6 +1877,7 @@ html {
   display: none;
   width: 36px;
   height: 36px;
+  flex: 0 0 36px;
 }
 .libraryGroupLabel .icon:before {
   content: " ";
@@ -2104,7 +2083,7 @@ html {
 }
 .isMetaEnabled .libraryItem.isFavorite .libraryItemText1,
 .isMetaEnabled .libraryItem.isFavorite .libraryItemText2 {
-  margin-right: 26px;
+  margin-right: 30px;
 }
 
 #libraryAlbumOptionsView {
@@ -2347,7 +2326,7 @@ html {
 
 #albumView {
   padding-bottom: 0;
-  transition: top 400ms cubic-bezier(0, 0.5, 0.3, 1), opacity 400ms ease-out;
+  transition: transform 400ms cubic-bezier(0, 0.5, 0.3, 1), opacity 400ms ease-out;
 }
 #albumView.animIn {
   border-top: 1px solid var(--col-listitem);
@@ -2389,9 +2368,10 @@ html {
 }
 #albumViewTexts #albumViewTextsInner #albumViewArtist {
   display: inline-block;
-  padding: 8px;
-  margin: -8px;
+  padding: 8px 12px 8px 12px;
+  margin: -12px;
   border-radius: 6px;
+  background-color: var(--col-listitem-less);
   cursor: pointer;
 }
 #albumViewTexts #albumViewTextsInner #albumViewArtist:hover {
@@ -2615,12 +2595,9 @@ html {
   display: none;
   position: absolute;
   z-index: 10000;
-  transition: left 400ms cubic-bezier(0, 0.5, 0.3, 1), top 400ms cubic-bezier(0, 0.5, 0.3, 1), width 400ms ease-out, height 400ms ease-out;
+  transform-origin: top left;
+  transition: transform 400ms cubic-bezier(0, 0.5, 0.3, 1);
 }
-#albumOverlayImage.animOut {
-  transition: left 400ms cubic-bezier(0, 0.5, 0.3, 1), top 400ms cubic-bezier(0, 0.5, 0.3, 1), width 400ms ease-out, height 400ms ease-out;
-}
-
 #settingsView {
   padding-bottom: 24px;
 }

@@ -36,12 +36,15 @@
 			<div id="debug"></div>
 
 			<div id="topBar">
-				<div id="appLogo"><div id="appLogoInner"><span class="h">H</span><span class="q">Q</span><span class="p">P</span><span class="w">W</span><span class="v">V</span></div></div>
-				<div id="appTitle">HQPlayer Web Viewer</div>
-				<div id="topBarButtons">
-					<div id="hqpSettingsButton" class="iconButton"></div>
-					<div id="settingsButton" class="iconButton"></div>
+				<div class="viewHeader">
+					<div id="appLogo"><div id="appLogoInner"><span class="h">H</span><span class="q">Q</span><span class="p">P</span><span class="w">W</span><span class="v">V</span></div></div>
+					<div id="appTitle" class="title">HQPlayer Web Viewer</div>
+					<div id="topBarButtons">
+						<div id="hqpSettingsButton" class="iconButton"></div>
+						<div id="settingsButton" class="iconButton"></div>
+					</div>
 				</div>
+
 			</div>
 
 			<div id="mainArea">
@@ -64,6 +67,7 @@
 								<div class="dropdownTitle">Group by</div>
 								<div class="dropdownItems">
 									<div class="dropdownItem" data-value="none">None (default)</div>
+									<div class="dropdownItem" data-value="artist">Artist</div>
 									<div class="dropdownItem" data-value="genre">Genre</div>
 									<div class="dropdownItem" data-value="path">Subdirectory</div>
 									<div class="dropdownItem" data-value="bitrate">Samplerate</div>
@@ -178,7 +182,7 @@
 					<div id="historyView" class="subview">
 						<div class="viewHeader">
 							<span class="title">History</span>
-							<span id="historyCount" class="headerCountText">(XXX)</span>
+							<span id="historyCount" class="headerCountText"></span>
 							<div id="historyCloseButton" class="iconButton closeButton" style="margin-left:auto"></div>
 						</div>
 						<div id="historyList"></div>
@@ -200,7 +204,7 @@
 				<div id="hqpSettingsView" class="subview">
 
 					<div class="viewHeader">
-						<span class="title">Upscaler settings</span>
+						<span class="title">Upscaler Settings</span>
 						<div id="hqpSettingsCloseButton" class="iconButton closeButton" style="margin-left:auto;"></div>
 					</div>
 
@@ -338,10 +342,11 @@
 				<div id="settingsView" class="subview">
 
 					<div class="viewHeader">
-						<div id="settingsVersion" class="title"></div>
+						<div class="title">Settings</div>
 						<div id="settingsCloseButton" class="iconButton closeButton" style="margin-left:auto"></div>
 					</div>
 
+					<div id="settingsVersion" class="title"></div>
 					<a id="settingsProjectAnchor" class="colorTextLess" style="position:relative; top:-6px;"></a>
 
 					<div id="settingsHotkeys" style="margin-top:28px;">

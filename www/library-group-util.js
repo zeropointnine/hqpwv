@@ -5,7 +5,10 @@ import Settings from './settings.js';
 import ViewUtil from './view-util.js';
 
 /**
- * Util fns for making 'library groups' 
+ * Util fns for making 'library groups'
+ *
+ * Rem, the `albums` param used by these fns can
+ * have had different sort orders applied to them.
  */
 class LibraryGroupUtil {
 
@@ -52,39 +55,6 @@ class LibraryGroupUtil {
     }
   }
 
-  /**
-   *
-   */
-  makeDirectoryGroups_ORIG(albums) {
-    const dirLevel = this.findBaseDirectoryLevel(albums);
-
-    const groups = [];
-    const labels = [];
-
-    let group;
-    let lastSubdir = null;
-
-    // Make shallow copy and sort by path
-    albums = [...albums];
-    albums.sort(LibraryDataUtil.sortByPath);
-
-    for (const album of albums) {
-      const path = album['@_path'];
-      const pathArray = this.makePathArray(path);
-      const subdir = pathArray[dirLevel];
-      if (subdir != lastSubdir) {
-        group = [];
-        groups.push(group);
-        const label = subdir + '/';
-        labels.push(label);
-      }
-
-      group.push(album);
-      lastSubdir = subdir;
-    }
-    return { labels: labels, groups: groups };
-  }
-
   makeDirectoryGroups(albums) {
     const dirLevel = this.findBaseDirectoryLevel(albums);
 
@@ -112,12 +82,48 @@ class LibraryGroupUtil {
     return { labels:labels, groups: groups };
   }
 
+  makeArtistGroups(albums, searchString=null) {
+
+    // key = artist, value = array of albums
+    const artistArrays = {};
+    const noArtists = []; // shouldn't be possible?
+    for (const album of albums) {
+      const artist = album['@_artist'];
+      if (artist) {
+        if (!artistArrays[artist]) {
+          artistArrays[artist] = [];
+        }
+        artistArrays[artist].push(album);
+      } else {
+        noArtists.push(album);
+      }
+    }
+
+    const artistKeys = Object.keys(artistArrays);
+    artistKeys.sort();
+    const labels = [];
+    const groups = [];
+    for (const artistKey of artistKeys) {
+      const b = (!searchString || artistKey.includes(searchString));
+      if (b) {
+        labels.push(artistKey);
+        groups.push(artistArrays[artistKey]);
+      }
+    }
+    if (!searchString && noArtists.length > 0) {
+      labels.push('No Artist');
+      groups.push(noArtists);
+    }
+
+    return { labels: labels, groups: groups };
+  }
+
   /**
    *
    */
   makeGenreGroups(albums, searchString=null) {
 
-    // key = genre and value = array of albums
+    // key = genre, value = array of albums
     const genreArrays = {};
     const noGenreAlbums = [];
     for (const album of albums) {
@@ -145,7 +151,7 @@ class LibraryGroupUtil {
         groups.push(genreArrays[genreKey]);
       }
     }
-    if (!searchString) {
+    if (!searchString && noGenreAlbums.length > 0) {
       labels.push('No genre');
       groups.push(noGenreAlbums);
     }

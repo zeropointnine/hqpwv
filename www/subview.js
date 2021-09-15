@@ -2,7 +2,8 @@ import TopBarUtil from './top-bar-util.js';
 import ViewUtil from './view-util.js';
 
 /**
- * Base class for subviews of #mainView.
+ * Base class for the primary views, which are children of #mainView and occupy its full area.
+ * Subclasses use the term 'View', fyi.
  * Not much at the moment.
  */
 export default class Subview {

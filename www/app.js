@@ -173,6 +173,7 @@ export default class App {
   }
 
 	showSettingsView() {
+    TopBar.reshowLogo();
 		this.showSubview(this.settingsView);
 	}
 
@@ -246,7 +247,7 @@ export default class App {
     // Subview *must* send 'enable-user-input' at end of its show()
     $(document).trigger('disable-user-input');
 
-    TopBarUtil.returnHeader();
+    TopBarUtil.returnSubviewHeader(true);
 
     this.subviewZ++; // ha.
     subview.$el.css('z-index', this.subviewZ);
@@ -353,8 +354,8 @@ export default class App {
       $target = this.libraryView.$el;
     }
 
-    TopBarUtil.returnHeader();
-    TopBarUtil.setLibrarySubviewIfNecessary();
+    TopBarUtil.returnSubviewHeader(true);
+    TopBarUtil.updateFor($target, true);
     ViewUtil.setFocus($target);
   }
 
@@ -504,12 +505,12 @@ export default class App {
   };
 
   onAlbumGenreButton(genre) {
-    this.libraryView.showSearchSync('genre', genre);
+    this.libraryView.openSearchSync('genre', genre);
     this.albumView.hide();
   }
 
   onAlbumArtistButton(artist) {
-    this.libraryView.showSearchSync('artist', artist);
+    this.libraryView.openSearchSync('artist', artist);
     this.albumView.hide();
   }
 

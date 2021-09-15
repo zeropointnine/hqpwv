@@ -1,8 +1,8 @@
 #albumView {
   padding-bottom:0; // bc last list item
   transition:
-      top $app-standard-duration cubic-bezier(0,.5,.3,1.0), // used for fade-in
-      opacity $app-standard-duration ease-out; // used for fade-out
+      transform $app-standard-duration cubic-bezier(0,.5,.3,1.0),
+      opacity $app-standard-duration ease-out;
 
   &.animIn {
     border-top: 1px solid var(--col-listitem);
@@ -47,9 +47,10 @@
 
     #albumViewArtist { // acts as a button
       display:inline-block;
-      padding:8px;
-      margin:-8px;
+      padding:8px 12px 8px 12px;
+      margin:-12px;
       border-radius: 6px;
+      background-color:var(--col-listitem-less);
       cursor:pointer;
       &:hover {
         background-color:var(--col-listitem);
@@ -278,17 +279,7 @@
   display:none;
   position:absolute;
   z-index:10000; // underneath bottombar
-  transition:
-    left $app-standard-duration cubic-bezier(0,.5,.3,1.0),
-    top $app-standard-duration cubic-bezier(0,.5,.3,1.0),
-    width $app-standard-duration ease-out,
-    height $app-standard-duration ease-out;
-
-  &.animOut {
-    transition:
-      left $app-standard-duration cubic-bezier(0,.5,.3,1.0),
-      top $app-standard-duration cubic-bezier(0,.5,.3,1.0),
-      width $app-standard-duration ease-out,
-      height $app-standard-duration ease-out;
-  }
+  transform-origin: top left;
+  transition: transform $app-standard-duration $app-standard-ease;
+  &.animOut { }
 }

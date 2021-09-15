@@ -2,8 +2,6 @@
 
 
 .viewHeader {
-  background:rgba(255,0,0,0.1);
-
   position:absolute;
   display:flex;
   align-items:center;
@@ -13,20 +11,21 @@
   top:0; // lives in top padding area of subview
   left:0;
 
-  padding: $space-unit $space-unit $space-unit $space-unit;
+  padding: $space-unit ($space-unit * .5) $space-unit $space-unit;
   @include mobile {
     // todo
   }
 
+  transition: top ($app-standard-duration * .33) $app-standard-ease;
+
   .title {
     font-size: 16px;
     font-weight: bold;
-    line-height: $icon-button-side;
+    margin-top:-3px; // looks better
   }
   .headerCountText {
     margin-left:6px;
     font-size: $font-size-smaller;
-    padding-top:4px;
     color:var(--col-text-least);
   }
 }

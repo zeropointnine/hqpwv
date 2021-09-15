@@ -5,15 +5,20 @@ html {
 // Is full area of viewport
 #page { }
 
-// see 'topbar.scss' for #topBar
+// Three main divs:
+// #topBar (see topbar.scss)
+// #mainArea
+// #playbarView (see playbar-view.scss)
 
 #mainArea {
   position:absolute;
   width:100%;
+  min-width: $site-min-width;
   top:$top-bar-height;
-  bottom:100px; // clear playbar // todo
-  background-color:var(--col-bg);
+  bottom:$playbar-height;
+
   overflow:hidden;
+  background-color:var(--col-bg);
 }
 
 // Allows us to know current breakpoint programmatically by inspecting element's width

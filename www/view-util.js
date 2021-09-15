@@ -50,6 +50,13 @@ ViewUtil.setCssSync = ($element, myFunction) => {
   $element.removeClass('noTransition');
 }
 
+ViewUtil.setCssPropertySync = ($element, $property, $value) => {
+  $element.addClass('noTransition');
+  $element.css($property, $value);
+  $element[0].offsetHeight;
+  $element.removeClass('noTransition');
+};
+
 /**
  * Just formalizes a consistent system to use for animating css and getting callbacks.
  * Does NOT call back if no transition was triggerd!
@@ -146,7 +153,7 @@ ViewUtil.fitInRect = (srcW, srcH, destW, destH) => {
   // todo return 4-element array to be consistent w/ theotherstuff
 };
 
-/** Assumes absolutely positioned element. */
+
 ViewUtil.setXYWH = ($el, x, y, w, h) => {
   $el.css('left', x + 'px');
   $el.css('top', y + 'px');

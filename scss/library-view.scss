@@ -93,6 +93,7 @@ $marginUnitMobile: 6px;
     display: none; // default
     width:$icon-button-side;
     height:$icon-button-side;
+    flex: 0 0 36px;
     &:before {
       @include iconBefore;
     }
@@ -306,7 +307,7 @@ $marginUnitMobile: 6px;
   }
   .libraryItemText1,
   .libraryItemText2 {
-    margin-right:26px;
+    margin-right:30px;
   }
 }
 

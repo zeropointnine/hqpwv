@@ -35,8 +35,8 @@ export default class PlaylistCompoundView extends Subview {
     this.$el.addClass('animIn');
 
   	ViewUtil.animateCss(this.$el,
-  		() => this.$el.css("top", this.$el.height() + "px"),
-  		() => this.$el.css('top', '0px'),
+  		() => this.$el.css("transform", `translateY(${this.$el.height()}px)`),
+  		() => this.$el.css('transform', 'translateY(0)'),
       () => {
         this.$el.removeClass('animIn');
         $(document).trigger('enable-user-input');
@@ -55,7 +55,7 @@ export default class PlaylistCompoundView extends Subview {
     }
     ViewUtil.animateCss(this.$el,
         null,
-        () => this.$el.css("top", this.$el.outerHeight() + "px"),
+        () => this.$el.css('transform', `translateY(${this.$el.outerHeight()}px)`),
         () => {
           ViewUtil.setVisible(this.$el, false);
           ViewUtil.setVisible(this.historyView.$el, false);
