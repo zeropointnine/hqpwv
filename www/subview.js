@@ -1,29 +1,19 @@
-import ViewUtil from './view-util.js'
+import TopBarUtil from './top-bar-util.js';
+import ViewUtil from './view-util.js';
 
 /**
  * Base class for subviews of #mainView.
- * Hooks up scroll effect. Not much else at the moment.
+ * Not much at the moment.
  */
 export default class Subview {
 
-  // Root element
   $el;
-  // List container (if any)
   $list;
-  // Used for scroll effect
-  lastScrollPos = 0;
 
-  // Define $el and $list here.
   constructor($el, $list=null) {
     this.$el = $el;
     this.$list = $list;
-
-    this.$el.on("scroll", e => {
-      const scrollPos = this.$el[0].scrollTop;
-      const delta = scrollPos - this.lastScrollPos;
-      this.lastScrollPos = scrollPos;
-      $(document).trigger('subview-scroll', delta);
-    });
+    this.$el.on("scroll", e => this.onScroll(e));
   }
 
   get $el() {
@@ -44,5 +34,9 @@ export default class Subview {
         null,
         () => this.$el.css('opacity', 0),
         () => ViewUtil.setVisible(this.$el, false));
+  }
+
+  onScroll(e) {
+    TopBarUtil.onSubviewScroll(this.$el);
   }
 }

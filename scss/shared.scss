@@ -33,8 +33,8 @@ label {
   position:absolute;
   width:100%;
   height:100%;
+  padding: $view-header-height $space-unit $space-unit $space-unit;
   overflow-y: scroll;
-  padding:$space-unit;
   background-color:var(--col-bg);
   transition: opacity $app-standard-duration $app-standard-ease;
 

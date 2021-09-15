@@ -54,6 +54,11 @@ $z-subview-max: 9999;
 $app-standard-ease: cubic-bezier(0,.5,.3,1.0);
 $app-standard-duration: 400ms;
 
+// values of specific ui elements
+$top-bar-height: 52px;
+$view-header-height: 52px;
+
+
 @mixin mobile {
   @media (max-width: $mobile-max-width)  { @content; }
 }

@@ -8,6 +8,8 @@ import MetaUtil from './meta-util.js'
 import Model from './model.js';
 import Service from './service.js';
 import Subview from'./subview.js';
+import TopBar from './top-bar.js';
+import TopBarUtil from './top-bar-util.js';
 import TrackListItemUtil from './track-list-item-util.js';
 import Util from'./util.js';
 import Values from'./values.js';

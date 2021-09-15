@@ -57,6 +57,7 @@ export default class PlaylistView extends Subview {
 	}
 
   onShow() {
+    this.$el[0].scrollTop = 0;
     ViewUtil.setVisible(this.$el, true);
     ViewUtil.setFocus(this.$el);
     $(document).on('model-status-updated', this.updateSelectedItem);

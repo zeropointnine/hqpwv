@@ -14,12 +14,7 @@ $marginUnitMobile: 6px;
 }
 
 #libraryHeaderView {
-  margin-left:$space-unit;
-  margin-right:$space-unit;
-  @include mobile {
-    margin-left:$space-unit-mobile;
-    margin-right:$space-unit-mobile;
-  }
+
 }
 
 #librarySpinner {
@@ -43,7 +38,7 @@ $marginUnitMobile: 6px;
     padding-left:6px; // net effect is that listitems align 12px from edges
     padding-right:6px;
   }
-  transition: opacity ($app-standard-duration * .66) ease-in;
+  transition: opacity ($app-standard-duration * .66) ease-out;
 }
 
 // Wrapper for the search results content
@@ -59,7 +54,7 @@ $marginUnitMobile: 6px;
     padding-left:6px; // net effect is that listitems align 12px from edges
     padding-right:6px;
   }
-  transition: opacity ($app-standard-duration * .66) ease-in;
+  transition: opacity ($app-standard-duration * .66) ease-out;
 }
 
 // ---

@@ -1,9 +1,12 @@
 #playbarView {
   visibility: hidden;
-  position:relative;
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:100px;
 	flex: 0 0 auto;
-	height: auto;
-	padding: 12px 0 12px 0;
+	padding: 12px 0 0 0;
   background-color: var(--col-bg);
   z-index:10001;
 }

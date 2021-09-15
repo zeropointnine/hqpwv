@@ -21,6 +21,7 @@ import SnackView from './snack-view.js';
 import Statuser from './statuser.js';
 import ToastView from './toast-view.js';
 import TopBar from './top-bar.js';
+import TopBarUtil from './top-bar-util.js';
 import Util from './util.js';
 import Values from './values.js';
 import ViewUtil from './view-util.js';
@@ -34,7 +35,6 @@ export default class App {
 
   static instance;
 
-  topBar = new TopBar();
 	playbarView = new PlaybarView();
 	libraryView = new LibraryView();
 	albumView = new AlbumView();
@@ -246,11 +246,13 @@ export default class App {
     // Subview *must* send 'enable-user-input' at end of its show()
     $(document).trigger('disable-user-input');
 
-    this.topBar.unhide();
+    TopBarUtil.returnHeader();
 
     this.subviewZ++; // ha.
     subview.$el.css('z-index', this.subviewZ);
+
     subview.show(...extra);
+
     this.updatePageHolderSubviewClass(subview);
   }
 
@@ -259,11 +261,10 @@ export default class App {
     // Subview *must* send 'enable-user-input' at end of its hide()
     $(document).trigger('disable-user-input');
 
-    this.topBar.unhide();
-
     this.updatePageHolderSubviewClassOnHide();
     subview.hide();
-    this.postHideFocus(subview.$el);
+    
+    this.postHideHeaderAndFocus(subview.$el);
   }
   
   /**
@@ -337,7 +338,7 @@ export default class App {
    * Upon hiding a view, focus on the topmost view that just got exposed.
    * (Cursor-scrolling convenience)
    */
-  postHideFocus($elementWhichIsHiding) {
+  postHideHeaderAndFocus($elementWhichIsHiding) {
     const $els = [this.albumView.$el, this.playlistView.$el, this.settingsView.$el];
     let $target;
     for (let $element of $els) {
@@ -351,6 +352,9 @@ export default class App {
     if (!$target) {
       $target = this.libraryView.$el;
     }
+
+    TopBarUtil.returnHeader();
+    TopBarUtil.setLibrarySubviewIfNecessary();
     ViewUtil.setFocus($target);
   }
 

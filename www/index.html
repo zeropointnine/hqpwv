@@ -35,57 +35,59 @@
 
 			<div id="debug"></div>
 
-			<div id="topBar" style="position:relative">
+			<div id="topBar">
 				<div id="appLogo"><div id="appLogoInner"><span class="h">H</span><span class="q">Q</span><span class="p">P</span><span class="w">W</span><span class="v">V</span></div></div>
 				<div id="appTitle">HQPlayer Web Viewer</div>
-				<div id="hqpSettingsButton" class="iconButton"></div>
-				<div id="settingsButton" class="iconButton"></div>
+				<div id="topBarButtons">
+					<div id="hqpSettingsButton" class="iconButton"></div>
+					<div id="settingsButton" class="iconButton"></div>
+				</div>
 			</div>
 
 			<div id="mainArea">
 
 				<div id="libraryView" class="subview" tabindex="0">
 
-						<div id="libraryHeaderView" class="viewHeader">
-							<span id="libraryTitle" class="title">Library</span>
-							<span id="libraryNumbers" class="headerCountText"></span>
-							<div id="libraryAlbumOptionsView" style="margin-left:auto; display:flex;">
-								<div id="librarySortDropdown" class="dropdown">
-									<div class="dropdownTitle">Sort by</div>
-									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="artist">Artist</div>
-										<div class="dropdownItem" data-value="album">Album</div>
-										<div class="dropdownItem" data-value="random">Random</div>
-									</div>
+					<div id="libraryHeaderView" class="viewHeader">
+						<span id="libraryTitle" class="title">Library</span>
+						<span id="libraryNumbers" class="headerCountText"></span>
+						<div id="libraryAlbumOptionsView" style="margin-left:auto; display:flex;">
+							<div id="librarySortDropdown" class="dropdown">
+								<div class="dropdownTitle">Sort by</div>
+								<div class="dropdownItems">
+									<div class="dropdownItem" data-value="artist">Artist</div>
+									<div class="dropdownItem" data-value="album">Album</div>
+									<div class="dropdownItem" data-value="random">Random</div>
 								</div>
-								<div id="libraryGroupDropdown" class="dropdown">
-									<div class="dropdownTitle">Group by</div>
-									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="none">None (default)</div>
-										<div class="dropdownItem" data-value="genre">Genre</div>
-										<div class="dropdownItem" data-value="path">Subdirectory</div>
-										<div class="dropdownItem" data-value="bitrate">Samplerate</div>
-									</div>
-								</div>
-								<div id="libraryFilterDropdown" class="dropdown">
-									<div class="dropdownTitle">Filter by</div>
-									<div class="dropdownItems">
-										<div class="dropdownItem" data-value="none">None (default)</div>
-										<div class="dropdownItem" data-value="favorites">Favorites</div>
-									</div>
-								</div>
-								<div id="libraryOptionsButtons">
-									<div id="librarySortButton" class="iconButton toggleButton"></div>
-									<div id="libraryGroupButton" class="iconButton toggleButton"></div>
-									<!-- not using, for now -->
-									<!--<div id="libraryFilterButton" class="iconButton toggleButton"></div>-->
-								</div>
-
-								<div class="librarySearchDivider"></div>
-								<div id="librarySearchButton" class="iconButton toggleButton"></div>
 							</div>
-							<div id="librarySearchCloseButton" class="iconButton closeButton"></div>
+							<div id="libraryGroupDropdown" class="dropdown">
+								<div class="dropdownTitle">Group by</div>
+								<div class="dropdownItems">
+									<div class="dropdownItem" data-value="none">None (default)</div>
+									<div class="dropdownItem" data-value="genre">Genre</div>
+									<div class="dropdownItem" data-value="path">Subdirectory</div>
+									<div class="dropdownItem" data-value="bitrate">Samplerate</div>
+								</div>
+							</div>
+							<div id="libraryFilterDropdown" class="dropdown">
+								<div class="dropdownTitle">Filter by</div>
+								<div class="dropdownItems">
+									<div class="dropdownItem" data-value="none">None (default)</div>
+									<div class="dropdownItem" data-value="favorites">Favorites</div>
+								</div>
+							</div>
+							<div id="libraryOptionsButtons">
+								<div id="librarySortButton" class="iconButton toggleButton"></div>
+								<div id="libraryGroupButton" class="iconButton toggleButton"></div>
+								<!-- not using, for now -->
+								<!--<div id="libraryFilterButton" class="iconButton toggleButton"></div>-->
+							</div>
+
+							<div class="librarySearchDivider"></div>
+							<div id="librarySearchButton" class="iconButton toggleButton"></div>
 						</div>
+						<div id="librarySearchCloseButton" class="iconButton closeButton"></div>
+					</div>
 
 						<div id="librarySearchPanel">
 							<div class="tabBar">
@@ -424,7 +426,7 @@
 			<div id="fullOverlayScreen"></div>
 			<img id="fullOverlayImage">
 
-			<div id="playbarView" style="position:relative">
+			<div id="playbarView">
 
 				<div id="showPlaylistButton" class="iconButton">
 					<div id="playlistNumberAt"></div>

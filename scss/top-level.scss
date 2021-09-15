@@ -2,133 +2,21 @@ html {
   visibility: hidden; // until color theme is applied
 }
 
-#page {
-  display: flex;
-  flex-direction: column;
-  flex:1;
-  overflow: hidden;
-}
+// Is full area of viewport
+#page { }
+
+// see 'topbar.scss' for #topBar
 
 #mainArea {
-  position:relative;
+  position:absolute;
+  width:100%;
+  top:$top-bar-height;
+  bottom:100px; // clear playbar // todo
   background-color:var(--col-bg);
-  flex: 1;
   overflow:hidden;
 }
 
-// ---
-
-#topBar {
-  position:relative;
-  flex: 0 0 auto;
-  padding: 8px 12px 8px 12px;
-  border-bottom: 2px solid var(--col-listitem);
-  display:flex;
-  align-items: center;
-  background-color:var(--col-bg);
-  transition: margin-top 100ms ease-out;
-  &.isAnimating {
-    transition: margin-top $app-standard-duration ease-out;
-  }
-  @include mobile {
-    padding: 4px 12px 4px 12px;
-  }
-}
-#appLogo {
-  position:absolute;
-  top:0;
-  left:0;
-  z-index:9998;
-}
-#appLogoInner {
-  position:absolute;
-  top:-33px;
-  left:-7px;
-
-  span {
-    font-size:74px;
-    font-weight:900;
-    color:var(--col-listitem);
-  }
-  span.q {
-    margin-left:-6px;
-  }
-  span.p {
-    margin-left:-6px;
-  }
-  span.w {
-    margin-left:-3px;
-  }
-  span.v {
-    margin-left:-4px;
-  }
-
-  @include mobile {
-    top:-28px;
-    left:-5px;
-    span {
-      font-size: 61px;
-    }
-    span.q {
-      margin-left:-5px;
-    }
-    span.p {
-      margin-left:-5px;
-    }
-    span.w {
-      margin-left:-1px;
-    }
-    span.v {
-      margin-left:-3px;
-    }
-  }
-}
-#appTitle {
-  font-size:18px;
-  font-weight: bold;
-  color:var(--col-text-least);
-  flex: 1;
-  visibility: hidden;
-  @include mobile {
-    font-size:16px;
-  }
-}
-.lightTheme #appTitle {
-  color:var(--col-listitem-selected);
-}
-
-#settingsButton {
-  &:before {
-    background-image: url('./../img/icons/settings_white_24dp.svg');
-    opacity:0.66;
-  }
-  background-color: transparent;
-  &:hover {
-    background-color: var(--col-listitem-over);
-  }
-}
-.settingsView #settingsButton,
-.hqpSettingsView #settingsButton{
-  visibility: hidden;
-}
-
-#hqpSettingsButton {
-  &:before {
-    background-image: url('./../img/icons/settings_applications_white_24dp.svg');
-    opacity:0.66;
-  }
-  background-color: transparent;
-  &:hover {
-    background-color: var(--col-listitem-over);
-  }
-}
-.settingsView #hqpSettingsButton,
-.hqpSettingsView #hqpSettingsButton{
-  visibility: hidden;
-}
-// ---
-
-// Allows us to know current breakpoint by inspecting element's width
+// Allows us to know current breakpoint programmatically by inspecting element's width
 #breakpointIndicator {
   position:absolute;
   visibility: hidden;

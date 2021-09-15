@@ -1,0 +1,121 @@
+#topBar {
+  position:absolute;
+  display:flex;
+
+  width:100%;
+  height: $top-bar-height;
+  top:0;
+  left:0;
+
+  align-items: center;
+  flex: 0 0 auto;
+
+  padding: $space-unit $space-unit $space-unit $space-unit;
+  border-bottom: 2px solid var(--col-listitem); // does this subtract from the height?
+  background-color:var(--col-bg);
+  transition: margin-top 100ms ease-out;
+  &.isAnimating {
+    transition: margin-top $app-standard-duration ease-out;
+  }
+  @include mobile {
+    // todo
+  }
+}
+
+#appLogo {
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:9998;
+}
+#appLogoInner {
+  position:absolute;
+  top:-33px;
+  left:-7px;
+
+  span {
+    font-size:74px;
+    font-weight:900;
+    color:var(--col-listitem);
+  }
+  span.q {
+    margin-left:-6px;
+  }
+  span.p {
+    margin-left:-6px;
+  }
+  span.w {
+    margin-left:-3px;
+  }
+  span.v {
+    margin-left:-4px;
+  }
+
+  @include mobile {
+    top:-28px;
+    left:-5px;
+    span {
+      font-size: 61px;
+    }
+    span.q {
+      margin-left:-5px;
+    }
+    span.p {
+      margin-left:-5px;
+    }
+    span.w {
+      margin-left:-1px;
+    }
+    span.v {
+      margin-left:-3px;
+    }
+  }
+}
+#appTitle {
+  font-size:18px;
+  font-weight: bold;
+  color:var(--col-text-least);
+  flex: 1;
+  visibility: hidden;
+  @include mobile {
+    font-size:16px;
+  }
+}
+.lightTheme #appTitle {
+  color:var(--col-listitem-selected);
+}
+
+#topBarButtons {
+  display:flex;
+  margin-left:auto;
+}
+
+#settingsButton {
+  &:before {
+    background-image: url('./../img/icons/settings_white_24dp.svg');
+    opacity:0.66;
+  }
+  background-color: transparent;
+  &:hover {
+    background-color: var(--col-listitem-over);
+  }
+}
+.settingsView #settingsButton,
+.hqpSettingsView #settingsButton{
+  visibility: hidden;
+}
+
+#hqpSettingsButton {
+  &:before {
+    background-image: url('./../img/icons/settings_applications_white_24dp.svg');
+    opacity:0.66;
+  }
+  background-color: transparent;
+  &:hover {
+    background-color: var(--col-listitem-over);
+  }
+}
+.settingsView #hqpSettingsButton,
+.hqpSettingsView #hqpSettingsButton{
+  visibility: hidden;
+}

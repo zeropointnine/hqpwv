@@ -1,12 +1,23 @@
 // Higher-level 'widget' definitions
 
 
-// Subview header UI with title text and usually a close button on the right
 .viewHeader {
+  background:rgba(255,0,0,0.1);
+
+  position:absolute;
   display:flex;
-  height:$icon-button-side;
   align-items:center;
-  position:relative;
+
+  width: 100%;
+  height: $view-header-height;
+  top:0; // lives in top padding area of subview
+  left:0;
+
+  padding: $space-unit $space-unit $space-unit $space-unit;
+  @include mobile {
+    // todo
+  }
+
   .title {
     font-size: 16px;
     font-weight: bold;
