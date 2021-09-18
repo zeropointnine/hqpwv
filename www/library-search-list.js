@@ -82,7 +82,6 @@ export default class LibrarySearchList extends LibraryContentList {
     Settings.librarySearchType = type;
     Settings.librarySearchValue = value || '';
     this.makeGroups();
-    this.labelClass = this.searchType;
     this.populateDom();
     this.$el.parent()[0].scrollTop = 0;
     $(document).trigger('library-search-view-populated');
@@ -104,6 +103,9 @@ export default class LibrarySearchList extends LibraryContentList {
       case 'genre':
         o = this.makeGenreGroups();
         break;
+      case 'year':
+        o = this.makeYearGroups();
+        break;
       case 'track':
         o = this.makeTracksGroup();
         break;
@@ -115,17 +117,24 @@ export default class LibrarySearchList extends LibraryContentList {
         break;
       default:
         cl('warning logic');
-        o = {labels: [], groups: []};
         break;
+    }
+    if (!o || !o['labels'] || !o['groups']) {
+      o = {labels: [], groups: []};
     }
     this.labels = o['labels'];
     this.groups = o['groups'];
   }
 
   // override
-  get groupClassName() {
+  get groupCssClass() {
     return (this.searchType == 'track' || this.searchType == 'trackFavorites')
         ? 'libraryTrackGroup' : 'libraryAlbumGroup';
+  }
+
+  // override
+  get labelCssClass() {
+    return this.searchType;
   }
 
   // override
@@ -152,6 +161,7 @@ export default class LibrarySearchList extends LibraryContentList {
       case 'artist':
       case 'album':
       case 'genre':
+      case 'year':
       case 'albumFavorites':
         return LibraryContentList.makeAlbumListItem(data);
         break;
@@ -213,6 +223,13 @@ export default class LibrarySearchList extends LibraryContentList {
       return { labels: [], groups: [] }
     }
     return LibraryGroupUtil.makeGenreGroups(this.albums, this.searchValue);
+  }
+
+  makeYearGroups() {
+    if (!this.searchValue) {
+      return { labels: [], groups: [] }
+    }
+    return LibraryGroupUtil.makeYearGroups(this.albums, this.searchValue);
   }
 
   /**

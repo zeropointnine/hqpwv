@@ -10,7 +10,7 @@ const makePrefix = (prepre) => {
   return `[${h}:${m}:${s} ${prepre}]`;
 };
 
-/** Log with no prefix and not filtered */
+/** "x" is for user-facing messages, typicaly just for startup. */
 const x = (...rest) => {
   log(...rest);
 }

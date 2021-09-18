@@ -153,8 +153,7 @@ ViewUtil.fitInRect = (srcW, srcH, destW, destH) => {
   // todo return 4-element array to be consistent w/ theotherstuff
 };
 
-
-ViewUtil.setXYWH = ($el, x, y, w, h) => {
+ViewUtil.setLeftTopWidthHeight = ($el, x, y, w, h) => {
   $el.css('left', x + 'px');
   $el.css('top', y + 'px');
   $el.css('width', w + 'px');

@@ -2,23 +2,20 @@
 # Must be cd'ed to dist dir.
 # Do not use underscores in filenames, just dashes (because MacOS).
 
-echo '************************************************'
-echo '*** Edit filenames in script before running! ***'
-echo '************************************************'
+echo '******************************************************'
+echo '*** Edit version numbers in script before running! ***'
+echo '******************************************************'
 
 pkg ../package.json
 
-mv hqpwv-node16-macos-x64 hqpwv-server-0-9-7-macos-x64
-mv hqpwv-node14-win-x64.exe hqpwv-server-0-9-7-win-x64.exe
-mv hqpwv-node16-linux-x64 hqpwv-server-0-9-7-linux-x64
-mv hqpwv-node16-linux-arm64 hqpwv-server-0-9-7-linux-arm64
+mv hqpwv-node16-macos hqpwv-server-0-9-9-macos-x64
+mv hqpwv-node14-win.exe hqpwv-server-0-9-9-win-x64.exe
+mv hqpwv-node16-linux hqpwv-server-0-9-9-linux-x64
 
-zip hqpwv-server-0-9-7-macos-x64.zip hqpwv-server-0-9-7-macos-x64
-zip hqpwv-server-0-9-7-win-x64.zip hqpwv-server-0-9-7-win-x64.exe
-zip hqpwv-server-0-9-7-linux-x64.zip hqpwv-server-0-9-7-linux-x64
-zip hqpwv-server-0-9-7-linux-arm64.zip hqpwv-server-0-9-7-linux-arm64
+zip hqpwv-server-0-9-9-macos-x64.zip hqpwv-server-0-9-9-macos-x64
+zip hqpwv-server-0-9-9-win-x64.zip hqpwv-server-0-9-9-win-x64.exe
+zip hqpwv-server-0-9-9-linux-x64.zip hqpwv-server-0-9-9-linux-x64
 
-# rm hqpwv-server-0-9-7-macos
-# rm hqpwv-server-0-9-7-win.exe
-# rm hqpwv-server-0-9-7-linux-x64
-# rm hqpwv-server-0-9-7-linux-arm64
+# rm hqpwv-server-0-9-9-macos
+# rm hqpwv-server-0-9-9-win.exe
+# rm hqpwv-server-0-9-9-linux-x64

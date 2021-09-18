@@ -135,26 +135,44 @@ class Settings {
     this.storage.setItem('libraryFilterType', s);
   }
 
-  get libraryCollapsedGroups() {
-    return this._libraryCollapsedGroups;
+  // ---
+
+  isLibraryGroupCollapsed(key) {
+    return !!this._libraryCollapsedGroups[key]
   }
 
-  addLibraryCollapsedGroup(key) {
-    this._libraryCollapsedGroups[key] = 1;
-    this.commitLibraryCollapsedGroups();
-  }
-
-  removeLibraryCollapsedGroup(key) {
-    if (this._libraryCollapsedGroups[key] !== undefined) {
-      delete this._libraryCollapsedGroups[key];
-      this.commitLibraryCollapsedGroups();
+  setLibraryGroupCollapsed(key, isCollapsed) {
+    if (isCollapsed) {
+      this._libraryCollapsedGroups[key] = 1;
+      this._commitLibraryCollapsedGroups();
+    } else {
+      if (this._libraryCollapsedGroups[key] !== undefined) {
+        delete this._libraryCollapsedGroups[key];
+        this._commitLibraryCollapsedGroups();
+      }
     }
   }
 
-  commitLibraryCollapsedGroups() {
+  /* Batch update */
+  setLibraryGroupsCollapsed(keys, isCollapsed) {
+    if (isCollapsed) {
+      for (const key of keys) {
+        this._libraryCollapsedGroups[key] = 1;
+      }
+    } else {
+      for (const key of keys) {
+        delete this._libraryCollapsedGroups[key];
+      }
+    }
+    this._commitLibraryCollapsedGroups();
+  }
+
+  _commitLibraryCollapsedGroups() {
     const s = JSON.stringify(this._libraryCollapsedGroups);
     this.storage.setItem('libraryCollapsedGroups', s);
   }
+
+  // ---
 
   get colorTheme() {
     return this._colorTheme;

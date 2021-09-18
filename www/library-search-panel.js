@@ -12,6 +12,7 @@ export default class LibrarySearchPanel {
   $artistsTabButton;
   $albumsTabButton;
   $genresTabButton;
+  $yearsTabButton;
   $tracksTabButton;
   tabButtons$;
 
@@ -30,8 +31,9 @@ export default class LibrarySearchPanel {
     this.$artistsTabButton = $el.find('#artistsTabButton');
     this.$albumsTabButton = $el.find('#albumsTabButton');
     this.$genresTabButton = $el.find('#genresTabButton');
+    this.$yearsTabButton = $el.find('#yearsTabButton');
     this.$tracksTabButton = $el.find('#tracksTabButton');
-    this.tabButtons$ = [ this.$artistsTabButton, this.$albumsTabButton, this.$genresTabButton, this.$tracksTabButton];
+    this.tabButtons$ = [ this.$artistsTabButton, this.$albumsTabButton, this.$genresTabButton, this.$yearsTabButton, this.$tracksTabButton];
     this.$tabContent = $el.find('#searchTabContent');
     this.$input = $el.find('#librarySearchInput');
     this.$okButton = $el.find('#librarySearchOkButton');
@@ -41,6 +43,7 @@ export default class LibrarySearchPanel {
     this.$artistsTabButton.on('click tap', this.onTabButton);
     this.$albumsTabButton.on('click tap', this.onTabButton);
     this.$genresTabButton.on('click tap', this.onTabButton);
+    this.$yearsTabButton.on('click tap', this.onTabButton);
     this.$tracksTabButton.on('click tap', this.onTabButton);
     this.$okButton.on('click tap', this.onOkButton);
     this.$albumFavoritesButton.on('click tap', this.onAlbumFavoritesButton);
@@ -118,6 +121,9 @@ export default class LibrarySearchPanel {
       case 'genre':
         $el = this.$genresTabButton;
         break;
+      case 'year':
+        $el = this.$yearsTabButton;
+        break;
       case 'track':
         $el = this.$tracksTabButton;
         break;
@@ -138,6 +144,7 @@ export default class LibrarySearchPanel {
       case 'artist':
       case 'album':
       case 'genre':
+      case 'year':
       case 'track':
         this.tabType = this._searchType;
         break;
@@ -169,6 +176,10 @@ export default class LibrarySearchPanel {
       case 'genre':
         $tabButton = this.$genresTabButton;
         placeholder = 'Search album genres';
+        break;
+      case 'year':
+        $tabButton = this.$yearsTabButton;
+        placeholder = 'Search year (eg, 2012 or 1968-1972)';
         break;
       case 'track':
         $tabButton = this.$tracksTabButton;

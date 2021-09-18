@@ -1,5 +1,6 @@
 import AlbumUtil from './album-util.js';
 import DataUtil from './data-util.js';
+import GroupLabelContextMenu from './group-label-context-menu.js';
 import LibraryAlbumOptionsView from './library-album-options-view.js';
 import LibraryAlbumsList from './library-albums-list.js';
 import LibrarySearchPanel from './library-search-panel.js';
@@ -29,9 +30,9 @@ export default class LibraryView extends Subview {
   $searchCloseButton;
 
   searchPanel;
-
   albumsList;
   searchList;
+  groupLabelContextMenu;
 
   constructor() {
     super($("#libraryView"));
@@ -45,6 +46,7 @@ export default class LibraryView extends Subview {
     this.albumsList = new LibraryAlbumsList(this.$el.find('#libraryAlbumsList'));
     this.searchPanel = new LibrarySearchPanel(this.$el.find("#librarySearchPanel"));
     this.searchList = new LibrarySearchList(this.$el.find('#librarySearchList'));
+    this.groupLabelContextMenu = new GroupLabelContextMenu($('#groupContextMenu'));
 
     this.$searchButton.on('click tap', () => this.openSearch());
     this.$searchCloseButton.on('click tap', () => this.closeSearch());
@@ -54,6 +56,8 @@ export default class LibraryView extends Subview {
     Util.addAppListener(this, 'library-search-view-populated',
         () => this.updateHeaderText(true));
     Util.addAppListener(this, 'library-search', this.onSearch);
+    Util.addAppListener(this, 'group-label-context-button', this.onGroupLabelContextButton);
+    Util.addAppListener(this, 'group-label-context-item', this.onGroupLabelContextItem);
   }
 
   setSpinnerState(b) {
@@ -136,11 +140,31 @@ export default class LibraryView extends Subview {
     this.searchList.setSearchTypeAndValue(type, value);
   }
 
+  onGroupLabelContextButton($button) {
+    $button = $($button); // wtf
+    const list = ViewUtil.isDisplayed(this.albumsList.$el) ? this.albumsList : this.searchList;
+    this.groupLabelContextMenu.show(this.$el, $button, list.areAllLabelsExpanded, list.areAllLabelsCollapsed);
+  }
+
+  onGroupLabelContextItem(itemId) {
+    const list = ViewUtil.isDisplayed(this.albumsList.$el) ? this.albumsList : this.searchList;
+    if (itemId == 'groupContextItemExpand') {
+      list.expandAllGroups();
+    } else if (itemId == 'groupContextItemCollapse') {
+      list.collapseAllGroups();
+    }
+  }
+
   /** Returns true if handled/'eaten' */
   onEscape() {
     if (ViewUtil.isDisplayed(this.searchPanel.$el)) {
       this.closeSearch();
       return true;
+    } else { // is albums list
+      if (this.$el[0].scrollTop > 0) {
+        this.$el[0].scrollTop = 0;
+        return true;
+      }
     }
     return false;
   }

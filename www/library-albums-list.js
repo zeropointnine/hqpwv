@@ -100,8 +100,6 @@ export default class LibraryAlbumsList extends LibraryContentList {
 
     this.groupsDirty = true;
     this.domDirty = true;
-
-    this.labelClass = this.groupType; // nb
   }
 
   setFilterType(filterType) {
@@ -174,6 +172,10 @@ export default class LibraryAlbumsList extends LibraryContentList {
       o = LibraryGroupUtil.makeArtistGroups(this.filteredSortedAlbums);
     } else if (this.groupType == 'genre') {
       o = LibraryGroupUtil.makeGenreGroups(this.filteredSortedAlbums);
+    } else if (this.groupType == 'year') {
+      o = LibraryGroupUtil.makeYearGroups(this.filteredSortedAlbums);
+    } else if (this.groupType == 'decade') {
+      o = LibraryGroupUtil.makeDecadeGroups(this.filteredSortedAlbums);
     } else {
       o = LibraryGroupUtil.makeIdentity(this.filteredSortedAlbums);
     }
@@ -182,8 +184,13 @@ export default class LibraryAlbumsList extends LibraryContentList {
   }
 
   // override
-  get groupClassName() {
+  get groupCssClass() {
     return 'libraryAlbumGroup';
+  }
+
+  // override
+  get labelCssClass() {
+    return this.groupType;
   }
 
   // override

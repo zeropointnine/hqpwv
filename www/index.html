@@ -69,6 +69,8 @@
 									<div class="dropdownItem" data-value="none">None (default)</div>
 									<div class="dropdownItem" data-value="artist">Artist</div>
 									<div class="dropdownItem" data-value="genre">Genre</div>
+									<div class="dropdownItem" data-value="year">Year</div>
+									<div class="dropdownItem" data-value="decade">Decade</div>
 									<div class="dropdownItem" data-value="path">Subdirectory</div>
 									<div class="dropdownItem" data-value="bitrate">Samplerate</div>
 								</div>
@@ -98,6 +100,7 @@
 								<div id="artistsTabButton" class="tabButton" data-value="artist"></div>
 								<div id="albumsTabButton" class="tabButton" data-value="album" ></div>
 								<div id="genresTabButton" class="tabButton" data-value="genre"></div>
+								<div id="yearsTabButton" class="tabButton" data-value="year"></div>
 								<div id="tracksTabButton" class="tabButton" data-value="track"></div>
 								<div class="tabBarSpacer"></div>
 							</div>
@@ -399,6 +402,11 @@
 
 				<!-- z-index'ed overlays -->
 
+				<div id="groupContextMenu" class="contextMenu">
+					<div id="groupContextItemExpand" class="contextItem">Expand all</div>
+					<div id="groupContextItemCollapse" class="contextItem">Collapse all</div>
+				</div>
+
 				<div id="albumContextMenu" class="contextMenu">
 					<div id="albumContextItemQueue" class="contextItem">Queue track</div>
 					<div id="albumContextItemQueueMultiple" class="contextItem">Queue this and following tracks</div>
@@ -423,13 +431,13 @@
 
 				<img id="albumOverlayImage">
 
+				<div id="fullOverlayScreen"></div>
+				<img id="fullOverlayImage">
+
 				<!-- !important-->
 				<div id="breakpointIndicator"></div>
 
 			</div> <!-- #mainArea -->
-
-			<div id="fullOverlayScreen"></div>
-			<img id="fullOverlayImage">
 
 			<div id="playbarView">
 

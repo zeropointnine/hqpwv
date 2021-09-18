@@ -64,7 +64,7 @@ $marginUnitMobile: 6px;
   // expand/collapse caret icon
   &:before {
     @include iconBefore();
-    background-position: 6px center;
+    background-position: 0 center;
     background-image: url('./../img/icons/expand_less_white_24dp.svg');
   }
   &.isCollapsed{
@@ -83,10 +83,8 @@ $marginUnitMobile: 6px;
   margin-left: 6px;
   margin-right: 6px;
   padding-left:28px;
-  padding-right:12px;
-  height:$icon-button-side;
+  height: ($icon-button-side + 12);
   border-top: 1px solid var(--col-listitem);
-  margin-bottom: 12px;
   cursor:pointer;
 
   .icon {
@@ -108,9 +106,22 @@ $marginUnitMobile: 6px;
   .count {
     margin-left: 10px;
     padding-top: 2px;
+    margin-right:12px;
     font-size: $font-size-smaller;
     color: var(--col-text-least);
   }
+  .moreButton {
+    margin-left:auto;
+    flex: 0 0 $icon-button-side;
+    background-color:transparent;
+    &:hover {
+      background-color:var(--col-listitem-over);
+    }
+  }
+}
+
+.libraryGroupLabel + .libraryAlbumGroup {
+  margin-top: 6px;
 }
 
 .libraryGroupLabel {
@@ -153,6 +164,23 @@ $marginUnitMobile: 6px;
       }
     }
   }
+  &.year {
+    .icon {
+      display: block;
+      &:before {
+        background-image: url('./../img/icons/calendar_today_white_24dp.svg');
+      }
+    }
+  }
+  &.decade {
+    .icon {
+      display: block;
+      &:before {
+        background-image: url('./../img/icons/date_range_white_24dp.svg');
+      }
+    }
+  }
+
 }
 
 // ---
@@ -160,7 +188,7 @@ $marginUnitMobile: 6px;
 .libraryAlbumGroup {
   display:flex;
   flex-wrap: wrap;
-  margin-bottom:8px;
+  margin-bottom:4px;
   &.isCollapsed{
     display:none;
   }
@@ -418,6 +446,9 @@ $marginUnitMobile: 6px;
 #genresTabButton:before {
   content: 'Genres'
 }
+#yearsTabButton:before {
+  content: 'Year'
+}
 #tracksTabButton:before {
   content: 'Track titles'
 }
@@ -430,6 +461,9 @@ $marginUnitMobile: 6px;
   }
   #genresTabButton:before {
     content: 'Genre'
+  }
+  #yearsTabButton:before {
+    content: 'Year'
   }
   #tracksTabButton:before {
     content: 'Tracks'

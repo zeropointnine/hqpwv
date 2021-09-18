@@ -19,10 +19,10 @@ const init = () => {
   }
   fs.mkdirSync(PATH);
   if (fs.existsSync(PATH)) {
-    log.x('- created dir', PATH)
+    log.x('created dir', PATH)
     return true;
   }
-  log.x(`- error: couldn't create directory`, PATH);
+  log.x(`error: couldn't create directory`, PATH);
   return false;
 };
 

@@ -1,5 +1,6 @@
 import AlbumUtil from './album-util.js';
 import DataUtil from './data-util.js';
+import GroupLabelUtil from './group-label-util.js';
 import LibraryGroupUtil from './library-group-util.js';
 import MetaUtil from './meta-util.js';
 import Model from './model.js';
@@ -19,7 +20,6 @@ export default class LibraryContentList {
 
   albums;
   labels;
-  labelClass;
   groups;
 
   intersectionObs;
@@ -46,7 +46,10 @@ export default class LibraryContentList {
   setAlbums(albums) { }
 
   /** 'Abstract' */
-  get groupClassName() { }
+  get groupCssClass() { }
+
+  /** 'Abstract' */
+  get labelCssClass() { }
 
   /**
    * Returns a list item DOM element
@@ -70,41 +73,42 @@ export default class LibraryContentList {
 
     const isLibraryEmpty = (Model.library.albums.length == 0);
     if (isLibraryEmpty) {
-      const $item = this.makeLibraryIsEmptyItem();
+      const $item = LibraryContentList.makeLibraryIsEmptyItem();
       this.$el.append($item);
       return;
     }
     const isEmpty = (this.albums.length == 0) || (this.groups.length == 0)
         || (this.groups.length == 1 && this.groups[0].length == 0);
     if (isEmpty) {
-      const $item = this.makeLibraryViewIsEmptyItem();
+      const $item = LibraryContentList.makeListIsEmptyItem();
       this.$el.append($item);
       return;
     }
 
     // Make labels and groups
     for (let i = 0; i < this.groups.length; i++) {
+
       const label = this.labels[i];
       const group = this.groups[i];
-      const settingsKey = this.labelClass + ":" + encodeURIComponent(label); // NB!
-      const isCollapsed = !!Settings.libraryCollapsedGroups[settingsKey];
+
+      let $label;
       if (label) {
-        if (!this.labelClass) {
-          cl('warning no labelclass');
-          return;
-        }
-        const $label = this.makeLabel(label, this.labelClass, group.length);
-        if (isCollapsed) {
-          $label.addClass('isCollapsed');
-        }
-        $label.on('click tap', (e) => this.onLabelClick(e));
+        $label = GroupLabelUtil.makeLabel(label, this.labelCssClass, group.length);
         this.$el.append($label);
       }
-      const $group = $(`<div class="${this.groupClassName}"></div>`);
-      if (isCollapsed) {
-        $group.addClass('isCollapsed');
-      }
+
+      const $group = $(`<div class="${this.groupCssClass}"></div>`);
       this.populateGroupDiv($group, group);
+
+      if ($label) {
+        const s =  this.labelCssClass + ":" + encodeURIComponent(label.substr(0, 100));
+        const isCollapsed = Settings.isLibraryGroupCollapsed(s);
+        if (isCollapsed) {
+          $label.addClass('isCollapsed');
+          $group.addClass('isCollapsed');
+        }
+      }
+
       this.$el.append($group);
     }
   }
@@ -124,21 +128,61 @@ export default class LibraryContentList {
     }
   }
 
-  /**
-   * Returns a label DOM element or null // todo ?
-   */
-  makeLabel(label, labelClass, count=0) {
-    const settingsKey = labelClass + ":" + encodeURIComponent(label);
-    let s = '';
-    s += `<div class="libraryGroupLabel ${labelClass}" data-settings="${settingsKey}">`;
-    s += `<span class="icon"></span>`;
-    s += `<span class="inner">${label}</span>`;
-    s += (count > 0) ? `<span class="count">(${count})</span>` : '';
-    s += `</div>`;
-    return $(s);
+  get areAllLabelsExpanded() {
+    const $labels = this.$el.find('.libraryGroupLabel');
+    if ($labels.length == 0) {
+      return null;
+    }
+    for (const label of $labels) {
+      const isCollapsed = $(label).hasClass('isCollapsed');
+      if (isCollapsed) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  makeLibraryIsEmptyItem() {
+  get areAllLabelsCollapsed() {
+    const $labels = this.$el.find('.libraryGroupLabel');
+    if ($labels.length == 0) {
+      return null;
+    }
+    for (const label of $labels) {
+      const isCollapsed = $(label).hasClass('isCollapsed');
+      if (!isCollapsed) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  expandAllGroups() {
+    const $labels = this.$el.find('.libraryGroupLabel');
+    const $groups = this.$el.find('.libraryAlbumGroup');
+    $labels.removeClass('isCollapsed');
+    $groups.removeClass('isCollapsed');
+
+    const keys = [];
+    for (const label of $labels) {
+      keys.push(label.getAttribute('data-collapsekey'));
+    }
+    Settings.setLibraryGroupsCollapsed(keys, false);
+  }
+
+  collapseAllGroups() {
+    const $labels = this.$el.find('.libraryGroupLabel');
+    const $groups = this.$el.find('.libraryAlbumGroup');
+    $labels.addClass('isCollapsed');
+    $groups.addClass('isCollapsed');
+
+    const keys = [];
+    for (const label of $labels) {
+      keys.push(label.getAttribute('data-collapsekey'));
+    }
+    Settings.setLibraryGroupsCollapsed(keys, true);
+  }
+
+  static makeLibraryIsEmptyItem() {
     let s;
     s = `<div id="libraryNoneItem" class="libraryItem">`;
     s += `<span class="colorAccent">Library is empty.</span><br><br>`;
@@ -149,7 +193,7 @@ export default class LibraryContentList {
     return $(s);
   }
 
-  makeLibraryViewIsEmptyItem() {
+  static makeListIsEmptyItem() {
     const s = `<div class="libraryItem" id="libraryNoneItem">No items</div>`;
     return $(s);
   }
@@ -166,31 +210,6 @@ export default class LibraryContentList {
       } else {
         const src = $img.attr('data-src');
         $img.attr('src', src);
-      }
-    }
-  };
-
-  // Must be regular class function to be overridable
-  onLabelClick(event) {
-    // Toggle class for both label and group
-    const $label = $(event.currentTarget);
-    const $group = $label.next();
-    const shouldCollapse = !$label.hasClass('isCollapsed');
-    if (shouldCollapse) {
-      $label.addClass('isCollapsed');
-      $group.addClass('isCollapsed');
-    } else {
-      $label.removeClass('isCollapsed');
-      $group.removeClass('isCollapsed');
-    }
-
-    // Update settings
-    const label = $label.attr('data-settings');
-    if (label) {
-      if (shouldCollapse) {
-        Settings.addLibraryCollapsedGroup(label);
-      } else {
-        Settings.removeLibraryCollapsedGroup(label);
       }
     }
   };

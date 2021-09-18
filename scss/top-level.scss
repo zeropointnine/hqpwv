@@ -21,6 +21,27 @@ html {
   background-color:var(--col-bg);
 }
 
+#fullOverlayScreen {
+  display:none;
+  position:absolute;
+  z-index: 9998;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0, 0.9);
+  transition: opacity $app-standard-duration ease-in;
+}
+#fullOverlayImage {
+  display:none;
+  z-index: 9999;
+  position:absolute;
+  cursor: pointer;
+  transition:
+    left $app-standard-duration ease-out,
+    top $app-standard-duration ease-out,
+    width $app-standard-duration ease-out,
+    height $app-standard-duration ease-out;
+}
+
 // Allows us to know current breakpoint programmatically by inspecting element's width
 #breakpointIndicator {
   position:absolute;
@@ -49,26 +70,3 @@ html {
   font-weight:bold;
   background:rgba(255,255,255, 0.2);
 }
-
-#fullOverlayScreen {
-  display:none;
-  opacity: 0;
-  z-index: 9998;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0, 0.85);
-  transition: opacity $app-standard-duration ease-in;
-}
-#fullOverlayImage {
-  display:none;
-  z-index: 9999;
-  position:absolute;
-  cursor: pointer;
-  transition:
-    left $app-standard-duration $app-standard-ease,
-    top $app-standard-duration $app-standard-ease,
-    width $app-standard-duration $app-standard-ease,
-    height $app-standard-duration $app-standard-ease;
-}
-

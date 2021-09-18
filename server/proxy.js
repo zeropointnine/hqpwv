@@ -48,7 +48,7 @@ const initDiscoverySocket = () => {
 	if (discoSocket) {
 		discoSocket.close();
 	}
-  log.x('- creating udp socket');
+  log.x('creating udp socket');
 	discoSocket = dgram.createSocket('udp4');
 	
   discoSocket.on('error', () => {
@@ -62,15 +62,15 @@ const initDiscoverySocket = () => {
 };
 
 const onDiscoSocketListening = () => {
-  log.x(`- udp socket listening on ${discoSocket.address().address}:${discoSocket.address().port}`);
+  log.x(`udp socket listening on ${discoSocket.address().address}:${discoSocket.address().port}`);
   discoSocket.setMulticastLoopback(true);
-  log.x(`- waiting for response from HQPlayer...`);
+  log.x(`waiting for response from HQPlayer...`);
   timeoutId = setTimeout(onDiscoveryTimeout, 1500);
   sendUdpCommand(`<discover>hqplayer</discover>`);
 };
 
 const onDiscoSocketMessage = (msg, rinfo) => {
-  log.x(`- udp socket received message from ${rinfo.address}:${rinfo.port}`);
+  log.x(`udp socket received message from ${rinfo.address}:${rinfo.port}`);
   if (!msg.toString().includes('<discover')) {
     log.x(`  unrecognized message, ignoring:`, msg.toString().substr(0,30));
     return;
@@ -79,7 +79,7 @@ const onDiscoSocketMessage = (msg, rinfo) => {
   try {
     json = fastXmlParser.parse(msg.toString(), XML_PARSER_OPTIONS);
   } catch (error) {
-    log.x(`\nERROR: Couldn't parse udp data as xml`);
+    log.x(`ERROR: Couldn't parse udp data as xml`);
     log.x(msg.toString());
     log.x(error + '\n');
     return;
@@ -90,7 +90,7 @@ const onDiscoSocketMessage = (msg, rinfo) => {
     return; // shdnthpn
   }
   if (o['@_result'] != 'OK') {
-    log.x(`\nWARNING: Did not get expected result=OK`);
+    log.x(`WARNING: Did not get expected result=OK`);
     return;
   }
 
@@ -110,14 +110,14 @@ const onDiscoveryTimeout = () => {
     return;
   }
 
-  log.x('');
   hqpIp = validHqpIps[0];
   initSocket();
 };
 
 const printNoResponse = () => {
-  log.x(`\nERROR: No response from HQPlayer`);
-  log.x(`\nTIPS:`);
+  log.x(`--------------------------------`);
+  log.x(`ERROR: No response from HQPlayer`);
+  log.x(`TIPS:`);
   log.x(`1. Make sure HQPlayer is currently running`);
   log.x(`2. Make sure HQPlayer's Settings dialog is not open.`);
   log.x(`3. Verify HQPlayer "Allow control from network" button is enabled.`);
@@ -147,7 +147,6 @@ const onSelectInstanceKeypress = (buffer) => {
     return;
   }
 
-  log.x('');
   process.stdin.off('data', onSelectInstanceKeypress);
   process.stdin.setRawMode(false);
 
@@ -159,7 +158,7 @@ const sendUdpCommand = (message) => {
   message = XML_HEADER + message;
 	discoSocket.send(message, PORT, UDP_ADDRESS, (error) => {
     if (error) {
-      log.x(`\nERROR sending udp message`);
+      log.x(`ERROR sending udp message`);
       log.x(error + '\n');
       exitOnKeypress();
     }
@@ -169,17 +168,17 @@ const sendUdpCommand = (message) => {
 };
 
 const initSocket = () => {
-  log.x(`- connecting to tcp socket ${hqpIp}:${PORT}`);
+  log.x(`connecting to tcp socket ${hqpIp}:${PORT}`);
   // Note, could also create connection using hostname instead of IP.
   // IP has proven to be more reliable when reconnecting windows hqpwv server to mac hqplayer, fwiw.
   socket = net.createConnection(PORT, hqpIp, () => {
-    log.x('- tcp socket connected');  // rem, still need to wait for 'ready'
+    log.x('tcp socket connected');  // rem, still need to wait for 'ready'
   });
   socket.on("error", onSocketError);
   socket.on("end", onSocketEnd);
   socket.on("data", onData);
   socket.on("ready", () => {
-    log.x('- tcp socket ready');
+    log.x('tcp socket ready');
     if (initCallback) {
       initCallback(hqpIp);
       initCallback = null;

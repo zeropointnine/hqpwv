@@ -99,17 +99,17 @@ const onProxyReady = (ip) => {
   // Init meta
   let isSuccess = meta.init();
   if (!isSuccess) {
-    log.x('- warning meta init failed, hqpwv metadata disabled')
+    log.x('warning meta init failed, hqpwv metadata disabled')
   } else {
-    log.x('- meta ready');
+    log.x('metadata ready');
   }
 
   // Init custom playlists
   isSuccess = playlists.init();
   if (!isSuccess ) {
-    log.x('- warning custom playlists init failed, will be disabled')
+    log.x('warning custom playlists init failed, will be disabled')
   } else {
-    log.x('- custom playlists ready');
+    log.x('custom playlists ready');
   }
 };
 
@@ -117,8 +117,8 @@ const onProxyReady = (ip) => {
 
 const onError = (e) => {
   if (e.code == 'EADDRINUSE') {
-    log.x(`\nERROR: Port ${port} is in use.`);
-    log.x(`\nTry using a different port:`);
+    log.x(`ERROR: Port ${port} is in use.`);
+    log.x(`Try using a different port:`);
     log.x(`     ${APP_FILENAME} -port [PORTNUMBER]\n`);
     showPromptAndExit();
   } else {
@@ -127,7 +127,7 @@ const onError = (e) => {
 };
 
 const onSuccess = () => {
-  log.x(`- webserver is ready on port ${port}`);
+  log.x(`webserver is ready on port ${port}`);
   const ipAddress = ip.address();
   const urlText = ipAddress
       ? `http://${ipAddress}:${port}`
@@ -137,7 +137,7 @@ const onSuccess = () => {
   log.x(`Now browse to ${urlText}`);
   log.x(`from a device on your local network.`);
   log.x(`Please keep this process running.`);
-  log.x(`----------------------------------------------------\n`);
+  log.x(`----------------------------------------------------`);
 };
 
 /**
@@ -174,13 +174,12 @@ isArgHelp = () => {
 
 printHelp = () => {
   log.x('Optional arguments:');
-  log.x('\n--port [portnumber]');
+  log.x('--port [portnumber]');
   log.x('    Port to run the webserver on (default is ' + DEFAULT_PORT + ')');
-  log.x('\n--hqpip [ip_address]');
+  log.x('--hqpip [ip_address]');
   log.x('    IP address of the machine running HQPlayer.');
   log.x('    Only necessary if running multiple instances');
   log.x('    of HQPlayer on the network.');
-  log.x('');
 };
 
 const showPromptAndExit = () => {
@@ -195,7 +194,7 @@ process.on( "SIGINT", function() {
   if (meta.getIsDirty()) {
     meta.saveFile();
   }
-  log.x('- done');
+  log.x('done');
   process.exit();
 });
 

@@ -137,4 +137,33 @@ export default class AppUtil {
     }
     return result;
   }
+
+  /**
+   * Returns a year int from value, or null if not an int or out of range
+   * We are recognizing only 1500-2099 as valid years, so.
+   */
+  static getValidYear(value) {
+    const i = parseInt(value);
+    return (i >= 1500 && i <= 2099) ? i : null;
+  };
+
+  /**
+   * Parses date metadata field to find year.
+   * Returns 0 if interpreted as invalid.
+   */
+  static getYearFromMetadataDate(metadataDate) {
+    if (!metadataDate) {
+      return 0;
+    }
+    // comma semicolon slash dash dot space (covers most all observed, real-world values)
+    const a = metadataDate.split(/[,;/\-. ]/);
+    for (const token of a) {
+      const year = AppUtil.getValidYear(token);
+      if (year) {
+        return year;
+      }
+    }
+    return 0;
+  }
+
 }

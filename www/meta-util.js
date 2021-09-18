@@ -6,6 +6,10 @@ import ToastView from './toast-view.js';
 
 const HISTORY_MAX_ITEMS = 1000;
 
+const TRACKS_KEY = 'tracks-r2';
+const HISTORY_KEY = 'history-r2';
+const ALBUMS_KEY = 'albums';
+
 /**
  * Owns the hqpwv 'metadata layer' data.
  *
@@ -90,14 +94,14 @@ class MetaUtil {
         resultCallback(false);
         return;
       }
-      if (!data['tracks'] || !data['albums'] || !data['history']) {
+      if (!data[TRACKS_KEY] || !data[ALBUMS_KEY] || !data[HISTORY_KEY]) {
         cl('warning missing required property', data);
         resultCallback(false);
         return;
       }
-      this._tracks = data['tracks'];
-      this._albums = data['albums'];
-      this._history = data['history'];
+      this._tracks = data[TRACKS_KEY];
+      this._albums = data[ALBUMS_KEY];
+      this._history = data[HISTORY_KEY];
       resultCallback(true);
     };
     const onError = (e) => {

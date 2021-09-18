@@ -46,6 +46,10 @@
     &:hover {
       background-color: var(--col-listitem);
     }
+    &.isDisabled { // untested
+      pointer-events:none;
+      color:var(--col-text-least);
+    }
   }
 }
 
@@ -195,8 +199,9 @@
 }
 @include mobile {
   .tabButton {
-    padding-left:8px;
-    padding-right:8px;
+    font-size:12px;
+    padding-left:6px;
+    padding-right:6px;
   }
 }
 

@@ -123,7 +123,7 @@ export default class AlbumView extends Subview {
     this.$overlayImage.attr('src', this.$libraryItemImage.attr('src'));
 
     ViewUtil.animateCss(this.$overlayImage,
-        () => ViewUtil.setXYWH(this.$overlayImage, ...rectStart),
+        () => ViewUtil.setLeftTopWidthHeight(this.$overlayImage, ...rectStart),
         () => this.setTransformUsing(this.$overlayImage, rectStart, rectEnd),
         () => {
           ViewUtil.setVisible(this.$libraryItemImage, '');
@@ -174,7 +174,7 @@ export default class AlbumView extends Subview {
     this.$overlayImage.css('transform', 'translate(0,0) scale(1,1)');
 
     ViewUtil.animateCss(this.$overlayImage,
-        () => ViewUtil.setXYWH(this.$overlayImage, ...rectStart),
+        () => ViewUtil.setLeftTopWidthHeight(this.$overlayImage, ...rectStart),
         () => this.setTransformUsing(this.$overlayImage, rectStart, rectEnd),
         this.animateOutOverlayContinued);
   }

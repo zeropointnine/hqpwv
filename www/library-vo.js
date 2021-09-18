@@ -4,6 +4,9 @@ import Util from './util.js';
 
 /**
  * Value object wrapper around hqp <Library /> object.
+ *
+ * Stores separate lookup related info
+ * or otherwise adds new properties directly to pre-existing objects.
  */
 export default class LibraryVo {
 
@@ -137,12 +140,29 @@ export default class LibraryVo {
     return this.getTrackByHash(hash)
   }
 
+  isAlbum(item) {
+    return !!(item['LibraryFile']);
+  }
+
+  isPlaylist(item) {
+    if (!!(item['LibraryFile'])) {
+      return false;
+    }
+    const path = item['@_path'];
+    if (!path) {
+      cl('warning bad data', item);
+      return false;
+    }
+    return path.includes('.m3u');
+  }
+
   // ---
 
   init(responseArray) {
     // Separate items into albums and playlists
     this._albums = [];
     this._hqPlaylistItems = [];
+
     for (let i = responseArray.length - 1; i >= 0; i--) {
       const item = responseArray[i];
       if (this.isAlbum(item)) {
@@ -168,26 +188,21 @@ export default class LibraryVo {
       }
     });
 
+    // Track hash is simply a representation of the track's filename.
+    // Overwrite it with one that combines album hash + track hash!
+    for (const album of this.albums) {
+      const tracks = AlbumUtil.getTracksOf(album);
+      for (const track of tracks) {
+        track['@_hash'] = album['@_hash'] + '_' + track['@_hash'];
+      }
+    }
+
     this.initGenreArrays();
 
     // Init album lookup
     this.initTrackUriToTrackHash();
-  }
 
-  isAlbum(item) {
-    return !!(item['LibraryFile']);
-  }
-
-  isPlaylist(item) {
-    if (!!(item['LibraryFile'])) {
-      return false;
-    }
-    const path = item['@_path'];
-    if (!path) {
-      cl('warning bad data', item);
-      return false;
-    }
-    return path.includes('.m3u');
+    this.initTrackYearValues();
   }
 
   /**
@@ -230,4 +245,17 @@ export default class LibraryVo {
       }
     }
   };
+
+  /**
+   * Adds `year` integer property to album objects, when possible.
+   */
+  initTrackYearValues() {
+    for (const album of this.albums) {
+      const date = album['@_date'];
+      const year = AppUtil.getYearFromMetadataDate(date);
+      if (year) {
+        album['year'] = year;
+      }
+    }
+  }
 }

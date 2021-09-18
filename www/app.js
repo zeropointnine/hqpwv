@@ -54,6 +54,11 @@ export default class App {
   subviewZ = 100;
 
 	constructor() {
+    if (!window.hqpwv) {
+      window.hqpwv = {};
+    }
+    window.hqpwv.AppUtil = AppUtil;
+
     if (Util.isTouch) {
       $('html').addClass('isTouch');
     }

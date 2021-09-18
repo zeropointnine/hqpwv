@@ -4,5 +4,5 @@ dist/hqpwv-server-*
 node_modules/
 www/css/main.css.map
 
-hqpwv-metadata.json
+hqpwv-metadata*
 hqpwv-playlists/

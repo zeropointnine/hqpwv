@@ -32,28 +32,25 @@ class FullAlbumOverlay {
     ViewUtil.setDisplayed(this.$overlayImage, true);
     ViewUtil.setVisible(this.$sourceImage, false);
 
-    // Set overlay image to use same src as the source image.
     this.$overlayImage.attr('src', this.$sourceImage.attr('src'));
 
-    // Overlay height must be set programmatically
-    this.updateOverlayScreenHeight();
-
+    // Place abs pos overlay image on top of the in-flow album image, and animate
     const startRect = this.getConvertedStartRect(this.$sourceImage);
-    ViewUtil.setCssSync(this.$overlayImage,
-        () => ViewUtil.setXYWH(this.$overlayImage, ...startRect));
-
     const endRect = this.getEndRect(this.$sourceImage);
-    ViewUtil.setXYWH(this.$overlayImage, ...endRect);
+    ViewUtil.animateCss(this.$overlayImage,
+        () => ViewUtil.setLeftTopWidthHeight(this.$overlayImage, ...startRect),
+        () => ViewUtil.setLeftTopWidthHeight(this.$overlayImage, ...endRect));
 
+    // Also fade in overlay screen, which is right under overlay image
     ViewUtil.setCssSync(this.$overlayScreen, () => this.$overlayScreen.css('opacity', 0));
     this.$overlayScreen.css('opacity', 1);
 
-    $(document).on('debounced-window-resize', this.onWindowResize); // todo this may not be necessary anymore?
+    $(document).on('debounced-window-resize', this.onWindowResize);
   }
 
   animateOut() {
     const r = this.getConvertedStartRect(this.$sourceImage);
-    ViewUtil.setXYWH(this.$overlayImage, ...r);
+    ViewUtil.setLeftTopWidthHeight(this.$overlayImage, ...r);
 
     ViewUtil.animateCss(this.$overlayScreen,
         () => this.$overlayScreen.css('opacity', 1),
@@ -63,7 +60,7 @@ class FullAlbumOverlay {
 
   /**
    * Get source image's (real content) rect in overlay's coordinate space.
-   * Overlay image will be played on top for some swap action.
+   * Overlay image will be placed on top for some swap action.
    */
   getConvertedStartRect($sourceImage) {
     const srcRect = $sourceImage[0].getBoundingClientRect();
@@ -95,22 +92,13 @@ class FullAlbumOverlay {
     ViewUtil.setDisplayed(this.$overlayScreen, false);
     ViewUtil.setDisplayed(this.$overlayImage, false);
     this.$sourceImage.css('visibility', ''); // nb! (?!)
-    $(document).on('debounced-window-resize', this.onWindowResize);
-  }
-
-  updateOverlayScreenHeight() {
-    // Overlay height must be set programmatically
-    // todo is this still necessary, or can it be refactored out smh
-    const h = $('#page').height() - $('#playbarView').outerHeight();
-    this.$overlayScreen.css('height', h);
+    $(document).off('debounced-window-resize', this.onWindowResize);
   }
 
   onWindowResize = () => {
-    this.updateOverlayScreenHeight();
-
     const r = this.getEndRect(this.$sourceImage);
     ViewUtil.setCssSync(this.$overlayImage,
-        () => ViewUtil.setXYWH(this.$overlayImage, ...r));
+        () => ViewUtil.setLeftTopWidthHeight(this.$overlayImage, ...r));
   };
 }
 
