@@ -30,11 +30,16 @@ export default class Subview {
   }
 
   // Override as needed
-  hide() {
+  hide(callback=null) {
     ViewUtil.animateCss(this.$el,
         null,
         () => this.$el.css('opacity', 0),
-        () => ViewUtil.setVisible(this.$el, false));
+        () => {
+          ViewUtil.setVisible(this.$el, false);
+          if (callback) {
+            callback();
+          }
+        });
   }
 
   onScroll(e) {

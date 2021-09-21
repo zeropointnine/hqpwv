@@ -29,9 +29,6 @@ export default class AlbumUtil {
     const filetypeText = AlbumUtil.getFiletypeText(album);
 
     let s = '';
-    if (date) {
-      s = s ? (s + ' | ' + date) : date;
-    }
     if (bitrateText || filetypeText) {
       let s2 = '';
       if (bitrateText) {
@@ -40,10 +37,13 @@ export default class AlbumUtil {
       if (filetypeText) {
         s2 = s2 ? s2 + ' ' + filetypeText : filetypeText;
       }
-      s = s ? (s + '<br>' + s2) : s2;
+      s = s ? (s + ' • ' + s2) : s2;
     }
     if (duration) {
-      s = s ? s + ('<br>' + duration) : duration;
+      s = s ? s + (' • ' + duration) : duration;
+    }
+    if (date) {
+      s = s ? (s + ' • ' + date) : date;
     }
     return s;
   }

@@ -18,7 +18,6 @@ export default class TrackListItemUtil {
    * @param array elements must have value for either @_uri, or @_hash/hash
    */
   static populateList($holder, array) {
-
     const result = [];
 
     for (let i = 0; i < array.length; i++) {
@@ -159,16 +158,56 @@ export default class TrackListItemUtil {
 
   /**
    * Returns html string contents for the `.main` section of the track list item:
-   * Track name and duration text.
+   * Track name + duration text. Optionally, a new line with song-artist.
    */
   static makeMainContents(item) {
+
     const song = item['@_song'];
     const seconds = parseFloat(item['@_length']);
     let result = '';
     result += `<span class="trackText">${ song ? song : 'Track' }</span>`;
     if (seconds) {
-      result += ` <span class="duration">(${Util.durationText(seconds)})</span>`;
+      result += `&nbsp;<span class="duration">(${Util.durationText(seconds)})</span>`;
     }
+
+    // Album track items do not have the album's performer or composer properties (redundantly) populated.
+    // Playlist track items have artist, and performer + composer (when exists),
+    // even when they are the same as that of its album (when album exists)
+    let songPerformer = item['@_performer'];
+    let songArtist = item['@_artist'];
+    let songComposer = item['@_composer'];
+    if (item['@_uri']) {
+      // Is playlist track, not album track
+      const assocAlbum = Model.library.getAlbumByTrackUri(item['@_uri']);
+      if (assocAlbum) {
+        if (assocAlbum['@_artist'] && assocAlbum['@_artist'] == songArtist) {
+          cl('artist is dupe, removing', songArtist);
+          songArtist = null;
+        }
+        if (assocAlbum['@_performer'] && assocAlbum['@_performer'] == songPerformer) {
+          cl('performer is dupe, removing', songPerformer);
+          songPerformer= null;
+        }
+        if (assocAlbum['@_composer'] && assocAlbum['@_composer'] == songComposer) {
+          cl('composer is dupe, removing', songComposer);
+          songComposer= null;
+        }
+      }
+    }
+    let extraLines = '';
+    if (songPerformer) {
+      extraLines += `<div class='extraLine'><span class='caption'>Performer:</span> ${songPerformer}</div>`;
+    }
+    if (songArtist) {
+      extraLines += `<div class='extraLine'><span class='caption'>Artist:</span> ${songArtist}</div>`;
+    }
+    if (songComposer) {
+      extraLines += `<div class='extraLine'><span class='caption'>Composer:</span> ${songComposer}</div>`;
+    }
+    if (extraLines) {
+      result += `<div class="extra">${extraLines}</div>`;
+    }
+
     return result;
   }
 

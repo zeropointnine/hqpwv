@@ -25,8 +25,10 @@ If simply trying to run the project, this step can be skipped, as the compiled c
 
 5. Start the server:
 `node server/server.js`
-  
+
 6. Browse to the locally served webpage as directed.
-  
+
 Executables are generated with `pkg` by simply entering:
 `pkg .`
+
+Front-end code consists of untranspiled, vanilla ES6 classes.

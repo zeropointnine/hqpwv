@@ -58,6 +58,9 @@ export default class AlbumView extends Subview {
   }
 
   show(album, $libraryItem=null) {
+
+    cl('album', album)
+
     this.$libraryItemImage = $libraryItem ? $libraryItem.find('img') : null;
     this.currentPlayingSongAlbumIndex = -1;
 
@@ -143,8 +146,11 @@ export default class AlbumView extends Subview {
     $(document).off('new-track', this.onNewTrack);
     $(document).off('meta-track-favorite-changed meta-track-incremented', this.trackMetaChangeHandler);
 
-    // do normal fadeout of album view
-    super.hide();
+    // Do normal fadeout of album view
+    super.hide(() => {
+      // Prevent next show from displaying old image on any fail or delay
+      this.$picture.attr('src', '');
+    });
 
     if (this.$libraryItemImage) {
       this.animateOutOverlay();
@@ -228,6 +234,39 @@ export default class AlbumView extends Subview {
     s = s || 'Album';
     $("#albumViewTitle").html(s);
 
+    const $performer = $('#albumViewPerformer');
+    const performer = this.album['@_performer'];
+    if (performer) {
+      s = `Performed by ${this.album['@_performer']}`;
+      $performer.text(s);
+      ViewUtil.setDisplayed($performer, true);
+      if ($performer[0].scrollHeight > $performer[0].clientHeight) {
+        $performer.addClass('pseudoEllipse');
+      } else {
+        $performer.removeClass('pseudoEllipse');
+      }
+    } else {
+      $performer.text('');
+      ViewUtil.setDisplayed($performer, false);
+    }
+
+    const $composer = $('#albumViewComposer');
+    const composer = this.album['@_composer'];
+    if (composer) {
+      s = `Composed by ${this.album['@_composer']}`;
+      $composer.text(s);
+      ViewUtil.setDisplayed($composer, true);
+      if ($composer[0].scrollHeight > $composer[0].clientHeight) {
+        $composer.addClass('pseudoEllipse');
+      } else {
+        $composer.removeClass('pseudoEllipse');
+      }
+    } else {
+      $composer.text('');
+      ViewUtil.setDisplayed($composer, false);
+    }
+    ViewUtil.setDisplayed($('#albumViewPerformerComposer'), (performer || composer));
+
     $("#albumViewStats").html(AlbumUtil.makeAlbumStatsText(this.album));
 
     AlbumUtil.updateGenreButtons($('#albumViewGenreButtons'), this.album);
@@ -241,16 +280,33 @@ export default class AlbumView extends Subview {
 
 	makeListItem(index, item) {
 		const seconds = parseInt(item['@_length']);
-		const duration = seconds ? ` <span class="albumItemDuration">(${Util.durationText(seconds)})</span>` : '';
+		const duration = seconds ? `&nbsp;<span class="albumItemDuration">(${Util.durationText(seconds)})</span>` : '';
 		const song = item['@_song'];
     const hash = item['@_hash'];
     const isFavorite = MetaUtil.isTrackFavoriteFor(hash);
     const favoriteSelectedClass = isFavorite ? 'isSelected' : '';
     const numViews = MetaUtil.getNumViewsFor(hash);
-		let s = '';
+
+    let extra = '';
+    if (item['@_performer']) {
+      extra += `<div class='extraLine'><span class='caption'>Performer:</span> ${item['@_performer']}</div>`;
+    }
+    if (item['@_artist']) { // song's artist (not album's artist)
+      extra += `<div class='extraLine'><span class='caption'>Artist:</span> ${item['@_artist']}</div>`;
+    }
+    if (item['@_composer']) {
+      extra += `<div class='extraLine'><span class='caption'>Composer:</span> ${item['@_composer']}</div>`;
+    }
+
+    let s = '';
     s += `<div class="albumItem" data-index="${index}" data-hash="${hash}">`;
 		s += `  <div class="albumItemLeft">${index+1}</div>`;
-		s += `  <div class="albumItemMain">${song}${duration}</div>`;
+		s += `  <div class="albumItemMain">`;
+    s += `    <div class="song">${song}${duration}</div>`;
+    if (extra) {
+      s += `  <div class="extra">${extra}</div>`;
+    }
+    s += `  </div>`;
     s += `  <div class="trackItemMeta">`;
     s += `    <div class="numViews">${numViews || ''}</div>`;
     s += `    <div class="iconButton toggleButton favoriteButton ${favoriteSelectedClass}"></div>`;

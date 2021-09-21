@@ -60,12 +60,39 @@
     #albumViewTitle {
       font-family: 'Noto Serif SC', sans-serif;
       font-size:36px;
-      //margin-right:15%;
       line-height:42px;
-      margin-top:$space-unit;
+      margin-top:10px; // because large-font title text below
+      word-break: break-word;
     }
+
+    #albumViewPerformerComposer {
+      margin-top:10px;
+    }
+
+    #albumViewPerformer,
+    #albumViewComposer {
+      color: var(--col-text-less);
+      font-size: $font-size-smaller;
+      max-height: 63px; // show up to 3 lines (21 * 3)
+      overflow: hidden;
+      //margin-top:6px;
+    }
+    .pseudoEllipse {
+      position:relative;
+      padding-right:16px;
+      &:before {
+        content: '...';
+        position:absolute;
+        right:0;
+        bottom:0;
+        width:16px;
+        height:21px;
+      }
+    }
+
     #albumViewStats {
-      margin-top:$space-unit;
+      margin-top:12px; // bc tall title text above causes extra vertical space
+      font-size:$font-size-smaller;
     }
 
     #albumViewGenreButtons {
@@ -97,6 +124,7 @@
     #albumViewPath {
       margin-top:$space-unit;
       font-size: 12px;
+      word-break: break-word;
       color:var(--col-text-least);
     }
     #albumViewButtons {
@@ -129,7 +157,7 @@
         margin:-6px;
       }
       #albumViewTitle {
-        margin-top:$space-unit-mobile;
+        margin-top:10px;
         font-size: 28px;
         line-height:33px;
       }
@@ -225,7 +253,7 @@
 
   @include mobile {
     left: 0;
-    padding: 8px 8px 8px 12px;
+    padding: 8px 0 8px 8px;
   }
 }
 .isPaused .albumItem {
@@ -244,8 +272,49 @@
   }
 }
 
+.albumItemLeft {
+	margin-right:16px;
+  min-width: 20px;
+  text-align: center;
+  @include mobile {
+    margin-right:10px;
+  }
+}
 
+.albumItemMain {
+	flex:1;
+  min-width: 0; // allows children to properly ellipsize
+  .caption {
+    text-transform: uppercase;
+    color: var(--col-text-least);
+    font-size:$font-size-smallest;
+  }
+  .song {
+    line-height:20px;
+    .albumItemDuration {
+      color: var(--col-text-less);
+    }
+  }
+  .extra {
+    margin-top: 4px;
+    .extraLine {
+      font-size: $font-size-smaller;
+      line-height:18px;
+      color: var(--col-text-least);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space:nowrap;
+    }
+  }
+}
+
+.albumItemContext {
+  height:$icon-button-side; // w/o this, is too tall, not sure why
+}
+
+// ---
 // Selectability-related:
+
 #albumViewTexts * {
   @include userSelect(text);
 }
@@ -255,21 +324,8 @@
   @include userSelect(none);
 }
 
-
-.albumItemLeft {
-	margin-right:12px;
+.albumItem * {
   @include userSelect(text);
-}
-.albumItemMain {
-	flex:1;
-  @include userSelect(text);
-  .albumItemDuration {
-    color: var(--col-text-less);
-    @include userSelect(text);
-  }
-}
-.albumItemContext {
-  height:$icon-button-side; // w/o this, is too tall, not sure why
 }
 
 // ---

@@ -24,8 +24,28 @@
   }
   .main {
     flex:1;
+    line-height:20px;
+    min-width: 0; // allows children to properly ellipsize
 
     .trackText { }
+
+    .caption {
+      text-transform: uppercase;
+      color: var(--col-text-least);
+      font-size:$font-size-smallest;
+    }
+
+    .extra {
+      margin-top: 4px;
+      .extraLine {
+        font-size: $font-size-smaller;
+        line-height:18px;
+        color: var(--col-text-least);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
 
     .nonLibraryInfo { // used for non-library tracks
       color:var(--col-text-less);

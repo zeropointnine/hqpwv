@@ -41,7 +41,7 @@
 }
 :root {
   --col-bg: #181818;
-  --col-listitem-less: #1c1c1c;
+  --col-listitem-less: #202020;
   --col-listitem: #282828;
   --col-listitem-over: #323232;
   --col-listitem-selected: #383838;
@@ -613,6 +613,24 @@ label {
 }
 .trackItem .main {
   flex: 1;
+  line-height: 20px;
+  min-width: 0;
+}
+.trackItem .main .caption {
+  text-transform: uppercase;
+  color: var(--col-text-least);
+  font-size: 12px;
+}
+.trackItem .main .extra {
+  margin-top: 4px;
+}
+.trackItem .main .extra .extraLine {
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--col-text-least);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .trackItem .main .nonLibraryInfo {
   color: var(--col-text-less);
@@ -2416,10 +2434,34 @@ html {
   font-family: "Noto Serif SC", sans-serif;
   font-size: 36px;
   line-height: 42px;
-  margin-top: 16px;
+  margin-top: 10px;
+  word-break: break-word;
+}
+#albumViewTexts #albumViewTextsInner #albumViewPerformerComposer {
+  margin-top: 10px;
+}
+#albumViewTexts #albumViewTextsInner #albumViewPerformer,
+#albumViewTexts #albumViewTextsInner #albumViewComposer {
+  color: var(--col-text-less);
+  font-size: 14px;
+  max-height: 63px;
+  overflow: hidden;
+}
+#albumViewTexts #albumViewTextsInner .pseudoEllipse {
+  position: relative;
+  padding-right: 16px;
+}
+#albumViewTexts #albumViewTextsInner .pseudoEllipse:before {
+  content: "...";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 21px;
 }
 #albumViewTexts #albumViewTextsInner #albumViewStats {
-  margin-top: 16px;
+  margin-top: 12px;
+  font-size: 14px;
 }
 #albumViewTexts #albumViewTextsInner #albumViewGenreButtons {
   margin-top: 16px;
@@ -2450,6 +2492,7 @@ html {
 #albumViewTexts #albumViewTextsInner #albumViewPath {
   margin-top: 16px;
   font-size: 12px;
+  word-break: break-word;
   color: var(--col-text-least);
 }
 #albumViewTexts #albumViewTextsInner #albumViewButtons {
@@ -2484,7 +2527,7 @@ html {
     margin: -6px;
   }
   #albumViewTexts #albumViewTextsInner #albumViewTitle {
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 28px;
     line-height: 33px;
   }
@@ -2566,7 +2609,7 @@ html {
 @media (max-width: 480px) {
   .albumItem {
     left: 0;
-    padding: 8px 8px 8px 12px;
+    padding: 8px 0 8px 8px;
   }
 }
 
@@ -2576,6 +2619,48 @@ html {
 
 .isBusy .albumItem.selected:before {
   animation: thumbPulse 1.33s infinite;
+}
+
+.albumItemLeft {
+  margin-right: 16px;
+  min-width: 20px;
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .albumItemLeft {
+    margin-right: 10px;
+  }
+}
+
+.albumItemMain {
+  flex: 1;
+  min-width: 0;
+}
+.albumItemMain .caption {
+  text-transform: uppercase;
+  color: var(--col-text-least);
+  font-size: 12px;
+}
+.albumItemMain .song {
+  line-height: 20px;
+}
+.albumItemMain .song .albumItemDuration {
+  color: var(--col-text-less);
+}
+.albumItemMain .extra {
+  margin-top: 4px;
+}
+.albumItemMain .extra .extraLine {
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--col-text-least);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.albumItemContext {
+  height: 36px;
 }
 
 #albumViewTexts * {
@@ -2596,34 +2681,12 @@ html {
   -o-user-select: none;
 }
 
-.albumItemLeft {
-  margin-right: 12px;
+.albumItem * {
   -moz-user-select: text;
   -webkit-user-select: text;
   -ms-user-select: text;
   user-select: text;
   -o-user-select: text;
-}
-
-.albumItemMain {
-  flex: 1;
-  -moz-user-select: text;
-  -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-  -o-user-select: text;
-}
-.albumItemMain .albumItemDuration {
-  color: var(--col-text-less);
-  -moz-user-select: text;
-  -webkit-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-  -o-user-select: text;
-}
-
-.albumItemContext {
-  height: 36px;
 }
 
 #albumOverlayImage {

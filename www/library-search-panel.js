@@ -167,7 +167,7 @@ export default class LibrarySearchPanel {
     switch (this._tabType) {
       case 'artist':
         $tabButton = this.$artistsTabButton;
-        placeholder = 'Search artist names';
+        placeholder = 'Search album artist names';
         break;
       case 'album':
         $tabButton = this.$albumsTabButton;
@@ -179,7 +179,7 @@ export default class LibrarySearchPanel {
         break;
       case 'year':
         $tabButton = this.$yearsTabButton;
-        placeholder = 'Search year (eg, 2012 or 1968-1972)';
+        placeholder = 'Search album year (eg, 2012 or 1968-1972)';
         break;
       case 'track':
         $tabButton = this.$tracksTabButton;
