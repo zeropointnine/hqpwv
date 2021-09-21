@@ -214,15 +214,19 @@ const onSocketEnd = () => {
 
 // -------------------------------------------------------------------
 
-const sendCommandToHqp = (xml, callback) => {
-  // log.x(`client request: ${xml.substr(0,80)}`);
+const isBusy = () => {
+  return !!clientRequestXml;
+};
 
+const sendCommandToHqp = (xml, callback) => {
   if (!socket) {
     callback({ error: "not_connected"});
     clearValues();
     return;
   }
   if (clientRequestXml) {
+    // Should not be possible unless there is a logic error in
+    // proxy.js or server-command-handler.js
     callback({ error: 'proxy_is_busy' });
     clearValues();
     return;
@@ -234,7 +238,7 @@ const sendCommandToHqp = (xml, callback) => {
     clientRequestAsJson = fastXmlParser.parse(clientRequestXml, XML_PARSER_OPTIONS);
   } catch (error) {
     doCallback({ error: "request_xml_invalid" });
-    // Note too that if hqp receives an unrecognized command, it will close the socket.
+    // Note too that if hqp receives an unrecognized xml command, it will close the socket.
     return;
   }
 
@@ -251,7 +255,7 @@ const onData = (data) => {
 
   if (!clientRequestXml) {
     // hqp is sending data while no 'command' is pending.
-    log.w(`received data unprompted: ${dataAsString.substr(0, 80)}`);
+    log.w(`received data unprompted: ${dataAsString.substr(0, 40)}`);
     return;
   }
 
@@ -367,10 +371,11 @@ const postProcessLibrary = (json) => {
 
 const doCallback = (json) => {
   if (json.error) {
-    log.w('sending error response to client:', json.error);
+    log.w('sending error:', json.error, clientRequestXml.substr(0, 40));
   }
-  responseCallback(json);
+  const callback = responseCallback;
   clearValues();
+  callback(json);
 };
 
 // ---
@@ -400,6 +405,7 @@ const exitOnKeypress = () => {
 };
 
 module.exports = {
+  isBusy: isBusy,
   sendCommandToHqp: sendCommandToHqp,
   start: start
 };

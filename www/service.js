@@ -1,3 +1,4 @@
+import App from './app.js';
 import Commands from './commands.js';
 import DataUtil from './data-util.js';
 import Model from './model.js';
@@ -123,11 +124,18 @@ class Service {
    * Makes request to server using the xml in `currentItem`
    */
 	makeRequest() {
+    /*
     if (!this.currentItem.xml.includes('<Status')) {
-      // cl(`${Values.uptimeString} service ${this.currentItem.xml.substr(0,60)}`);
+      cl(`${Values.uptimeString} service ${this.currentItem.xml.substr(0,60)}`);
     }
-    const url = Values.COMMAND_ENDPOINT + "?xml=" + encodeURIComponent(this.currentItem.xml);
-    $.ajax({ url: url, error: this.onError, success: this.onSuccess}); // todo timeout: ___ ?
+    */
+    const url = Values.COMMAND_ENDPOINT
+        + "?id=" + App.instance.instanceId
+        + "&xml=" + encodeURIComponent(this.currentItem.xml);
+    $.ajax({
+      url: url,
+      error: this.onError,
+      success: this.onSuccess}); // todo timeout?
   }
 
   /**

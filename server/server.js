@@ -13,6 +13,7 @@ const log = require('./log');
 const packageJson = require('./../package.json');
 const proxy = require('./proxy');
 const meta = require('./meta');
+const commandHandler = require('./server-command-handler');
 const metaHandler = require('./server-meta-handler');
 const playlistHandler = require('./server-playlist-handler');
 const playlists = require('./playlists');
@@ -23,8 +24,13 @@ const DEFAULT_PORT = 8000;
 
 let port;
 let server;
-let isBusy = false;
 let hqpIp;
+
+// ---
+
+if (__dirname.includes('/lee/')) {
+  log.setLevel(log.LEVEL_VERBOSE);
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -32,26 +38,10 @@ app.use(express.static(WEBPAGE_DIR));
 
 /**
  * 'commands'
- * These get proxied to/from HQPlayer.
- * Note the enforcement of a one-at-a-time policy
- * (due to nature of socket server).
+ * Get proxied to HQPlayer.
  */
 app.get('/endpoints/command', (request, response) => {
-  if (isBusy) {
-    let info = '';
-    if (request.query.xml) {
-      info = `${request.query.xml.substr(0,40)}`;
-    }
-    log.w(`proxy busy, rejected ${info} from ${request.connection.remoteAddress}`);
-    response.send({ error: "server_is_busy" });
-    return;
-  }
-  isBusy = true;
-  const xml = request.query.xml;
-  proxy.sendCommandToHqp(xml, (json) => {
-    response.send(json);
-    isBusy = false;
-  });  
+  commandHandler.go(request, response);
 });
 
 /**
