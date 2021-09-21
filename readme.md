@@ -7,7 +7,7 @@ HQPWV is a local webserver that allows you to remotely control [HQPlayer](https:
 [Discussion thread on audiophilestyle](https://audiophilestyle.com/forums/topic/63831-hqpwv-hqplayer-web-viewer)
 
 Demo video:
-[![Demo video](https://i.vimeocdn.com/video/1226369138?mw=1200&mh=750)](https://vimeo.com/593569610 "Demo video")
+[![Demo video](https://i.vimeocdn.com/video/1226369138-b9eb51cefba593dcf444fd1bad72adcfae4474ee2ac765ea22cc37d1d90515b5-d?mw=1920&mh=1080&q=100)](https://vimeo.com/593569610 "Demo video")
 
 
 # Development setup  
